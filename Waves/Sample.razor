@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using RazorConsole.Components
+
+<Columns>
+    <p>Current count</p>
+    <Markup
+        Content="@currentCount.ToString()"
+        Foreground="@Spectre.Console.Color.Green"
+    />
+    <TextButton
+        Content="Press me"
+        OnClick="IncrementCount"
+        BackgroundColor="@Spectre.Console.Color.Grey"
+        FocusedColor="@Spectre.Console.Color.Blue"
+    />
+</Columns>
+
+
+@code {
+    private int currentCount = 0;
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
