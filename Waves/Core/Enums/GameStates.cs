@@ -1,4 +1,4 @@
-﻿namespace Waves;
+﻿namespace Waves.Core.Enums;
 
 internal enum GameStates
 {

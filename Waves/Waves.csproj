@@ -12,13 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\" />
     <Folder Include="Entities\" />
     <Folder Include="Assets\" />
     <Folder Include="Configuration\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Utilities\" />
     <Folder Include="Systems\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
 
 </Project>

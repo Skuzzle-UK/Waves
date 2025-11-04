@@ -1,4 +1,7 @@
-﻿namespace Waves;
+﻿using Waves.Core.Enums;
+using Waves.Core.Interfaces;
+
+namespace Waves.Core;
 
 internal class GameStateManager : IGameStateManager
 {
