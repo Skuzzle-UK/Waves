@@ -1,7 +1,18 @@
-namespace Waves;
+using Waves.Core.Enums;
 
+namespace Waves.Core.Interfaces;
+
+/// <summary>
+/// Provides an interface for managing the state and score of a game.
+/// </summary>
+/// <remarks>The <c>IGameStateManager</c> interface defines methods and properties for controlling game flow,
+/// including starting and ending the game, toggling pause state, and managing the player's score. It also includes
+/// events for monitoring changes in game state and score.</remarks>
 internal interface IGameStateManager
 {
+    // TODO: Consider adding a PrepareGame method to set up initial game conditions before starting.
+    // TODO: Consider moving score management out of here for better separation of concerns.
+
     /// <summary>
     /// Get the players current score.
     /// </summary>
