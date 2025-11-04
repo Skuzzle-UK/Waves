@@ -11,4 +11,14 @@
     <PackageReference Include="RazorConsole.Core" Version="0.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Assets\" />
+    <Folder Include="Configuration\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Systems\" />
+  </ItemGroup>
+
 </Project>
