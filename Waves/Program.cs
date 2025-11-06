@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RazorConsole.Core;
+using Waves;
 using Waves.Core;
 using Waves.Core.Interfaces;
-using Waves.Pages;
 
 namespace Waves;
 
@@ -21,7 +21,7 @@ internal class Program
                 services.AddHostedService<KeyboardService>(sp => (KeyboardService)sp.GetRequiredService<IKeyboardService>());
                 services.AddHostedService<CursorVisibilityService>(sp => (CursorVisibilityService)sp.GetRequiredService<ICursorVisibilityService>());
             })
-            .UseRazorConsole<MainMenu>();
+            .UseRazorConsole<AppWrapper>();
 
         IHost host = hostBuilder.Build();
         await host.RunAsync();

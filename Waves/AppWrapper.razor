@@ -1,0 +1,18 @@
+@using RazorConsole.Components
+@using Waves.Pages
+
+<Panel Height="_panelHeight" Width="_panelWidth">
+    @if (_currentPage == "menu")
+    {
+        <MainMenu OnNavigateToGame="NavigateToGame" />
+    }
+    else if (_currentPage == "game")
+    {
+        <Game />
+    }
+</Panel>
+<Align Horizontal="@Spectre.Console.HorizontalAlignment.Right" Vertical="@Spectre.Console.VerticalAlignment.Bottom">
+    <Rows>
+        <Markup Content="Created by Nick & Billy - 2025" />
+    </Rows>
+</Align>
