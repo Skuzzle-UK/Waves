@@ -1,6 +1,6 @@
 ﻿namespace Waves.Core.Enums;
 
-internal enum GameStates
+public enum GameStates
 {
     PREPARING,
     RUNNING,

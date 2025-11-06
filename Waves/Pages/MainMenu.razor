@@ -1,48 +1,41 @@
 ﻿@using RazorConsole.Components
 
-<Panel>
-    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
-        <Padder Padding="@(new(0, 2, 0, 0))">
-            <Figlet Content="Waves" />
-        </Padder>
-        <Padder Padding="@(new(0, 1, 0, 0))">
-            <Markup Content="Surf to become Game Off 2025 champion" />
-        </Padder>
-        <Padder Padding="@(new(0, 0, 0,2))">
-        <Rows>
-            <Padder Padding="@(new(0, 0, 0, 1))">
-                <Markup Content="Use tab to navigate menu" />
-            </Padder>
-            <Panel>
-                <TextButton
-                    Content="  Start  "
-                    OnClick="Start"
-                    BackgroundColor="@Spectre.Console.Color.Grey15"
-                    FocusedColor="@Spectre.Console.Color.Blue"
-                />
-            </Panel>
-            <Panel>
-                <TextButton
-                    Content="  Leaderboard  "
-                    OnClick="NavigateToLeaderboard"
-                    BackgroundColor="@Spectre.Console.Color.Grey15"
-                    FocusedColor="@Spectre.Console.Color.Blue"
-                />
-            </Panel>
-            <Panel>
-                <TextButton
-                    Content="  Quit  "
-                    OnClick="Quit"
-                    BackgroundColor="@Spectre.Console.Color.Grey15"
-                    FocusedColor="@Spectre.Console.Color.Blue"
-                />
-            </Panel>
-        </Rows>
-        </Padder>
-    </Align>
-</Panel>
-<Align Horizontal="@Spectre.Console.HorizontalAlignment.Right" Vertical="@Spectre.Console.VerticalAlignment.Bottom">
+<Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+    <Padder Padding="@(new(0, 2, 0, 0))">
+        <Figlet Content="Waves" />
+    </Padder>
+    <Padder Padding="@(new(0, 1, 0, 0))">
+        <Markup Content="Surf to become Game Off 2025 champion" />
+    </Padder>
+    <Padder Padding="@(new(0, 0, 0,2))">
     <Rows>
-        <Markup Content="Created by Nick & Billy - 2025" />
+        <Padder Padding="@(new(0, 0, 0, 1))">
+            <Markup Content="Use tab to navigate menu" />
+        </Padder>
+        <Panel>
+            <TextButton
+                Content="  Start  "
+                OnClick="Start"
+                BackgroundColor="@Spectre.Console.Color.Grey15"
+                FocusedColor="@Spectre.Console.Color.Blue"
+            />
+        </Panel>
+        <Panel>
+            <TextButton
+                Content="  Leaderboard  "
+                OnClick="NavigateToLeaderboard"
+                BackgroundColor="@Spectre.Console.Color.Grey15"
+                FocusedColor="@Spectre.Console.Color.Blue"
+            />
+        </Panel>
+        <Panel>
+            <TextButton
+                Content="  Quit  "
+                OnClick="Quit"
+                BackgroundColor="@Spectre.Console.Color.Grey15"
+                FocusedColor="@Spectre.Console.Color.Blue"
+            />
+        </Panel>
     </Rows>
+    </Padder>
 </Align>

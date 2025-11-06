@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
-using Spectre.Console;
 using Waves.Core.Interfaces;
 
 namespace Waves.Pages;
@@ -16,6 +15,9 @@ public partial class MainMenu : IDisposable
     [Inject]
     private ICursorVisibilityService CursorVisibilityService { get; set; } = null!;
 
+    [Parameter]
+    public Action<string>? OnNavigateToGame { get; set; }
+
     protected override void OnInitialized()
     {
         KeyboardService.StopAsync(ApplicationLifetime.ApplicationStopping);
@@ -23,7 +25,7 @@ public partial class MainMenu : IDisposable
 
     private void Start()
     {
-        // Start game logic
+        OnNavigateToGame?.Invoke("game");
     }
 
     private void NavigateToLeaderboard()
