@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RazorConsole.Core" Version="0.1.0" />
+    <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251106-45c53f1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.6" />
   </ItemGroup>
 
   <ItemGroup>

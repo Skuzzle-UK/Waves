@@ -20,6 +20,9 @@ public partial class MainMenu : IDisposable
 
     [Inject]
     private MovementSystem MovementSystem { get; set; } = default!;
+    
+    [Parameter]
+    public Action<string>? OnNavigateToGame { get; set; }
 
     protected override void OnInitialized()
     {
@@ -38,6 +41,7 @@ public partial class MainMenu : IDisposable
 
         MovementSystem.Register(exampleProjectile);
 
+        OnNavigateToGame?.Invoke("game");
     }
 
     private void NavigateToLeaderboard()

@@ -1,0 +1,12 @@
+﻿@using RazorConsole.Components
+
+<Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.DarkSeaGreen">
+    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Right">
+        <Markup Content="@($"{GameStateManager.Score} : SCORE")" />
+    </Align>
+</Panel>
+
+@for (int r = 0; r < _gameGridHeight; r++)
+{
+    <Markup Content="@GetRowContent(r)" />
+}

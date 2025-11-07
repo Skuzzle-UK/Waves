@@ -3,7 +3,7 @@ using Waves.Core.Interfaces;
 
 namespace Waves.Core;
 
-internal class GameStateManager : IGameStateManager
+public class GameStateManager : IGameStateManager
 {
     public int Score {get; private set;}
     public GameStates CurrentGameState { get; private set; }

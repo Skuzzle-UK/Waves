@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RazorConsole.Core;
+using Waves;
 using Waves.Core;
 using Waves.Core.Interfaces;
 using Waves.Pages;
@@ -25,7 +26,7 @@ internal class Program
                 services.AddHostedService<CursorVisibilityService>(sp => (CursorVisibilityService)sp.GetRequiredService<ICursorVisibilityService>());
                 services.AddHostedService<GameLoop>(sp => (GameLoop)sp.GetRequiredService<IGameLoop>());
             })
-            .UseRazorConsole<MainMenu>();
+            .UseRazorConsole<AppWrapper>();
 
         IHost host = hostBuilder.Build();
 
