@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
     <Folder Include="Assets\" />
+    <Folder Include="Entities\" />
     <Folder Include="Configuration\" />
     <Folder Include="Helpers\" />
     <Folder Include="Systems\" />

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
-using Spectre.Console;
 using Waves.Core.Interfaces;
+using Waves.Core.Maths;
+using Waves.Entities.Builders;
+using Waves.Systems;
 
 namespace Waves.Pages;
 
@@ -16,6 +18,9 @@ public partial class MainMenu : IDisposable
     [Inject]
     private ICursorVisibilityService CursorVisibilityService { get; set; } = null!;
 
+    [Inject]
+    private MovementSystem MovementSystem { get; set; } = default!;
+
     protected override void OnInitialized()
     {
         KeyboardService.StopAsync(ApplicationLifetime.ApplicationStopping);
@@ -24,6 +29,15 @@ public partial class MainMenu : IDisposable
     private void Start()
     {
         // Start game logic
+        
+        Entities.Projectile exampleProjectile = ProjectileBuilder.Create()
+            .WithSpeed(200)
+            .WithPosition(10, 10)
+            .WithDirection(Vector2.Right)
+            .Build();
+
+        MovementSystem.Register(exampleProjectile);
+
     }
 
     private void NavigateToLeaderboard()
