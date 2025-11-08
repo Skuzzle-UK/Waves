@@ -37,7 +37,7 @@ public class KeyboardService : IKeyboardService, IHostedService
         {
             if (Console.KeyAvailable)
             {
-                var keyInfo = Console.ReadKey(intercept: true);
+                ConsoleKeyInfo keyInfo = Console.ReadKey(intercept: true);
                 OnKeyPressed?.Invoke(keyInfo);
             }
             else
