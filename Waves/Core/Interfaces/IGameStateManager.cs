@@ -10,9 +10,6 @@ namespace Waves.Core.Interfaces;
 /// events for monitoring changes in game state and score.</remarks>
 public interface IGameStateManager
 {
-    // TODO: Consider adding a PrepareGame method to set up initial game conditions before starting.
-    // TODO: Consider moving score management out of here for better separation of concerns.
-
     /// <summary>
     /// Get the players current score.
     /// </summary>
@@ -38,9 +35,16 @@ public interface IGameStateManager
     event EventHandler<int>? ScoreChanged;
 
     /// <summary>
+    /// Prepares the game for a new session, resetting score and initial state.
+    /// </summary>
+    /// <remarks>This method should be called before StartGame to reset the game to initial conditions.
+    /// It resets the score to zero and transitions to the PREPARING state.</remarks>
+    void PrepareGame();
+
+    /// <summary>
     /// Initializes and starts the game, setting up necessary resources and state.
     /// </summary>
-    /// <remarks>This method should be called once to begin the game. It prepares the game environment and 
+    /// <remarks>This method should be called once to begin the game. It prepares the game environment and
     /// transitions the application to the active game state. Ensure all pre-game configurations are completed before
     /// calling this method.</remarks>
     void StartGame();

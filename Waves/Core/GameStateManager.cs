@@ -19,10 +19,10 @@ public class GameStateManager : IGameStateManager
 
     public void PrepareGame()
     {
-        Score = 0;
-        ScoreChanged?.Invoke(this, Score);
         CurrentGameState = GameStates.PREPARING;
         GameStateChanged?.Invoke(this, CurrentGameState);
+        Score = 0;
+        ScoreChanged?.Invoke(this, Score);
     }
 
     public void StartGame()
