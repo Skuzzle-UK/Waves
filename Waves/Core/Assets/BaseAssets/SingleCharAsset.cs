@@ -1,6 +1,6 @@
 using Waves.Core.Maths;
 
-namespace Waves.Core.Assets;
+namespace Waves.Core.Assets.BaseAssets;
 
 /// <summary>
 /// A simple single-character asset for backward compatibility.
@@ -20,7 +20,7 @@ public class SingleCharAsset : IAsset
 
     public char GetCharAt(int x, int y)
     {
-        return (x == 0 && y == 0) ? _character : ' ';
+        return x == 0 && y == 0 ? _character : ' ';
     }
 
     public void Update(float deltaTime)

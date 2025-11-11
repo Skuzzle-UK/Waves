@@ -15,22 +15,6 @@ public interface IEntityFactory
     Player CreatePlayer(Vector2 position);
 
     /// <summary>
-    /// Creates an enemy at the specified position.
-    /// </summary>
-    /// <param name="position">The starting position for the enemy.</param>
-    /// <param name="enemyType">The type of enemy to create.</param>
-    /// <returns>A new enemy instance.</returns>
-    // BaseEntity CreateEnemy(Vector2 position, EnemyType enemyType);
-
-    /// <summary>
-    /// Creates an obstacle at the specified position.
-    /// </summary>
-    /// <param name="position">The position for the obstacle.</param>
-    /// <param name="obstacleType">The type of obstacle to create.</param>
-    /// <returns>A new obstacle instance.</returns>
-    // BaseEntity CreateObstacle(Vector2 position, ObstacleType obstacleType);
-
-    /// <summary>
     /// Creates a projectile at the specified position.
     /// </summary>
     /// <param name="position">The starting position for the projectile.</param>

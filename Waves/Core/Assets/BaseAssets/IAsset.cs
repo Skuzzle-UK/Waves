@@ -1,6 +1,6 @@
 using Waves.Core.Maths;
 
-namespace Waves.Core.Assets;
+namespace Waves.Core.Assets.BaseAssets;
 
 /// <summary>
 /// Base interface for all visual assets that can be rendered in the game.

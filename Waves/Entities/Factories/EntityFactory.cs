@@ -52,27 +52,4 @@ public class EntityFactory : IEntityFactory
             .WithDirection(direction)
             .Build();
     }
-
-    // Future enemy creation
-    // public BaseEntity CreateEnemy(Vector2 position, EnemyType enemyType)
-    // {
-    //     return enemyType switch
-    //     {
-    //         EnemyType.Basic => new BasicEnemy(position),
-    //         EnemyType.Fast => new FastEnemy(position),
-    //         EnemyType.Heavy => new HeavyEnemy(position),
-    //         _ => throw new ArgumentException($"Unknown enemy type: {enemyType}")
-    //     };
-    // }
-
-    // Future obstacle creation
-    // public BaseEntity CreateObstacle(Vector2 position, ObstacleType obstacleType)
-    // {
-    //     return obstacleType switch
-    //     {
-    //         ObstacleType.Wall => new WallObstacle(position),
-    //         ObstacleType.Destructible => new DestructibleObstacle(position),
-    //         _ => throw new ArgumentException($"Unknown obstacle type: {obstacleType}")
-    //     };
-    // }
 }

@@ -1,6 +1,6 @@
 using Waves.Core.Maths;
 
-namespace Waves.Core.Assets;
+namespace Waves.Core.Assets.BaseAssets;
 
 /// <summary>
 /// A multi-character asset that can display ASCII art or larger sprites.

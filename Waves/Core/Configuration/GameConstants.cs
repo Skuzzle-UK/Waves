@@ -34,6 +34,8 @@ public static class GameConstants
         public const int RenderUpdateMilliseconds = 16;
     }
 
+
+    // TODO: I don't like these all in constants. They should be assigned inside of the class that uses them.
     /// <summary>
     /// Player entity configuration.
     /// </summary>

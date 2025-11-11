@@ -8,7 +8,7 @@ namespace Waves.Systems;
 /// </summary>
 public class ScoreSystem : IUpdatable, IDisposable
 {
-    private readonly IGameStateManager _gameStateManager;
+    private readonly IGameManager _gameManager;
     private float _elapsedTime;
 
     /// <summary>
@@ -16,13 +16,13 @@ public class ScoreSystem : IUpdatable, IDisposable
     /// </summary>
     public int UpdateOrder => GameConstants.UpdateOrder.ScoreSystem;
 
-    public ScoreSystem(IGameStateManager gameStateManager)
+    public ScoreSystem(IGameManager gameManager)
     {
-        _gameStateManager = gameStateManager;
+        _gameManager = gameManager;
         _elapsedTime = 0f;
 
         // Subscribe to game state changes to auto-reset when game is preparing
-        _gameStateManager.GameStateChanged += OnGameStateChanged;
+        _gameManager.GameStateChanged += OnGameStateChanged;
     }
 
     private void OnGameStateChanged(object? sender, Core.Enums.GameStates newState)
@@ -42,7 +42,7 @@ public class ScoreSystem : IUpdatable, IDisposable
 
         if (_elapsedTime >= GameConstants.Scoring.ScoreInterval)
         {
-            _gameStateManager.IncrementScore(GameConstants.Scoring.ScoreIncrement);
+            _gameManager.IncrementScore(GameConstants.Scoring.ScoreIncrement);
             _elapsedTime -= GameConstants.Scoring.ScoreInterval; // Keep the remainder to maintain accuracy
         }
     }
@@ -58,6 +58,6 @@ public class ScoreSystem : IUpdatable, IDisposable
     public void Dispose()
     {
         // Unsubscribe from events to prevent memory leaks
-        _gameStateManager.GameStateChanged -= OnGameStateChanged;
+        _gameManager.GameStateChanged -= OnGameStateChanged;
     }
 }

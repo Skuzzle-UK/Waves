@@ -23,9 +23,7 @@ public class Player : BaseEntity
     public Player(Vector2 position)
     {
         Position = position;
-
-        // Player decides its own visual representation
-        Asset = GameAssets.Player.Surfer;
+        Asset = PlayerAssets.Surfer;
         ClampToBounds = true;  // Players should stay on screen
         RenderPriority = GameConstants.Player.RenderPriority;
         Mass = GameConstants.Player.Mass;

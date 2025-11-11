@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Waves.Core.Assets;
+using Waves.Core.Assets.BaseAssets;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
@@ -61,24 +61,6 @@ public class GameRenderService : IUpdatable
         {
             _renderables.Remove(renderable);
         }
-    }
-
-    /// <summary>
-    /// Legacy method for backward compatibility. Use RegisterRenderable instead.
-    /// </summary>
-    [Obsolete("Use RegisterRenderable instead")]
-    public void RegisterEntity(IRenderable entity)
-    {
-        RegisterRenderable(entity);
-    }
-
-    /// <summary>
-    /// Legacy method for backward compatibility. Use RegisterRenderable instead.
-    /// </summary>
-    [Obsolete("Use RegisterRenderable instead")]
-    public void RegisterPlayer(IRenderable player)
-    {
-        RegisterRenderable(player);
     }
 
     /// <summary>
@@ -233,27 +215,6 @@ public class GameRenderService : IUpdatable
     private bool IsInBounds(int x, int y)
     {
         return x >= 0 && x < _width && y >= 0 && y < _height;
-    }
-
-    /// <summary>
-    /// Gets the rendered content for a specific row.
-    /// </summary>
-    public string GetRowContent(int row)
-    {
-        lock (_lock)
-        {
-            if (row < 0 || row >= _height)
-            {
-                return string.Empty;
-            }
-
-            var rowString = string.Empty;
-            for (int col = 0; col < _width; col++)
-            {
-                rowString += _buffer[col, row];
-            }
-            return rowString;
-        }
     }
 
     /// <summary>

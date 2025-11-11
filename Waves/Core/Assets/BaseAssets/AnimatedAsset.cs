@@ -1,6 +1,6 @@
 using Waves.Core.Maths;
 
-namespace Waves.Core.Assets;
+namespace Waves.Core.Assets.BaseAssets;
 
 /// <summary>
 /// An animated asset that cycles through multiple frames.
