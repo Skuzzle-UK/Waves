@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
+using Waves.Systems;
 
 namespace Waves.Core;
 
@@ -12,9 +13,18 @@ namespace Waves.Core;
 public class GameLoop : IGameLoop, IHostedService, IDisposable
 {
     private readonly int _tickRateMilliseconds;
-    private readonly IGameStateManager _gameStateManager;
+    private readonly IGameManager _gameManager;
     private readonly object _lock = new();
     private readonly List<IUpdatable> _updatableSystems = [];
+
+    // Systems that should be registered when game starts
+    private readonly InputSystem _inputSystem;
+    private readonly MovementSystem _movementSystem;
+    private readonly ProjectileSpawner _projectileSpawner;
+    private readonly ScoreSystem _scoreSystem;
+    private readonly GameRenderService _renderService;
+
+    private bool _gameSystemsRegistered = false;
 
     private Timer? _timer;
     private bool _isPaused;
@@ -30,14 +40,32 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     /// Initializes a new instance of the GameTick class.
     /// </summary>
     /// <param name="tickRateMilliseconds">The interval between ticks in milliseconds.</param>
-    /// <param name="gameStateManager">The game state manager for automatic pause/resume integration.</param>
-    public GameLoop(int tickRateMilliseconds, IGameStateManager gameStateManager)
+    /// <param name="gameManager">The game manager for automatic pause/resume integration.</param>
+    /// <param name="inputSystem">The input system to register during gameplay.</param>
+    /// <param name="movementSystem">The movement system to register during gameplay.</param>
+    /// <param name="projectileSpawner">The projectile spawner to register during gameplay.</param>
+    /// <param name="scoreSystem">The score system to register during gameplay.</param>
+    /// <param name="renderService">The render service to register during gameplay.</param>
+    public GameLoop(
+        int tickRateMilliseconds,
+        IGameManager gameManager,
+        InputSystem inputSystem,
+        MovementSystem movementSystem,
+        ProjectileSpawner projectileSpawner,
+        ScoreSystem scoreSystem,
+        GameRenderService renderService)
     {
         _tickRateMilliseconds = tickRateMilliseconds;
-        _gameStateManager = gameStateManager;
+        _gameManager = gameManager;
+
+        _inputSystem = inputSystem;
+        _movementSystem = movementSystem;
+        _projectileSpawner = projectileSpawner;
+        _scoreSystem = scoreSystem;
+        _renderService = renderService;
 
         // Subscribe to game state changes for automatic pause/resume
-        _gameStateManager.GameStateChanged += OnGameStateChanged;
+        _gameManager.GameStateChanged += OnGameStateChanged;
     }
 
     /// <inheritdoc/>
@@ -140,24 +168,62 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     }
 
     /// <summary>
-    /// Handles game state changes to automatically pause/resume the tick system.
+    /// Handles game state changes to automatically pause/resume the tick system and manage game systems.
     /// </summary>
     private void OnGameStateChanged(object? sender, GameStates newState)
     {
         switch (newState)
         {
+            case GameStates.PREPARING:
+                // Register game systems when preparing a new game
+                RegisterGameSystems();
+                break;
+
             case GameStates.RUNNING:
                 Resume();
                 break;
+
             case GameStates.PAUSED:
                 Pause();
                 break;
+
             case GameStates.ENDED:
+                // Unregister game systems when game ends
+                UnregisterGameSystems();
                 Stop();
                 break;
-            case GameStates.PREPARING:
-                // Keep current state during preparation
-                break;
+        }
+    }
+
+    /// <summary>
+    /// Registers all game systems with the game loop.
+    /// </summary>
+    private void RegisterGameSystems()
+    {
+        if (!_gameSystemsRegistered)
+        {
+            RegisterUpdatable(_inputSystem);
+            RegisterUpdatable(_scoreSystem);
+            RegisterUpdatable(_projectileSpawner);
+            RegisterUpdatable(_movementSystem);
+            RegisterUpdatable(_renderService);
+            _gameSystemsRegistered = true;
+        }
+    }
+
+    /// <summary>
+    /// Unregisters all game systems from the game loop.
+    /// </summary>
+    private void UnregisterGameSystems()
+    {
+        if (_gameSystemsRegistered)
+        {
+            UnregisterUpdatable(_inputSystem);
+            UnregisterUpdatable(_scoreSystem);
+            UnregisterUpdatable(_projectileSpawner);
+            UnregisterUpdatable(_movementSystem);
+            UnregisterUpdatable(_renderService);
+            _gameSystemsRegistered = false;
         }
     }
 
@@ -224,7 +290,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
             return;
         }
 
-        _gameStateManager.GameStateChanged -= OnGameStateChanged;
+        _gameManager.GameStateChanged -= OnGameStateChanged;
         Stop();
         _isDisposed = true;
         GC.SuppressFinalize(this);

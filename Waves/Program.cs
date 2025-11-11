@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Hosting;
 using RazorConsole.Core;
 using Waves.Core;
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
+using Waves.Entities.Factories;
 using Waves.Systems;
 
 namespace Waves;
@@ -14,17 +16,37 @@ internal class Program
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureServices(services =>
             {
-                services.AddSingleton<IGameStateManager, GameStateManager>();
-                services.AddSingleton<IGameLoop>(sp => new GameLoop(16, sp.GetRequiredService<IGameStateManager>())); // 16ms = ~60 FPS
+                // Register game systems first
                 services.AddSingleton<MovementSystem>();
                 services.AddSingleton<InputSystem>();
-                services.AddSingleton<GameRenderService>(sp => new GameRenderService(AppWrapper.GameAreaWidth, AppWrapper.GameAreaHeight - 3));
-                services.AddSingleton<ScoreSystem>(sp => new ScoreSystem(sp.GetRequiredService<IGameStateManager>()));
+                services.AddSingleton<GameRenderService>(sp => new GameRenderService(AppWrapper.GameAreaWidth, AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset));
+
+                // Register EntityRegistry
+                services.AddSingleton<IEntityRegistry, EntityRegistry>();
+
+                // Register ProjectileSpawner
                 services.AddSingleton<ProjectileSpawner>(sp => new ProjectileSpawner(
+                    sp.GetRequiredService<IEntityRegistry>()
+                ));
+
+                // Register EntityFactory for creating all game entities
+                services.AddSingleton<IEntityFactory, EntityFactory>();
+
+                // Register GameManager (combined state and orchestration)
+                services.AddSingleton<IGameManager, GameManager>();
+
+                // Register ScoreSystem with GameManager dependency
+                services.AddSingleton<ScoreSystem>(sp => new ScoreSystem(sp.GetRequiredService<IGameManager>()));
+
+                // Register GameLoop with all game systems injected
+                services.AddSingleton<IGameLoop>(sp => new GameLoop(
+                    GameConstants.Timing.TickRateMilliseconds,
+                    sp.GetRequiredService<IGameManager>(),
                     sp.GetRequiredService<InputSystem>(),
                     sp.GetRequiredService<MovementSystem>(),
-                    sp.GetRequiredService<GameRenderService>()
-                ));
+                    sp.GetRequiredService<ProjectileSpawner>(),
+                    sp.GetRequiredService<ScoreSystem>(),
+                    sp.GetRequiredService<GameRenderService>()));
 
                 services.AddHostedService<GameLoop>(sp => (GameLoop)sp.GetRequiredService<IGameLoop>());
             })

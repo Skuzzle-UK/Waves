@@ -1,3 +1,4 @@
+using Waves.Core.Assets.BaseAssets;
 using Waves.Core.Maths;
 
 namespace Waves.Entities.Builders;
@@ -18,6 +19,7 @@ public class ProjectileBuilder
     private Vector2 _position = Vector2.Zero;
     private Vector2 _velocity = Vector2.Zero;
     private char _displayChar = '*';
+    private IAsset? _asset = null;
     private float _maxDistance = 1000f;
 
     private ProjectileBuilder() { }
@@ -91,6 +93,15 @@ public class ProjectileBuilder
     }
 
     /// <summary>
+    /// Sets a visual asset for the projectile (for multi-character or animated sprites).
+    /// </summary>
+    public ProjectileBuilder WithAsset(IAsset asset)
+    {
+        _asset = asset;
+        return this;
+    }
+
+    /// <summary>
     /// Builds and returns the configured Projectile instance.
     /// </summary>
     public Projectile Build()
@@ -100,7 +111,8 @@ public class ProjectileBuilder
             Speed = _speed,
             Position = _position,
             Velocity = _velocity.Normalized(), // Ensure normalized
-            DisplayChar = _displayChar,
+            DisplayCharacter = _displayChar,
+            Asset = _asset,
             MaxDistance = _maxDistance
         };
 
