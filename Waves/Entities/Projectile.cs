@@ -1,3 +1,4 @@
+using Waves.Core.Configuration;
 using Waves.Core.Maths;
 
 namespace Waves.Entities;
@@ -7,12 +8,7 @@ namespace Waves.Entities;
 /// </summary>
 public class Projectile : BaseEntity
 {
-    // TODO: Add a asset class which allows for multi-character entities
-    /// <summary>
-    /// The character or symbol used to display this projectile in the console.
-    /// </summary>
-    public char DisplayChar { get; set; }
-
+    // Asset system now implemented - entities can use IAsset for multi-character display
     /// <summary>
     /// Maximum distance this projectile can travel before becoming inactive.
     /// </summary>
@@ -23,9 +19,11 @@ public class Projectile : BaseEntity
 
     public Projectile()
     {
-        DisplayChar = '*';
-        MaxDistance = 1000f;
-        Speed = 150f; // Projectiles are faster than default (100)
+        DisplayCharacter = GameConstants.Projectile.AlternativeCharacter;
+        ClampToBounds = false;  // Projectiles can go off-screen
+        RenderPriority = GameConstants.Projectile.RenderPriority;
+        MaxDistance = GameConstants.Projectile.MaxDistance;
+        Speed = GameConstants.Projectile.EntitySpeed;
         _startPosition = Position;
         _distanceTraveled = 0f;
     }

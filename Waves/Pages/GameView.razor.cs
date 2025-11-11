@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
-using Waves.Entities;
+using Waves.Entities.Factories;
 using Waves.Systems;
 
 namespace Waves.Pages;
@@ -29,46 +30,40 @@ public partial class GameView : IDisposable
     [Inject]
     public ScoreSystem ScoreSystem { get; set; } = null!;
 
-    private Timer? _renderTimer;
+    [Inject]
+    public IEntityFactory EntityFactory { get; set; } = null!;
 
-    private static int _gameGridHeight => AppWrapper.GameAreaHeight - 3;
+    private static int _gameGridHeight => AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
+
+    private readonly Vector2 _centerPosition;
+
+    public GameView()
+    {
+        // Calculate center position once during construction
+        int gameWidth = AppWrapper.GameAreaWidth;
+        int gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
+        _centerPosition = new Vector2(gameWidth / 2, gameHeight / 2);
+    }
 
     protected override void OnInitialized()
     {
         GameStateManager.PrepareGame();
         GameStateManager.StartGame();
 
-        // TODO: I wonder if this should be part of PrepareGame in the GameStateManager?
-        ScoreSystem.Reset();
         GameLoop.RegisterUpdatable(InputSystem);
         GameLoop.RegisterUpdatable(ScoreSystem);
         GameLoop.RegisterUpdatable(ProjectileSpawner);
         GameLoop.RegisterUpdatable(MovementSystem);
         GameLoop.RegisterUpdatable(RenderService);
 
-        // Create player at center of game area
-        int centerX = AppWrapper.GameAreaWidth / 2;
-        int centerY = (AppWrapper.GameAreaHeight - 3) / 2;
+        RenderService.RenderComplete += ReRenderBlazorView;
 
-        Player player = new Player(
-            inputSystem: InputSystem,
-            position: new Vector2(centerX, centerY),
-            character: '#'
-        );
+        EntityFactory.CreatePlayer(_centerPosition);
+    }
 
-        // Register player with systems
-        MovementSystem.Register(player);
-        RenderService.RegisterPlayer(player);
-        ProjectileSpawner.SetPlayer(player);
-
-        // TODO: Can the render timer be part of the GameLoop or render service instead?
-        // Start render timer at 60 FPS (16ms per frame)
-        _renderTimer = new Timer(
-            callback: _ => InvokeAsync(StateHasChanged),
-            state: null,
-            dueTime: 0,
-            period: 16
-        );
+    private void ReRenderBlazorView()
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private string GetRowContent(int row)
@@ -78,7 +73,7 @@ public partial class GameView : IDisposable
 
     public void Dispose()
     {
-        _renderTimer?.Dispose();
+        RenderService.RenderComplete -= ReRenderBlazorView;
 
         GameStateManager.EndGame();
 

@@ -1,3 +1,4 @@
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 
 namespace Waves.Systems;
@@ -5,23 +6,31 @@ namespace Waves.Systems;
 /// <summary>
 /// System that increments the score over time while the game is running.
 /// </summary>
-public class ScoreSystem : IUpdatable
+public class ScoreSystem : IUpdatable, IDisposable
 {
     private readonly IGameStateManager _gameStateManager;
     private float _elapsedTime;
-    private const float ScoreInterval = 2.0f; // 2 seconds
-    private const int ScoreIncrement = 10;
-    private const float FixedDeltaTime = 0.016f; // 60 FPS
 
     /// <summary>
     /// Update order for score processing (100-199 range: Game logic systems).
     /// </summary>
-    public int UpdateOrder => 100;
+    public int UpdateOrder => GameConstants.UpdateOrder.ScoreSystem;
 
     public ScoreSystem(IGameStateManager gameStateManager)
     {
         _gameStateManager = gameStateManager;
         _elapsedTime = 0f;
+
+        // Subscribe to game state changes to auto-reset when game is preparing
+        _gameStateManager.GameStateChanged += OnGameStateChanged;
+    }
+
+    private void OnGameStateChanged(object? sender, Core.Enums.GameStates newState)
+    {
+        if (newState == Core.Enums.GameStates.PREPARING)
+        {
+            Reset();
+        }
     }
 
     /// <summary>
@@ -29,12 +38,12 @@ public class ScoreSystem : IUpdatable
     /// </summary>
     public void Update()
     {
-        _elapsedTime += FixedDeltaTime;
+        _elapsedTime += GameConstants.Timing.FixedDeltaTime;
 
-        if (_elapsedTime >= ScoreInterval)
+        if (_elapsedTime >= GameConstants.Scoring.ScoreInterval)
         {
-            _gameStateManager.IncrementScore(ScoreIncrement);
-            _elapsedTime -= ScoreInterval; // Keep the remainder to maintain accuracy
+            _gameStateManager.IncrementScore(GameConstants.Scoring.ScoreIncrement);
+            _elapsedTime -= GameConstants.Scoring.ScoreInterval; // Keep the remainder to maintain accuracy
         }
     }
 
@@ -44,5 +53,11 @@ public class ScoreSystem : IUpdatable
     public void Reset()
     {
         _elapsedTime = 0f;
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        _gameStateManager.GameStateChanged -= OnGameStateChanged;
     }
 }

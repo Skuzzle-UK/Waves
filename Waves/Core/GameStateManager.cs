@@ -1,4 +1,5 @@
-﻿using Waves.Core.Enums;
+﻿using Waves.Core.Configuration;
+using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 
 namespace Waves.Core;
@@ -13,7 +14,7 @@ public class GameStateManager : IGameStateManager
 
     public GameStateManager()
     {
-        Score = 0;
+        Score = GameConstants.Scoring.InitialScore;
         CurrentGameState = GameStates.ENDED;
     }
 
@@ -21,7 +22,7 @@ public class GameStateManager : IGameStateManager
     {
         CurrentGameState = GameStates.PREPARING;
         GameStateChanged?.Invoke(this, CurrentGameState);
-        Score = 0;
+        Score = GameConstants.Scoring.InitialScore;
         ScoreChanged?.Invoke(this, Score);
     }
 

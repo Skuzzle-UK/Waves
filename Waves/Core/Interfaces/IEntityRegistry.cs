@@ -1,0 +1,40 @@
+using Waves.Entities;
+
+namespace Waves.Core.Interfaces;
+
+/// <summary>
+/// Central registry for managing entity registration across all game systems.
+/// Provides a single point of registration instead of coupling to individual systems.
+/// </summary>
+public interface IEntityRegistry
+{
+    /// <summary>
+    /// Registers an entity with all relevant game systems based on its capabilities.
+    /// </summary>
+    /// <param name="entity">The entity to register.</param>
+    void RegisterEntity(BaseEntity entity);
+
+    /// <summary>
+    /// Unregisters an entity from all game systems.
+    /// </summary>
+    /// <param name="entity">The entity to unregister.</param>
+    void UnregisterEntity(BaseEntity entity);
+
+    /// <summary>
+    /// Registers an entity only with the movement system.
+    /// </summary>
+    /// <param name="entity">The entity to register for movement.</param>
+    void RegisterForMovement(BaseEntity entity);
+
+    /// <summary>
+    /// Registers an entity only with the render system.
+    /// </summary>
+    /// <param name="renderable">The entity to register for rendering.</param>
+    void RegisterForRendering(IRenderable renderable);
+
+    /// <summary>
+    /// Clears all registered entities from all systems.
+    /// Useful for game reset or cleanup.
+    /// </summary>
+    void ClearAll();
+}

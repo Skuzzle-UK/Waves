@@ -1,4 +1,8 @@
+using System.Collections.Generic;
+using Waves.Core.Assets;
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
+using Waves.Core.Maths;
 using Waves.Entities;
 
 namespace Waves.Systems;
@@ -9,76 +13,72 @@ namespace Waves.Systems;
 /// </summary>
 public class GameRenderService : IUpdatable
 {
-    private readonly List<BaseEntity> _entities = new();
-    private readonly List<Player> _players = new();
+    private readonly List<IRenderable> _renderables = new();
     private readonly object _lock = new();
 
     private char[,] _buffer;
-    private int _width;
-    private int _height;
+    private readonly int _width;
+    private readonly int _height;
+
+    /// <summary>
+    /// Event fired when rendering is complete and the UI should refresh.
+    /// </summary>
+    public event Action? RenderComplete;
 
     /// <summary>
     /// Update order for rendering (400-499 range: Rendering preparation systems).
     /// </summary>
-    public int UpdateOrder => 450;
+    public int UpdateOrder => GameConstants.UpdateOrder.RenderService;
 
     public GameRenderService(int width, int height)
     {
         _width = width;
         _height = height;
-        _buffer = new char[_width, _height];
+        _buffer = new char[width, height];
         ClearBuffer();
     }
 
     /// <summary>
-    /// Registers an entity to be rendered.
+    /// Registers a renderable entity to be displayed.
     /// </summary>
-    public void RegisterEntity(BaseEntity entity)
+    public void RegisterRenderable(IRenderable renderable)
     {
         lock (_lock)
         {
-            if (!_entities.Contains(entity))
+            if (!_renderables.Contains(renderable))
             {
-                _entities.Add(entity);
+                _renderables.Add(renderable);
             }
         }
     }
 
     /// <summary>
-    /// Registers a player to be rendered.
+    /// Unregisters a renderable entity from display.
     /// </summary>
-    public void RegisterPlayer(Player player)
+    public void UnregisterRenderable(IRenderable renderable)
     {
-        // TODO: Probably ties this class into player too much - consider refactoring
         lock (_lock)
         {
-            if (!_players.Contains(player))
-            {
-                _players.Add(player);
-            }
+            _renderables.Remove(renderable);
         }
     }
 
     /// <summary>
-    /// Unregisters an entity from rendering.
+    /// Legacy method for backward compatibility. Use RegisterRenderable instead.
     /// </summary>
-    public void UnregisterEntity(BaseEntity entity)
+    [Obsolete("Use RegisterRenderable instead")]
+    public void RegisterEntity(IRenderable entity)
     {
-        lock (_lock)
-        {
-            _entities.Remove(entity);
-        }
+        RegisterRenderable(entity);
     }
 
     /// <summary>
-    /// Unregisters a player from rendering.
+    /// Legacy method for backward compatibility. Use RegisterRenderable instead.
     /// </summary>
-    public void UnregisterPlayer(Player player)
+    [Obsolete("Use RegisterRenderable instead")]
+    public void RegisterPlayer(IRenderable player)
     {
-        lock (_lock)
-        {
-            _players.Remove(player);
-        }
+        RegisterRenderable(player);
     }
 
     /// <summary>
@@ -86,63 +86,153 @@ public class GameRenderService : IUpdatable
     /// </summary>
     public void Update()
     {
-        // TODO: Look at refactoring to remove player/projectile ties.
         lock (_lock)
         {
             // Clear buffer
             ClearBuffer();
 
-            // Render players
-            foreach (var player in _players)
+            // Sort renderables by priority (lower priority renders first, higher on top)
+            var activeRenderables = _renderables
+                .Where(r => r.IsActive)
+                .OrderBy(r => r.RenderPriority)
+                .ToList();
+
+            // Render each entity
+            foreach (var renderable in activeRenderables)
             {
-                if (!player.IsActive)
-                {
-                    continue;
-                }
-
-                // Keep player within bounds
-                ClampPositionToBounds(player);
-
-                int x = (int)MathF.Round(player.Position.X);
-                int y = (int)MathF.Round(player.Position.Y);
-
-                if (x >= 0 && x < _width && y >= 0 && y < _height)
-                {
-                    _buffer[x, y] = player.Character;
-                }
+                RenderEntity(renderable);
             }
 
-            // Render other entities (projectiles, etc.)
-            foreach (var entity in _entities)
+            // Clean up inactive renderables
+            _renderables.RemoveAll(r => !r.IsActive);
+        }
+
+        // Fire event to notify UI to refresh (outside of lock to prevent deadlocks)
+        RenderComplete?.Invoke();
+    }
+
+    /// <summary>
+    /// Renders a single entity to the buffer.
+    /// </summary>
+    private void RenderEntity(IRenderable renderable)
+    {
+        // Check if entity has an asset or just a character
+        if (renderable.Asset != null)
+        {
+            RenderAsset(renderable, renderable.Asset);
+        }
+        else
+        {
+            RenderSingleChar(renderable);
+        }
+    }
+
+    /// <summary>
+    /// Renders an entity with a multi-character asset.
+    /// </summary>
+    private void RenderAsset(IRenderable renderable, IAsset asset)
+    {
+        Vector2 position = renderable.Position;
+
+        // Calculate top-left corner based on asset center
+        int startX = (int)MathF.Round(position.X - asset.Center.X);
+        int startY = (int)MathF.Round(position.Y - asset.Center.Y);
+
+        // Render each character in the asset
+        for (int ay = 0; ay < asset.Height; ay++)
+        {
+            for (int ax = 0; ax < asset.Width; ax++)
             {
-                if (!entity.IsActive)
+                int worldX = startX + ax;
+                int worldY = startY + ay;
+
+                // Apply bounds clamping if required
+                if (renderable.ClampToBounds)
                 {
-                    continue;
+                    worldX = Math.Clamp(worldX, 0, _width - 1);
+                    worldY = Math.Clamp(worldY, 0, _height - 1);
                 }
 
-                // Don't clamp projectiles to bounds - let them go off screen
-                // ClampPositionToBounds(entity);
-
-                int x = (int)MathF.Round(entity.Position.X);
-                int y = (int)MathF.Round(entity.Position.Y);
-
-                if (x >= 0 && x < _width && y >= 0 && y < _height)
+                // Only render if within bounds
+                if (IsInBounds(worldX, worldY))
                 {
-                    // Check if entity is a Projectile to use its DisplayChar
-                    char displayChar = '*';
-                    if (entity is Projectile projectile)
+                    char c = asset.GetCharAt(ax, ay);
+                    if (c != ' ') // Don't overwrite with spaces (allows transparency)
                     {
-                        displayChar = projectile.DisplayChar;
+                        _buffer[worldX, worldY] = c;
                     }
-                    _buffer[x, y] = displayChar;
-                }
-                else
-                {
-                    // Deactivate entities that are off screen
-                    entity.IsActive = false;
                 }
             }
         }
+
+        // Check if entity is completely off-screen
+        if (!renderable.ClampToBounds)
+        {
+            bool completelyOffScreen =
+                startX + asset.Width < 0 || startX >= _width ||
+                startY + asset.Height < 0 || startY >= _height;
+
+            if (completelyOffScreen && renderable is BaseEntity entity)
+            {
+                entity.IsActive = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Renders an entity with a single character (backward compatibility).
+    /// </summary>
+    private void RenderSingleChar(IRenderable renderable)
+    {
+        Vector2 position = renderable.Position;
+
+        // Apply bounds clamping if required
+        if (renderable.ClampToBounds)
+        {
+            position = ClampPosition(position);
+        }
+
+        int x = (int)MathF.Round(position.X);
+        int y = (int)MathF.Round(position.Y);
+
+        // Only render if within bounds
+        if (IsInBounds(x, y))
+        {
+            _buffer[x, y] = renderable.DisplayCharacter;
+
+            // If we had to clamp and the entity wants clamping, update its actual position
+            // This maintains the behavior where players are kept in bounds
+            if (renderable.ClampToBounds && renderable is BaseEntity entity)
+            {
+                entity.Position = position;
+            }
+        }
+        else if (!renderable.ClampToBounds)
+        {
+            // For entities that don't clamp (like projectiles), deactivate when off-screen
+            if (renderable is BaseEntity entity)
+            {
+                entity.IsActive = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clamps a position to stay within the game bounds.
+    /// </summary>
+    private Vector2 ClampPosition(Vector2 position)
+    {
+        float x = Math.Clamp(position.X, 0, _width - 1);
+        float y = Math.Clamp(position.Y, 0, _height - 1);
+        return new Vector2(x, y);
+    }
+
+    /// <summary>
+    /// Checks if coordinates are within the render bounds.
+    /// </summary>
+    private bool IsInBounds(int x, int y)
+    {
+        return x >= 0 && x < _width && y >= 0 && y < _height;
     }
 
     /// <summary>
@@ -167,6 +257,33 @@ public class GameRenderService : IUpdatable
     }
 
     /// <summary>
+    /// Gets the complete rendered content as a single string with line breaks.
+    /// </summary>
+    public string GetRenderedContent()
+    {
+        lock (_lock)
+        {
+            var content = new System.Text.StringBuilder(_width * _height + _height);
+
+            for (int row = 0; row < _height; row++)
+            {
+                for (int col = 0; col < _width; col++)
+                {
+                    content.Append(_buffer[col, row]);
+                }
+
+                // Add newline except for the last row
+                if (row < _height - 1)
+                {
+                    content.AppendLine();
+                }
+            }
+
+            return content.ToString();
+        }
+    }
+
+    /// <summary>
     /// Clears the buffer by filling it with spaces.
     /// </summary>
     private void ClearBuffer()
@@ -175,34 +292,8 @@ public class GameRenderService : IUpdatable
         {
             for (int y = 0; y < _height; y++)
             {
-                _buffer[x, y] = ' ';
+                _buffer[x, y] = GameConstants.Display.EmptyChar;
             }
-        }
-    }
-
-    /// <summary>
-    /// Clamps an entity's position to stay within the game bounds.
-    /// </summary>
-    private void ClampPositionToBounds(BaseEntity entity)
-    {
-        if (entity.Position.X < 0)
-        {
-            entity.Position = new Core.Maths.Vector2(0, entity.Position.Y);
-        }
-
-        if (entity.Position.X >= _width)
-        {
-            entity.Position = new Core.Maths.Vector2(_width - 1, entity.Position.Y);
-        }
-
-        if (entity.Position.Y < 0)
-        {
-            entity.Position = new Core.Maths.Vector2(entity.Position.X, 0);
-        }
-
-        if (entity.Position.Y >= _height)
-        {
-            entity.Position = new Core.Maths.Vector2(entity.Position.X, _height - 1);
         }
     }
 }

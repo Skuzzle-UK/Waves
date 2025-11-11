@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 
@@ -28,7 +29,7 @@ public class InputSystem : IUpdatable
     /// <summary>
     /// Update order for input processing (0-99 range: Input processing systems).
     /// </summary>
-    public int UpdateOrder => 10;
+    public int UpdateOrder => GameConstants.UpdateOrder.InputSystem;
 
     /// <summary>
     /// Called each game tick to poll keyboard state.
@@ -56,6 +57,22 @@ public class InputSystem : IUpdatable
     }
 
     /// <summary>
+    /// Checks if spacebar is currently pressed (not consumed).
+    /// </summary>
+    public bool IsSpaceBarPressed()
+    {
+        return _wasSpacePressed;
+    }
+
+    /// <summary>
+    /// Consumes the spacebar press if it was just pressed.
+    /// </summary>
+    public bool ConsumeSpaceBar()
+    {
+        return WasSpacePressed();
+    }
+
+    /// <summary>
     /// Checks if a key is currently being held down.
     /// Uses GetAsyncKeyState which returns a short where the high-order bit indicates if the key is down.
     /// </summary>
@@ -72,7 +89,7 @@ public class InputSystem : IUpdatable
     public Vector2 GetMovementInput(float force = 300f)
     {
         Vector2 movement = Vector2.Zero;
-        float verticalForce = force * 0.3f;  // 30% of horizontal force
+        float verticalForce = force * GameConstants.Input.VerticalForceMultiplier;
         float horizontalForce = force;
 
         if (IsKeyDown(VK_W))

@@ -1,3 +1,4 @@
+using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Entities;
 
@@ -10,12 +11,11 @@ public class MovementSystem : IUpdatable
 {
     private readonly List<BaseEntity> _entities = [];
     private readonly object _lock = new();
-    private const float FixedDeltaTime = 0.016f; // 60 FPS (16ms per frame)
 
     /// <summary>
     /// Update order for movement processing (300-399 range: Animation and movement systems).
     /// </summary>
-    public int UpdateOrder => 350;
+    public int UpdateOrder => GameConstants.UpdateOrder.MovementSystem;
 
     /// <summary>
     /// Registers an entity to be updated by this movement system.
@@ -86,7 +86,7 @@ public class MovementSystem : IUpdatable
         {
             try
             {
-                entity.Update(FixedDeltaTime);
+                entity.Update(GameConstants.Timing.FixedDeltaTime);
             }
             catch (Exception ex)
             {

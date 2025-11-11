@@ -1,0 +1,194 @@
+using Waves.Core.Maths;
+
+namespace Waves.Core.Configuration;
+
+/// <summary>
+/// Central configuration for all game constants and settings.
+/// This class provides a single source of truth for game parameters.
+/// </summary>
+public static class GameConstants
+{
+    /// <summary>
+    /// Game timing and performance settings.
+    /// </summary>
+    public static class Timing
+    {
+        /// <summary>
+        /// Target frames per second for the game.
+        /// </summary>
+        public const int TargetFPS = 60;
+
+        /// <summary>
+        /// Fixed time step for each frame in seconds.
+        /// </summary>
+        public const float FixedDeltaTime = 1.0f / TargetFPS;
+
+        /// <summary>
+        /// Tick rate in milliseconds for the game loop timer.
+        /// </summary>
+        public const int TickRateMilliseconds = 16; // ~60 FPS
+
+        /// <summary>
+        /// Render update rate in milliseconds.
+        /// </summary>
+        public const int RenderUpdateMilliseconds = 16;
+    }
+
+    /// <summary>
+    /// Player entity configuration.
+    /// </summary>
+    public static class Player
+    {
+        /// <summary>
+        /// Player's mass affects acceleration from forces.
+        /// </summary>
+        public const float Mass = 2.0f;
+
+        /// <summary>
+        /// Drag coefficient for player movement (0-1, where 1 is no drag).
+        /// </summary>
+        public const float DragCoefficient = 0.9f;
+
+        /// <summary>
+        /// Maximum horizontal speed for the player.
+        /// </summary>
+        public const float MaxSpeedHorizontal = 20.0f;
+
+        /// <summary>
+        /// Maximum vertical speed for the player.
+        /// </summary>
+        public const float MaxSpeedVertical = 5.0f;
+
+        /// <summary>
+        /// Force applied when player moves.
+        /// </summary>
+        public const float MoveForce = 300f;
+
+        /// <summary>
+        /// Base movement speed (not used in physics-based movement).
+        /// </summary>
+        public const float BaseSpeed = 1.0f;
+
+        /// <summary>
+        /// Default display character for the player.
+        /// </summary>
+        public const char DefaultCharacter = '@';
+
+        /// <summary>
+        /// Render priority for player (higher renders on top).
+        /// </summary>
+        public const int RenderPriority = 10;
+    }
+
+    /// <summary>
+    /// Projectile entity configuration.
+    /// </summary>
+    public static class Projectile
+    {
+        /// <summary>
+        /// Default speed for projectiles.
+        /// </summary>
+        public const float DefaultSpeed = 200f;
+
+        /// <summary>
+        /// Speed for projectiles in entity definition.
+        /// </summary>
+        public const float EntitySpeed = 150f;
+
+        /// <summary>
+        /// Maximum distance a projectile can travel before deactivating.
+        /// </summary>
+        public const float MaxDistance = 1000f;
+
+        /// <summary>
+        /// Default display character for projectiles.
+        /// </summary>
+        public const char DefaultCharacter = '>';
+
+        /// <summary>
+        /// Alternative display character.
+        /// </summary>
+        public const char AlternativeCharacter = '*';
+
+        /// <summary>
+        /// Default direction for projectiles.
+        /// </summary>
+        public static readonly Vector2 DefaultDirection = Vector2.Right;
+
+        /// <summary>
+        /// Render priority for projectiles.
+        /// </summary>
+        public const int RenderPriority = 5;
+    }
+
+    /// <summary>
+    /// Scoring system configuration.
+    /// </summary>
+    public static class Scoring
+    {
+        /// <summary>
+        /// Time interval between score increments in seconds.
+        /// </summary>
+        public const float ScoreInterval = 2.0f;
+
+        /// <summary>
+        /// Points added each score interval.
+        /// </summary>
+        public const int ScoreIncrement = 10;
+
+        /// <summary>
+        /// Initial score value.
+        /// </summary>
+        public const int InitialScore = 0;
+    }
+
+    /// <summary>
+    /// System update order priorities.
+    /// Different ranges for different system types.
+    /// </summary>
+    public static class UpdateOrder
+    {
+        // 0-99: Input processing
+        public const int InputSystem = 10;
+
+        // 100-199: Game logic systems
+        public const int ScoreSystem = 100;
+        public const int ProjectileSpawner = 150;
+
+        // 200-299: Physics and collision (reserved for future)
+        public const int CollisionDetection = 250;
+
+        // 300-399: Animation and movement
+        public const int MovementSystem = 350;
+
+        // 400-499: Rendering
+        public const int RenderService = 450;
+    }
+
+    /// <summary>
+    /// Input system configuration.
+    /// </summary>
+    public static class Input
+    {
+        /// <summary>
+        /// Vertical movement force multiplier (as percentage of horizontal).
+        /// </summary>
+        public const float VerticalForceMultiplier = 0.3f;
+    }
+
+    /// <summary>
+    /// Display and rendering configuration.
+    /// </summary>
+    public static class Display
+    {
+        /// <summary>
+        /// Empty space character for buffer clearing.
+        /// </summary>
+        public const char EmptyChar = ' ';
+
+        /// <summary>
+        /// Height reduction for game grid (UI space).
+        /// </summary>
+        public const int GameGridHeightOffset = 3;
+    }
+}

@@ -1,34 +1,72 @@
+using Waves.Core.Assets;
+using Waves.Core.Configuration;
+using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 using Waves.Systems;
 
 namespace Waves.Entities;
 
 /// <summary>
-/// Player entity with physics-based movement controlled by WASD input.
+/// Player entity with physics-based movement controlled by an input provider.
 /// </summary>
 public class Player : BaseEntity
 {
     // TODO: Look at a way we can register the projectile spawner to the player as we might want to do similar to enemies
-    private readonly InputSystem _inputSystem;
+    private IInputProvider? _inputProvider;
     private Vector2 _acceleration;
 
-    public char Character { get; set; }
     public float Mass { get; set; }
     public float Drag { get; set; }
     public Vector2 MaxSpeed { get; set; }
     public float MoveForce { get; set; }
 
-    public Player(InputSystem inputSystem, Vector2 position, char character = '@')
+    public Player(Vector2 position)
     {
-        _inputSystem = inputSystem;
         Position = position;
-        Character = character;
-        Mass = 2.0f;
-        Drag = 0.9f;
-        MaxSpeed = new Vector2(20.0f, 5.0f); // Horizontal faster than vertical
-        MoveForce = 300f;
-        Speed = 1f; // Not used in physics-based movement
+
+        // Player decides its own visual representation
+        Asset = GameAssets.Player.Surfer;
+        ClampToBounds = true;  // Players should stay on screen
+        RenderPriority = GameConstants.Player.RenderPriority;
+        Mass = GameConstants.Player.Mass;
+        Drag = GameConstants.Player.DragCoefficient;
+        MaxSpeed = new Vector2(GameConstants.Player.MaxSpeedHorizontal, GameConstants.Player.MaxSpeedVertical);
+        MoveForce = GameConstants.Player.MoveForce;
+        Speed = GameConstants.Player.BaseSpeed; // Not used in physics-based movement
         _acceleration = Vector2.Zero;
+    }
+
+    /// <summary>
+    /// Initializes the player with all necessary dependencies and systems.
+    /// This method sets up input, weapons, and registers with required systems.
+    /// </summary>
+    /// <param name="inputSystem">The input system for player control.</param>
+    /// <param name="entityRegistry">The registry for system registration.</param>
+    /// <param name="projectileSpawner">The spawner for player projectiles.</param>
+    public void Initialize(
+        InputSystem inputSystem,
+        IEntityRegistry entityRegistry,
+        ProjectileSpawner projectileSpawner)
+    {
+        // Create and attach input provider
+        var inputProvider = new PlayerInputProvider(inputSystem, MoveForce);
+        SetInputProvider(inputProvider);
+
+        // Register with entity systems
+        entityRegistry.RegisterEntity(this);
+
+        // Set up weapons/projectiles
+        projectileSpawner.SetPlayer(this);
+        projectileSpawner.SetInputProvider(inputProvider);
+    }
+
+    /// <summary>
+    /// Sets the input provider for this player.
+    /// </summary>
+    /// <param name="inputProvider">The input provider to use for controlling this player.</param>
+    private void SetInputProvider(IInputProvider inputProvider)
+    {
+        _inputProvider = inputProvider;
     }
 
     public void AddForce(Vector2 force)
@@ -44,11 +82,14 @@ public class Player : BaseEntity
             return;
         }
 
-        // Get movement input from WASD keys
-        Vector2 movement = _inputSystem.GetMovementInput(MoveForce);
-        if (movement.Length > 0)
+        // Get movement input from the input provider
+        if (_inputProvider != null)
         {
-            AddForce(movement);
+            Vector2 movement = _inputProvider.GetMovementVector();
+            if (movement.Length > 0)
+            {
+                AddForce(movement);
+            }
         }
 
         // Apply acceleration to velocity
