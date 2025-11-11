@@ -58,6 +58,9 @@ public class GameManager : IGameManager
 
         // Start the game
         NewState(GameStates.RUNNING);
+
+        // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
+        // Expecting a loop in here that can accept all game states and act upon them accordingly.. i.e. pause should instantiate a pause message.
     }
 
     /// <summary>
