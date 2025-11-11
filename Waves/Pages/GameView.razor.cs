@@ -14,7 +14,7 @@ public partial class GameView : IDisposable
 
     protected override void OnInitialized()
     {
-        GameManager.InitializeNewGame();
+        GameManager.StartNewGame();
         RenderService.RenderComplete += ReRenderBlazorView;
     }
 
@@ -33,6 +33,6 @@ public partial class GameView : IDisposable
         RenderService.RenderComplete -= ReRenderBlazorView;
 
         // GameManager handles cleanup
-        GameManager.CleanupGame();
+        GameManager.ExitGame();
     }
 }

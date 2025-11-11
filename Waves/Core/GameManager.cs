@@ -47,33 +47,26 @@ public class GameManager : IGameManager
     /// <summary>
     /// Initializes a new game session with all necessary entities.
     /// </summary>
-    public void InitializeNewGame()
+    public void StartNewGame()
     {
         // Prepare game state
-        CurrentGameState = GameStates.PREPARING;
-        Score = GameConstants.Scoring.InitialScore;
-        GameStateChanged?.Invoke(this, CurrentGameState);
-        ScoreChanged?.Invoke(this, Score);
+        NewState(GameStates.PREPARING);
+        SetScore(GameConstants.Scoring.InitialScore);
 
         // Create player entity
         _entityFactory.CreatePlayer(_centerPosition);
 
         // Start the game
-        CurrentGameState = GameStates.RUNNING;
-        GameStateChanged?.Invoke(this, CurrentGameState);
+        NewState(GameStates.RUNNING);
     }
 
     /// <summary>
     /// Cleans up the current game session.
     /// </summary>
-    public void CleanupGame()
+    public void ExitGame()
     {
-        // Clear all entities
         _entityRegistry.ClearAll();
-
-        // End the game
-        CurrentGameState = GameStates.ENDED;
-        GameStateChanged?.Invoke(this, CurrentGameState);
+        NewState(GameStates.ENDED);
     }
 
     /// <summary>
@@ -85,8 +78,7 @@ public class GameManager : IGameManager
             ? GameStates.PAUSED
             : GameStates.RUNNING;
 
-        CurrentGameState = newState;
-        GameStateChanged?.Invoke(this, CurrentGameState);
+        NewState(newState);
     }
 
     /// <summary>
@@ -95,6 +87,26 @@ public class GameManager : IGameManager
     public void IncrementScore(int scoreIncrement)
     {
         Score += scoreIncrement;
+        ScoreChanged?.Invoke(this, Score);
+    }
+
+    /// <summary>
+    /// Sets the game into a new state and notifies subscribers.
+    /// </summary>
+    /// <param name="newState"></param>
+    private void NewState(GameStates newState)
+    {
+        CurrentGameState = newState;
+        GameStateChanged?.Invoke(this, CurrentGameState);
+    }
+
+    /// <summary>
+    /// Sets the score to a specific value and notifies subscribers.
+    /// </summary>
+    /// <param name="value"></param>
+    private void SetScore(int value)
+    {
+        Score = value;
         ScoreChanged?.Invoke(this, Score);
     }
 }

@@ -32,13 +32,13 @@ public interface IGameManager
     /// Initializes a new game session, creating all necessary entities and starting gameplay.
     /// This includes player creation, initial enemy spawning, and any level setup.
     /// </summary>
-    void InitializeNewGame();
+    void StartNewGame();
 
     /// <summary>
     /// Cleans up the current game session, removing entities and resetting systems.
     /// Called when returning to menu or ending the game.
     /// </summary>
-    void CleanupGame();
+    void ExitGame();
 
     /// <summary>
     /// Pauses or resumes the current game.
