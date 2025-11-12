@@ -14,6 +14,7 @@ public class GameManager : IGameManager
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
+    private readonly IAudioManager _audioManager;
 
     // Store game area dimensions for calculating positions
     private readonly int _gameWidth;
@@ -30,7 +31,8 @@ public class GameManager : IGameManager
 
     public GameManager(
         IEntityFactory entityFactory,
-        IEntityRegistry entityRegistry)
+        IEntityRegistry entityRegistry,
+        IAudioManager audioManager)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
@@ -42,6 +44,9 @@ public class GameManager : IGameManager
         // Initialize state
         CurrentGameState = GameStates.ENDED;
         Score = GameConstants.Scoring.InitialScore;
+        _audioManager = audioManager;
+
+        _audioManager.PlayOnce("C:\\Users\\Nick.Bailey\\Music\\Too much love solo.wav").ConfigureAwait(false);
     }
 
     /// <summary>

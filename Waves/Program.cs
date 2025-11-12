@@ -38,6 +38,8 @@ internal class Program
                 // Register ScoreSystem with GameManager dependency
                 services.AddSingleton<ScoreSystem>(sp => new ScoreSystem(sp.GetRequiredService<IGameManager>()));
 
+                services.AddSingleton<IAudioManager, AudioManager>();
+
                 // Register GameLoop with all game systems injected
                 services.AddSingleton<IGameLoop>(sp => new GameLoop(
                     GameConstants.Timing.TickRateMilliseconds,

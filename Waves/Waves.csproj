@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251106-45c53f1" />
-    <PackageReference Include="System.Text.Json" Version="8.0.6" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251110-6f995d0" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
