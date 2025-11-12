@@ -3,48 +3,52 @@
 public interface IAudioManager
 {
     /// <summary>
-    /// Changes the looped background track to the specified audio file.
+    /// Changes the looped background track to the specified embedded audio resource.
     /// This is primarily for background music.
     /// </summary>
-    /// <param name="track"></param>
+    /// <param name="resourcePath">Resource path (e.g., "Assets/Audio/music.wav")</param>
     /// <returns></returns>
-    Task SetLoopTrack(string audioFilePath);
+    void SetBackgroundTrack(string resourcePath);
 
     /// <summary>
     /// Starts playing the looped background track if set.
     /// This is primarily for background music.
     /// </summary>
     /// <returns></returns>
-    Task StartLoop();
+    void StartBackgroundTrack();
 
     /// <summary>
     /// Stops playing the looped background track.
     /// This is primarily for background music.
     /// </summary>
     /// <returns></returns>
-    Task StopLoop();
+    void StopBackgroundTrack();
 
     /// <summary>
-    /// Change the volume of the background loop track.
-    /// This is primarily for background music.
+    /// Volume of the loop track. Primarily used for background music.
+    /// Can be set from 0.0f to 1.0f, 1.0f being the maximum volume.
     /// </summary>
-    /// <param name="volume"></param>
-    /// <returns></returns>
-    Task SetLoopVolume(float volume);
+    float BackgroundTrackVolume {get; set;}
 
     /// <summary>
-    /// Plays an audio file once.
+    /// Playback speed of the loop track. Primarily used for background music.
+    /// Can be set from 0.25f to 2.0f, 1.0f being normal speed.
+    /// Values greater than 1.0f speed up playback, values less than 1.0f slow it down.
+    /// </summary>
+    float LoopSpeed { get; set; }
+
+    /// <summary>
+    /// Plays an embedded audio resource once.
     /// This is primarily for sound effects.
     /// </summary>
-    /// <param name="audioFilePath"></param>
+    /// <param name="resourcePath">Resource path (e.g., "Assets/Audio/sound.wav")</param>
     /// <returns></returns>
-    Task PlayOnce(string audioFilePath);
+    Task PlayOneShot(string resourcePath);
 
     /// <summary>
-    /// Set the volume for one shot audio.
-    /// This is primarily for sound effects.
+    /// Volume of the one shot audio tracks. Primarily used for sound effects.
+    /// Can be set from 0.0f to 1.0f, 1.0f being the maximum volume.
     /// </summary>
-    /// <param name="volume"></param>
-    /// <returns></returns>
-    Task SetPlayOnceVolume(float volume);
+    float OneShotVolume { get; set; }
+
 }

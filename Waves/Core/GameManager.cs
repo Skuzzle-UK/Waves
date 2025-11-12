@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Waves.Assets.Audio;
 using Waves.Core.Configuration;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
@@ -46,7 +48,8 @@ public class GameManager : IGameManager
         Score = GameConstants.Scoring.InitialScore;
         _audioManager = audioManager;
 
-        _audioManager.PlayOnce("C:\\Users\\Nick.Bailey\\Music\\Too much love solo.wav").ConfigureAwait(false);
+        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+        _audioManager.StartBackgroundTrack();
     }
 
     /// <summary>

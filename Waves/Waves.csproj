@@ -9,17 +9,25 @@
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Extras" Version="2.2.1" />
     <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251110-6f995d0" />
     <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\" />
     <Folder Include="Entities\" />
     <Folder Include="Configuration\" />
     <Folder Include="Helpers\" />
     <Folder Include="Systems\" />
     <Folder Include="Utilities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Audio\*.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Audio\Music\Waves_001.wav" />
   </ItemGroup>
 
 </Project>

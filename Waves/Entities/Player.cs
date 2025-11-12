@@ -1,4 +1,4 @@
-using Waves.Core.Assets;
+using Waves.Assets;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;

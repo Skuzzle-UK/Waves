@@ -1,4 +1,4 @@
-using Waves.Core.Assets.BaseAssets;
+using Waves.Assets.BaseAssets;
 using Waves.Core.Maths;
 
 namespace Waves.Entities.Builders;
