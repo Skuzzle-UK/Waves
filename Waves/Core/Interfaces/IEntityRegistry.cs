@@ -21,6 +21,13 @@ public interface IEntityRegistry
     void UnregisterEntity(BaseEntity entity);
 
     /// <summary>
+    /// Permanently disposes an entity, unregistering it from all systems and calling Dispose().
+    /// Use this instead of calling entity.Dispose() directly.
+    /// </summary>
+    /// <param name="entity">The entity to dispose.</param>
+    void DisposeEntity(BaseEntity entity);
+
+    /// <summary>
     /// Registers an entity only with the movement system.
     /// </summary>
     /// <param name="entity">The entity to register for movement.</param>
@@ -31,6 +38,18 @@ public interface IEntityRegistry
     /// </summary>
     /// <param name="renderable">The entity to register for rendering.</param>
     void RegisterForRendering(IRenderable renderable);
+
+    /// <summary>
+    /// Registers an entity only with the collision system.
+    /// </summary>
+    /// <param name="collidable">The entity to register for collision detection.</param>
+    void RegisterForCollision(ICollidable collidable);
+
+    /// <summary>
+    /// Unregisters an entity from the collision system.
+    /// </summary>
+    /// <param name="collidable">The entity to unregister from collision detection.</param>
+    void UnregisterFromCollision(ICollidable collidable);
 
     /// <summary>
     /// Clears all registered entities from all systems.

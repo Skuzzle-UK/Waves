@@ -1,3 +1,4 @@
+using Waves.Core.Assets.BaseAssets;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 using Waves.Entities.Builders;
@@ -51,5 +52,22 @@ public class EntityFactory : IEntityFactory
             .WithPosition(position)
             .WithDirection(direction)
             .Build();
+    }
+
+    /// <summary>
+    /// Creates an enemy at the specified position with the given visual asset.
+    /// Enemy is automatically registered with the entity registry.
+    /// </summary>
+    public Enemy CreateEnemy(Vector2 position, IAsset asset)
+    {
+        var enemy = EnemyBuilder.Create(_entityRegistry)
+            .WithPosition(position)
+            .WithAsset(asset)
+            .Build();
+
+        // Register the enemy with all relevant systems
+        _entityRegistry.RegisterEntity(enemy);
+
+        return enemy;
     }
 }

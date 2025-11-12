@@ -12,17 +12,20 @@ public class EntityRegistry : IEntityRegistry
 {
     private readonly MovementSystem _movementSystem;
     private readonly GameRenderService _renderService;
-    // Future systems can be added here (CollisionSystem, AudioSystem, etc.)
+    private readonly CollisionSystem _collisionSystem;
+    // Future systems can be added here (AudioSystem, etc.)
 
     private readonly List<BaseEntity> _registeredEntities = new();
     private readonly object _lock = new();
 
     public EntityRegistry(
         MovementSystem movementSystem,
-        GameRenderService renderService)
+        GameRenderService renderService,
+        CollisionSystem collisionSystem)
     {
         _movementSystem = movementSystem ?? throw new ArgumentNullException(nameof(movementSystem));
         _renderService = renderService ?? throw new ArgumentNullException(nameof(renderService));
+        _collisionSystem = collisionSystem ?? throw new ArgumentNullException(nameof(collisionSystem));
     }
 
     /// <inheritdoc/>
@@ -47,9 +50,13 @@ public class EntityRegistry : IEntityRegistry
                 _renderService.RegisterRenderable(renderable);
             }
 
+            // Register with collision system if it's collidable
+            if (entity is ICollidable collidable)
+            {
+                _collisionSystem.RegisterCollidable(collidable);
+            }
+
             // Future: Register with other systems based on capabilities
-            // if (entity is ICollidable collidable)
-            //     _collisionSystem.Register(collidable);
             // if (entity is IAudible audible)
             //     _audioSystem.Register(audible);
         }
@@ -58,7 +65,10 @@ public class EntityRegistry : IEntityRegistry
     /// <inheritdoc/>
     public void UnregisterEntity(BaseEntity entity)
     {
-        if (entity == null) return;
+        if (entity == null)
+        {
+            return;
+        }
 
         lock (_lock)
         {
@@ -73,8 +83,29 @@ public class EntityRegistry : IEntityRegistry
                 _renderService.UnregisterRenderable(renderable);
             }
 
+            // Unregister from collision
+            if (entity is ICollidable collidable)
+            {
+                _collisionSystem.UnregisterCollidable(collidable);
+            }
+
             // Future: Unregister from other systems
         }
+    }
+
+    /// <inheritdoc/>
+    public void DisposeEntity(BaseEntity entity)
+    {
+        if (entity == null)
+        {
+            return;
+        }
+
+        // Unregister from all systems first
+        UnregisterEntity(entity);
+
+        // Then dispose the entity (marks IsDisposed = true)
+        entity.Dispose();
     }
 
     /// <inheritdoc/>
@@ -96,6 +127,28 @@ public class EntityRegistry : IEntityRegistry
         lock (_lock)
         {
             _renderService.RegisterRenderable(renderable);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void RegisterForCollision(ICollidable collidable)
+    {
+        if (collidable == null) return;
+
+        lock (_lock)
+        {
+            _collisionSystem.RegisterCollidable(collidable);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void UnregisterFromCollision(ICollidable collidable)
+    {
+        if (collidable == null) return;
+
+        lock (_lock)
+        {
+            _collisionSystem.UnregisterCollidable(collidable);
         }
     }
 
