@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
+using NAudio.Extras;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using System.Diagnostics;
 using System.Reflection;
 using Waves.Core.Interfaces;
@@ -134,30 +134,18 @@ public class AudioManager : IAudioManager, IHostedService
             return;
         }
 
-        // Copy to MemoryStream to ensure the stream is seekable for looping
-        using MemoryStream memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        memoryStream.Position = 0;
-
-        using (WaveFileReader audioFile = new WaveFileReader(memoryStream))
+        using (WaveFileReader audioFile = new WaveFileReader(stream))
+        using (LoopStream loopStream = new LoopStream(audioFile))
         using (WaveOutEvent outputDevice = new WaveOutEvent())
         {
-            outputDevice.Init(audioFile);
+            outputDevice.Init(loopStream);
             outputDevice.Volume = BackgroundTrackVolume;
             outputDevice.Play();
 
             while (!_applicationLifetime.IsCancellationRequested && !_newLoopTrackSet && _demandLoopPlays)
             {
                 outputDevice.Volume = BackgroundTrackVolume;
-
-                // If playback stopped, restart from beginning
-                if (outputDevice.PlaybackState != PlaybackState.Playing)
-                {
-                    audioFile.Position = 0;
-                    outputDevice.Play();
-                }
-
-                await Task.Delay(5);
+                await Task.Delay(10);
             }
         }
 
