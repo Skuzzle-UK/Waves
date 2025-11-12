@@ -84,6 +84,12 @@ public class MovementSystem : IUpdatable
         // Update all entities with fixed timestep
         foreach (BaseEntity entity in snapshot)
         {
+            // Skip disposed entities (they should have been unregistered)
+            if (entity.IsDisposed)
+            {
+                continue;
+            }
+
             try
             {
                 entity.Update(GameConstants.Timing.FixedDeltaTime);

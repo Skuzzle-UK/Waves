@@ -60,7 +60,7 @@ public class EntityFactory : IEntityFactory
     /// </summary>
     public Enemy CreateEnemy(Vector2 position, IAsset asset)
     {
-        var enemy = EnemyBuilder.Create()
+        var enemy = EnemyBuilder.Create(_entityRegistry)
             .WithPosition(position)
             .WithAsset(asset)
             .Build();

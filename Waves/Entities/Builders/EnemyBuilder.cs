@@ -1,4 +1,5 @@
 using Waves.Core.Assets.BaseAssets;
+using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 
 namespace Waves.Entities.Builders;
@@ -9,18 +10,22 @@ namespace Waves.Entities.Builders;
 /// </summary>
 public class EnemyBuilder
 {
+    private readonly IEntityRegistry _entityRegistry;
     private Vector2 _position = Vector2.Zero;
     private Vector2 _velocity = Vector2.Zero;
     private float _speed = 0f; // Default: stationary
     private IAsset? _asset = null;
 
     // Private constructor to enforce use of Create() factory method
-    private EnemyBuilder() { }
+    private EnemyBuilder(IEntityRegistry entityRegistry)
+    {
+        _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
+    }
 
     /// <summary>
-    /// Creates a new EnemyBuilder instance.
+    /// Creates a new EnemyBuilder instance with required dependencies.
     /// </summary>
-    public static EnemyBuilder Create() => new();
+    public static EnemyBuilder Create(IEntityRegistry entityRegistry) => new(entityRegistry);
 
     /// <summary>
     /// Sets the initial position of the enemy.
@@ -65,7 +70,7 @@ public class EnemyBuilder
     /// </summary>
     public Enemy Build()
     {
-        Enemy enemy = new Enemy
+        Enemy enemy = new Enemy(_entityRegistry)
         {
             Position = _position,
             Velocity = _velocity.Length > 0 ? _velocity.Normalized() : Vector2.Zero,

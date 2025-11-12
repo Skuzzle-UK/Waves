@@ -65,7 +65,10 @@ public class EntityRegistry : IEntityRegistry
     /// <inheritdoc/>
     public void UnregisterEntity(BaseEntity entity)
     {
-        if (entity == null) return;
+        if (entity == null)
+        {
+            return;
+        }
 
         lock (_lock)
         {
@@ -88,6 +91,21 @@ public class EntityRegistry : IEntityRegistry
 
             // Future: Unregister from other systems
         }
+    }
+
+    /// <inheritdoc/>
+    public void DisposeEntity(BaseEntity entity)
+    {
+        if (entity == null)
+        {
+            return;
+        }
+
+        // Unregister from all systems first
+        UnregisterEntity(entity);
+
+        // Then dispose the entity (marks IsDisposed = true)
+        entity.Dispose();
     }
 
     /// <inheritdoc/>

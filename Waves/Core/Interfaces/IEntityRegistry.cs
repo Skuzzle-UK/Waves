@@ -21,6 +21,13 @@ public interface IEntityRegistry
     void UnregisterEntity(BaseEntity entity);
 
     /// <summary>
+    /// Permanently disposes an entity, unregistering it from all systems and calling Dispose().
+    /// Use this instead of calling entity.Dispose() directly.
+    /// </summary>
+    /// <param name="entity">The entity to dispose.</param>
+    void DisposeEntity(BaseEntity entity);
+
+    /// <summary>
     /// Registers an entity only with the movement system.
     /// </summary>
     /// <param name="entity">The entity to register for movement.</param>

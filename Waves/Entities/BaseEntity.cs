@@ -9,7 +9,7 @@ namespace Waves.Entities;
 /// <summary>
 /// Base class for all game entities that can move and update.
 /// </summary>
-public abstract class BaseEntity : IRenderable, ICollidable
+public abstract class BaseEntity : IRenderable, ICollidable, IDisposableEntity
 {
     /// <summary>
     /// Unique identifier for this entity.
@@ -33,8 +33,15 @@ public abstract class BaseEntity : IRenderable, ICollidable
 
     /// <summary>
     /// Whether this entity is active and should be updated.
+    /// When false, the entity is temporarily disabled but can be re-enabled.
     /// </summary>
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Whether this entity has been permanently disposed.
+    /// Once disposed, the entity should be removed from all systems and cannot be reused.
+    /// </summary>
+    public bool IsDisposed { get; private set; }
 
     /// <summary>
     /// The character used to display this entity.
@@ -129,5 +136,30 @@ public abstract class BaseEntity : IRenderable, ICollidable
     public virtual void OnCollision(ICollidable other)
     {
         // Default: no collision response
+    }
+
+    /// <summary>
+    /// Permanently disposes of this entity, marking it for removal from all systems.
+    /// Once disposed, the entity cannot be reused.
+    /// Call EntityRegistry.DisposeEntity() instead of calling this directly.
+    /// </summary>
+    public void Dispose()
+    {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        IsDisposed = true;
+        IsActive = false;
+        OnDispose();
+    }
+
+    /// <summary>
+    /// Called when the entity is being disposed.
+    /// Override to implement entity-specific cleanup logic.
+    /// </summary>
+    protected virtual void OnDispose()
+    {
     }
 }

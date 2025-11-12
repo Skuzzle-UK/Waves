@@ -10,8 +10,12 @@ namespace Waves.Entities;
 /// </summary>
 public class Enemy : BaseEntity
 {
-    public Enemy()
+    private readonly IEntityRegistry _entityRegistry;
+
+    public Enemy(IEntityRegistry entityRegistry)
     {
+        _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
+
         Speed = GameConstants.Enemy.DefaultSpeed;
         ClampToBounds = GameConstants.Enemy.ClampToBounds;
         RenderPriority = GameConstants.Enemy.RenderPriority;
@@ -23,19 +27,19 @@ public class Enemy : BaseEntity
 
     /// <summary>
     /// Handles collision with other entities.
-    /// When hit by player, the enemy disappears.
+    /// Disposes the enemy when hit by player or projectiles.
     /// </summary>
     public override void OnCollision(ICollidable other)
     {
         if (other.Layer == CollisionLayer.Player)
         {
-            // Wall disappears when player touches it
-            IsActive = false;
+            // Enemy is destroyed when player touches it
+            _entityRegistry.DisposeEntity(this);
         }
         else if (other.Layer == CollisionLayer.PlayerProjectile)
         {
-            // Enemy can be destroyed by projectiles too
-            IsActive = false;
+            // Enemy is destroyed by projectiles
+            _entityRegistry.DisposeEntity(this);
         }
     }
 }
