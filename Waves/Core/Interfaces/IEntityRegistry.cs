@@ -33,6 +33,18 @@ public interface IEntityRegistry
     void RegisterForRendering(IRenderable renderable);
 
     /// <summary>
+    /// Registers an entity only with the collision system.
+    /// </summary>
+    /// <param name="collidable">The entity to register for collision detection.</param>
+    void RegisterForCollision(ICollidable collidable);
+
+    /// <summary>
+    /// Unregisters an entity from the collision system.
+    /// </summary>
+    /// <param name="collidable">The entity to unregister from collision detection.</param>
+    void UnregisterFromCollision(ICollidable collidable);
+
+    /// <summary>
     /// Clears all registered entities from all systems.
     /// Useful for game reset or cleanup.
     /// </summary>

@@ -1,5 +1,6 @@
 using Waves.Core.Assets;
 using Waves.Core.Configuration;
+using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 using Waves.Systems;
@@ -32,6 +33,10 @@ public class Player : BaseEntity
         MoveForce = GameConstants.Player.MoveForce;
         Speed = GameConstants.Player.BaseSpeed; // Not used in physics-based movement
         _acceleration = Vector2.Zero;
+
+        // Set collision properties
+        Layer = CollisionLayer.Player;
+        CollidesWith = CollisionLayer.Enemy | CollisionLayer.EnemyProjectile;
     }
 
     /// <summary>
@@ -107,4 +112,12 @@ public class Player : BaseEntity
         // Reset acceleration for next frame
         _acceleration = Vector2.Zero;
     }
-}
+
+    /// <summary>
+    /// Handles collision with other entities.
+    /// </summary>
+    public override void OnCollision(ICollidable other)
+    {
+        // Handle collision in here!
+    }
+    }

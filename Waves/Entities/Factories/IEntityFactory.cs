@@ -1,3 +1,4 @@
+using Waves.Core.Assets.BaseAssets;
 using Waves.Core.Maths;
 
 namespace Waves.Entities.Factories;
@@ -21,4 +22,12 @@ public interface IEntityFactory
     /// <param name="direction">The direction the projectile should travel.</param>
     /// <returns>A new projectile instance.</returns>
     Projectile CreateProjectile(Vector2 position, Vector2 direction);
+    
+    /// <summary>
+    /// Creates an enemy at the specified position.
+    /// </summary>
+    /// <param name="position">The starting position of the enemy.</param>
+    /// <param name="asset">The enemy asset.</param>
+    /// <returns>A new enemy instance.</returns>
+    Enemy CreateEnemy(Vector2 position, IAsset asset);
 }

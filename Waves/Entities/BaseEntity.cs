@@ -1,4 +1,6 @@
 using Waves.Core.Assets.BaseAssets;
+using Waves.Core.Collision;
+using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 
@@ -7,7 +9,7 @@ namespace Waves.Entities;
 /// <summary>
 /// Base class for all game entities that can move and update.
 /// </summary>
-public abstract class BaseEntity : IRenderable
+public abstract class BaseEntity : IRenderable, ICollidable
 {
     /// <summary>
     /// Unique identifier for this entity.
@@ -55,6 +57,16 @@ public abstract class BaseEntity : IRenderable
     /// </summary>
     public virtual int RenderPriority { get; set; } = 0;
 
+    /// <summary>
+    /// The collision layer this entity belongs to. Default is None (no collisions).
+    /// </summary>
+    public virtual CollisionLayer Layer { get; set; } = CollisionLayer.None;
+
+    /// <summary>
+    /// The collision layers this entity can collide with. Default is None (no collisions).
+    /// </summary>
+    public virtual CollisionLayer CollidesWith { get; set; } = CollisionLayer.None;
+
     protected BaseEntity()
     {
         Id = Guid.NewGuid();
@@ -81,5 +93,41 @@ public abstract class BaseEntity : IRenderable
 
         // Apply velocity-based movement: Position += Velocity * Speed * DeltaTime
         Position += Velocity * Speed * deltaTime;
+    }
+
+    /// <summary>
+    /// Computes the bounding box for collision detection based on position and asset dimensions.
+    /// </summary>
+    public virtual BoundingBox GetBounds()
+    {
+        if (Asset != null)
+        {
+            float halfWidth = Asset.Width / 2f;
+            float halfHeight = Asset.Height / 2f;
+
+            return new BoundingBox(
+                left: Position.X - halfWidth,
+                right: Position.X + halfWidth,
+                top: Position.Y - halfHeight,
+                bottom: Position.Y + halfHeight
+            );
+        }
+
+        // Single character entity (1x1 bounds)
+        return new BoundingBox(
+            left: Position.X - 0.5f,
+            right: Position.X + 0.5f,
+            top: Position.Y - 0.5f,
+            bottom: Position.Y + 0.5f
+        );
+    }
+
+    /// <summary>
+    /// Called when this entity collides with another collidable entity.
+    /// Override to implement collision response behavior.
+    /// </summary>
+    public virtual void OnCollision(ICollidable other)
+    {
+        // Default: no collision response
     }
 }
