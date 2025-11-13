@@ -157,12 +157,14 @@ public class EntityRegistry : IEntityRegistry
     {
         lock (_lock)
         {
+            // Unregister all entities from their systems before clearing
+            foreach (var entity in _registeredEntities.ToList())
+            {
+                UnregisterEntity(entity);
+            }
+
             // Clear our tracking list
             _registeredEntities.Clear();
-
-            // Note: We don't clear the individual systems here as they
-            // may have other entities registered that weren't added through
-            // this registry. Systems should handle their own cleanup.
         }
     }
 

@@ -53,6 +53,7 @@ public class GameManager : IGameManager
         // Prepare game state
         NewState(GameStates.PREPARING);
         SetScore(GameConstants.Scoring.InitialScore);
+        _entityRegistry.ClearAll();
 
         // Create player entity
         _entityFactory.CreatePlayer(_centerPosition);

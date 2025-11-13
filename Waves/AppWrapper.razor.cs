@@ -13,7 +13,7 @@ public partial class AppWrapper
 
     private string _currentPage = "menu";
 
-    private void NavigateToGame(string page)
+    private void NavigateTo(string page)
     {
         _currentPage = page;
         StateHasChanged();

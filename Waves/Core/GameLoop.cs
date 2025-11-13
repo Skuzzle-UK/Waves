@@ -179,8 +179,9 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         switch (newState)
         {
             case GameStates.PREPARING:
-                // Register game systems when preparing a new game
+                // Register game systems and start the timer when preparing a new game
                 RegisterGameSystems();
+                Start();
                 break;
 
             case GameStates.RUNNING:
