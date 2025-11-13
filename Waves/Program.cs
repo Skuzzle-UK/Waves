@@ -19,6 +19,7 @@ internal class Program
                 // Register game systems first
                 services.AddSingleton<MovementSystem>();
                 services.AddSingleton<InputSystem>();
+                services.AddSingleton<CollisionSystem>();
                 services.AddSingleton<GameRenderService>(sp => new GameRenderService(AppWrapper.GameAreaWidth, AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset));
 
                 // Register EntityRegistry
@@ -47,6 +48,7 @@ internal class Program
                     sp.GetRequiredService<IGameManager>(),
                     sp.GetRequiredService<InputSystem>(),
                     sp.GetRequiredService<MovementSystem>(),
+                    sp.GetRequiredService<CollisionSystem>(),
                     sp.GetRequiredService<ProjectileSpawner>(),
                     sp.GetRequiredService<ScoreSystem>(),
                     sp.GetRequiredService<GameRenderService>()));

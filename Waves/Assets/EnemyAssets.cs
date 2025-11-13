@@ -13,4 +13,10 @@ public static class EnemyAssets
         "  /|",
         "~~~~~~"
     );
+
+    public static readonly IAsset BrickWall = new MultiCharAsset(
+        @"╔═══════╗",
+        @"║▓▓▓▓▓▓▓║",
+        @"╚═══════╝"
+    );
 }

@@ -1,4 +1,6 @@
 using Waves.Core.Configuration;
+using Waves.Core.Enums;
+using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 
 namespace Waves.Entities;
@@ -26,6 +28,10 @@ public class Projectile : BaseEntity
         Speed = GameConstants.Projectile.EntitySpeed;
         _startPosition = Position;
         _distanceTraveled = 0f;
+
+        // Set collision properties
+        Layer = CollisionLayer.PlayerProjectile;
+        CollidesWith = CollisionLayer.Enemy;
     }
 
     /// <summary>
@@ -49,6 +55,18 @@ public class Projectile : BaseEntity
 
         // Deactivate if max distance exceeded
         if (_distanceTraveled >= MaxDistance)
+        {
+            IsActive = false;
+        }
+    }
+
+    /// <summary>
+    /// Handles collision with other entities. Deactivates the projectile on collision with enemies.
+    /// </summary>
+    public override void OnCollision(ICollidable other)
+    {
+        // Projectile is destroyed when it hits anything it collides with (enemies)
+        if ((other.Layer & CollidesWith) != 0)
         {
             IsActive = false;
         }

@@ -124,6 +124,27 @@ public static class GameConstants
     }
 
     /// <summary>
+    /// Enemy entity configuration.
+    /// </summary>
+    public static class Enemy
+    {
+        /// <summary>
+        /// Default speed for enemies (0 = stationary).
+        /// </summary>
+        public const float DefaultSpeed = 0f;
+
+        /// <summary>
+        /// Render priority for enemies (between projectiles and player).
+        /// </summary>
+        public const int RenderPriority = 8;
+
+        /// <summary>
+        /// Whether enemies should be clamped to screen bounds by default.
+        /// </summary>
+        public const bool ClampToBounds = true;
+    }
+
+    /// <summary>
     /// Scoring system configuration.
     /// </summary>
     public static class Scoring

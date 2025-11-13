@@ -74,19 +74,20 @@ public class GameRenderService : IUpdatable
             ClearBuffer();
 
             // Sort renderables by priority (lower priority renders first, higher on top)
+            // Filter to only active, non-disposed entities
             var activeRenderables = _renderables
-                .Where(r => r.IsActive)
+                .Where(r => r.IsActive && (r is not BaseEntity entity || !entity.IsDisposed))
                 .OrderBy(r => r.RenderPriority)
                 .ToList();
 
             // Render each entity
-            foreach (var renderable in activeRenderables)
+            foreach (IRenderable? renderable in activeRenderables)
             {
                 RenderEntity(renderable);
             }
 
-            // Clean up inactive renderables
-            _renderables.RemoveAll(r => !r.IsActive);
+            // Clean up inactive or disposed renderables
+            _renderables.RemoveAll(r => !r.IsActive || (r is BaseEntity entity && entity.IsDisposed));
         }
 
         // Fire event to notify UI to refresh (outside of lock to prevent deadlocks)

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Waves.Assets.Audio;
+using Waves.Core.Assets;
 using Waves.Core.Configuration;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
@@ -63,6 +64,10 @@ public class GameManager : IGameManager
 
         // Create player entity
         _entityFactory.CreatePlayer(_centerPosition);
+
+        // Spawn test enemy - the one and only BRICKWALL!
+        Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
+        _entityFactory.CreateEnemy(wallPosition, EnemyAssets.BrickWall);
 
         // Start the game
         NewState(GameStates.RUNNING);

@@ -1,4 +1,5 @@
 ﻿@using RazorConsole.Components
+@using Waves.Core.Enums
 
 <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.DarkSeaGreen">
     <Align Horizontal="@Spectre.Console.HorizontalAlignment.Right">
@@ -10,7 +11,45 @@
     var content = GetRenderedContent();
     var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 }
-@foreach (var line in lines)
+
+@if (GameManager.CurrentGameState == GameStates.PAUSED)
 {
-    <Markup Content="@line" />
+    <Padder Padding="@(new(0, 2, 0, 0))" />
+    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+        <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Yellow">
+            <Padder Padding="@(new(1, 1, 1, 1))">
+                <Rows>
+                    <Figlet Content="PAUSED" Color="@Spectre.Console.Color.Yellow" />
+                    <Padder Padding="@(new(0, 1, 0, 0))" />
+                    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                        <Rows>
+                            <Panel>
+                                <TextButton
+                                    Content="   Resume   "
+                                    OnClick="ResumeGame"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue"
+                                />
+                            </Panel>
+                            <Panel>
+                                <TextButton
+                                    Content="    Exit    "
+                                    OnClick="ExitApplication"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue"
+                                />
+                            </Panel>
+                        </Rows>
+                    </Align>
+                </Rows>
+            </Padder>
+        </Panel>
+    </Align>
+}
+else
+{
+    @foreach (var line in lines)
+    {
+        <Markup Content="@line" />
+    }
 }

@@ -20,11 +20,15 @@ public class InputSystem : IUpdatable
     private const int VK_S = 0x53;
     private const int VK_D = 0x44;
     private const int VK_SPACE = 0x20;
+    private const int VK_ESCAPE = 0x1B;
 
     private bool _wasSpacePressed;
     private bool _spaceConsumed;
     private bool _spaceJustPressed;
 
+    private bool _wasEscapePressed;
+    private bool _escapeConsumed;
+    private bool _escapeJustPressed;
 
     /// <summary>
     /// Update order for input processing (0-99 range: Input processing systems).
@@ -40,6 +44,11 @@ public class InputSystem : IUpdatable
         _spaceJustPressed = spaceCurrentlyPressed && !_wasSpacePressed;
         _spaceConsumed = false;
         _wasSpacePressed = spaceCurrentlyPressed;
+
+        bool escapeCurrentlyPressed = IsKeyDown(VK_ESCAPE);
+        _escapeJustPressed = escapeCurrentlyPressed && !_wasEscapePressed;
+        _escapeConsumed = false;
+        _wasEscapePressed = escapeCurrentlyPressed;
     }
 
     /// <summary>
@@ -70,6 +79,20 @@ public class InputSystem : IUpdatable
     public bool ConsumeSpaceBar()
     {
         return WasSpacePressed();
+    }
+
+    /// <summary>
+    /// Checks if ESC key was pressed this frame and consumes it.
+    /// This ensures one pause toggle per press.
+    /// </summary>
+    public bool WasEscapePressed()
+    {
+        if (_escapeJustPressed && !_escapeConsumed)
+        {
+            _escapeConsumed = true;
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
