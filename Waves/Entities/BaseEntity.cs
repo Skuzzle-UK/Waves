@@ -1,4 +1,3 @@
-using Waves.Core.Assets.BaseAssets;
 using Waves.Core.Collision;
 using Waves.Core.Enums;
 using Waves.Assets.BaseAssets;
