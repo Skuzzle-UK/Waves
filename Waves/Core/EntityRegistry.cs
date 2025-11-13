@@ -160,20 +160,7 @@ public class EntityRegistry : IEntityRegistry
             // Unregister all entities from their systems before clearing
             foreach (var entity in _registeredEntities.ToList())
             {
-                // Unregister from movement
-                _movementSystem.Unregister(entity);
-
-                // Unregister from rendering
-                if (entity is IRenderable renderable)
-                {
-                    _renderService.UnregisterRenderable(renderable);
-                }
-
-                // Unregister from collision
-                if (entity is ICollidable collidable)
-                {
-                    _collisionSystem.UnregisterCollidable(collidable);
-                }
+                UnregisterEntity(entity);
             }
 
             // Clear our tracking list
