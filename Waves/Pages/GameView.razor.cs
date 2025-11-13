@@ -20,6 +20,9 @@ public partial class GameView : IDisposable
     [Inject]
     public IHostApplicationLifetime ApplicationLifetime { get; set; } = null!;
 
+    [Parameter]
+    public Action<string>? OnNavigate { get; set; }
+
     protected override void OnInitialized()
     {
         GameManager.StartNewGame();
@@ -57,6 +60,12 @@ public partial class GameView : IDisposable
     private void ExitApplication()
     {
         ApplicationLifetime.StopApplication();
+    }
+
+    private void ReturnToMainMenu()
+    {
+        GameManager.ExitGame();
+        OnNavigate?.Invoke("menu");
     }
 
     public void Dispose()

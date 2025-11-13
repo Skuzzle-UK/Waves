@@ -4,11 +4,11 @@
 <Panel Height="_panelHeight" Width="_panelWidth">
     @if (_currentPage == "menu")
     {
-        <MainMenu OnNavigateToGame="NavigateToGame" />
+        <MainMenu OnNavigate="NavigateTo" />
     }
     else if (_currentPage == "game")
     {
-        <GameView />
+        <GameView OnNavigate="NavigateTo" />
     }
 </Panel>
 <Align Horizontal="@Spectre.Console.HorizontalAlignment.Right" Vertical="@Spectre.Console.VerticalAlignment.Bottom">
