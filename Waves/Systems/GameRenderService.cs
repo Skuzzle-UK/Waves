@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Waves.Core.Assets.BaseAssets;
+using Waves.Assets.BaseAssets;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;

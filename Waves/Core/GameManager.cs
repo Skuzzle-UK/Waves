@@ -1,4 +1,5 @@
-using Waves.Core.Assets;
+using Waves.Assets;
+using Waves.Assets.Audio;
 using Waves.Core.Configuration;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
@@ -15,6 +16,7 @@ public class GameManager : IGameManager
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
+    private readonly IAudioManager _audioManager;
 
     // Store game area dimensions for calculating positions
     private readonly int _gameWidth;
@@ -31,7 +33,8 @@ public class GameManager : IGameManager
 
     public GameManager(
         IEntityFactory entityFactory,
-        IEntityRegistry entityRegistry)
+        IEntityRegistry entityRegistry,
+        IAudioManager audioManager)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
@@ -43,6 +46,10 @@ public class GameManager : IGameManager
         // Initialize state
         CurrentGameState = GameStates.ENDED;
         Score = GameConstants.Scoring.InitialScore;
+        _audioManager = audioManager;
+
+        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+        _audioManager.StartBackgroundTrack();
     }
 
     /// <summary>
