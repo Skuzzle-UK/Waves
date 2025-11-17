@@ -48,7 +48,7 @@ public class GameManager : IGameManager
         Score = GameConstants.Scoring.InitialScore;
         _audioManager = audioManager;
 
-        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
         _audioManager.StartBackgroundTrack();
     }
 
@@ -72,6 +72,8 @@ public class GameManager : IGameManager
         // Start the game
         NewState(GameStates.RUNNING);
 
+        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+
         // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
         // Expecting a loop in here that can accept all game states and act upon them accordingly.. i.e. pause should instantiate a pause message.
     }
@@ -83,6 +85,7 @@ public class GameManager : IGameManager
     {
         _entityRegistry.ClearAll();
         NewState(GameStates.ENDED);
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
     }
 
     /// <summary>
@@ -95,6 +98,15 @@ public class GameManager : IGameManager
             : GameStates.RUNNING;
 
         NewState(newState);
+
+        if (newState == GameStates.RUNNING)
+        {
+            _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+        }
+        else
+        {
+            _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+        }
     }
 
     /// <summary>
