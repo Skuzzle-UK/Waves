@@ -27,33 +27,33 @@ public partial class SettingsView
 
     private void IncreaseMusicVolume()
     {
-        AudioManager.BackgroundTrackVolume = Math.Min(1.0f, AudioManager.BackgroundTrackVolume + 0.1f);
+        AudioManager.BackgroundTrackVolume = Math.Min(1.0f, AudioManager.BackgroundTrackVolume + 0.025f);
     }
 
     private void DecreaseMusicVolume()
     {
-        AudioManager.BackgroundTrackVolume = Math.Max(0.0f, AudioManager.BackgroundTrackVolume - 0.1f);
+        AudioManager.BackgroundTrackVolume = Math.Max(0.0f, AudioManager.BackgroundTrackVolume - 0.025f);
     }
 
     private void IncreaseSfxVolume()
     {
-        AudioManager.OneShotVolume = Math.Min(1.0f, AudioManager.OneShotVolume + 0.1f);
+        AudioManager.OneShotVolume = Math.Min(1.0f, AudioManager.OneShotVolume + 0.025f);
     }
 
     private void DecreaseSfxVolume()
     {
-        AudioManager.OneShotVolume = Math.Max(0.0f, AudioManager.OneShotVolume - 0.1f);
+        AudioManager.OneShotVolume = Math.Max(0.0f, AudioManager.OneShotVolume - 0.025f);
     }
 
     private string GetMusicVolumeBar()
     {
-        int filled = (int)(AudioManager.BackgroundTrackVolume * 10);
-        return $"[{new string('█', filled)}{new string('░', 10 - filled)}] {(int)(AudioManager.BackgroundTrackVolume * 100)}%";
+        int filled = (int)(AudioManager.BackgroundTrackVolume * 40);
+        return $"\n[{new string('█', filled)}{new string('░', 40 - filled)}]";
     }
 
     private string GetSfxVolumeBar()
     {
-        int filled = (int)(AudioManager.OneShotVolume * 10);
-        return $"[{new string('█', filled)}{new string('░', 10 - filled)}] {(int)(AudioManager.OneShotVolume * 100)}%";
+        int filled = (int)(AudioManager.OneShotVolume * 40);
+        return $"\n[{new string('█', filled)}{new string('░', 40 - filled)}]";
     }
 }
