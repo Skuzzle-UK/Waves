@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
+using Spectre.Console;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Systems;
@@ -22,6 +23,8 @@ public partial class GameView : IDisposable
 
     [Parameter]
     public Action<string>? OnNavigate { get; set; }
+
+    private Color _healthBarColour = Color.Green;
 
     protected override void OnInitialized()
     {
@@ -50,6 +53,34 @@ public partial class GameView : IDisposable
     private string GetRenderedContent()
     {
         return RenderService.GetRenderedContent();
+    }
+
+    private string GetHealthBar()
+    {
+        string bar = "HP: |";
+        const int barLength = 20;
+        float healthPercent = (float)GameManager.Health / Core.Configuration.GameConstants.Player.MaxHealth;
+        
+        int filledBlocks = (int)(healthPercent * barLength);
+        
+        _healthBarColour = healthPercent > 0.6 ? Color.Green : Color.Yellow;
+        _healthBarColour = healthPercent > 0.4 ? _healthBarColour : Color.Orange1;
+        _healthBarColour = healthPercent > 0.2 ? _healthBarColour : Color.Red;
+        
+        for (int i = 0; i < barLength; i++)
+        {
+            if (i < filledBlocks)
+            {
+                bar += "▓";
+            }
+            else
+            {
+                bar += "░";
+            }
+        }
+        bar += "|";
+
+        return bar;
     }
 
     private void ResumeGame()

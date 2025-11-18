@@ -80,6 +80,16 @@ public static class GameConstants
         /// Render priority for player (higher renders on top).
         /// </summary>
         public const int RenderPriority = 10;
+
+        /// <summary>
+        /// Initial health value for the player.
+        /// </summary>
+        public const int InitialHealth = 100;
+
+        /// <summary>
+        /// Maximum health value for the player.
+        /// </summary>
+        public const int MaxHealth = 100;
     }
 
     /// <summary>
@@ -142,6 +152,16 @@ public static class GameConstants
         /// Whether enemies should be clamped to screen bounds by default.
         /// </summary>
         public const bool ClampToBounds = true;
+
+        /// <summary>
+        /// Default health value for enemies.
+        /// </summary>
+        public const int DefaultHealth = 100;
+
+        /// <summary>
+        /// Score points awarded when an enemy is killed.
+        /// </summary>
+        public const int ScoreOnKill = 100;
     }
 
     /// <summary>

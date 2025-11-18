@@ -15,11 +15,13 @@ public class Player : BaseEntity
     // TODO: Look at a way we can register the projectile spawner to the player as we might want to do similar to enemies
     private IInputProvider? _inputProvider;
     private Vector2 _acceleration;
+    private Action<int>? _onTakeDamage;
 
     public float Mass { get; set; }
     public float Drag { get; set; }
     public Vector2 MaxSpeed { get; set; }
     public float MoveForce { get; set; }
+    public int Health { get; set; } = GameConstants.Player.InitialHealth;
 
     public Player(Vector2 position)
     {
@@ -40,16 +42,18 @@ public class Player : BaseEntity
     }
 
     /// <summary>
-    /// Initializes the player with all necessary dependencies and systems.
+    /// Initialises the player with all necessary dependencies and systems.
     /// This method sets up input, weapons, and registers with required systems.
     /// </summary>
     /// <param name="inputSystem">The input system for player control.</param>
     /// <param name="entityRegistry">The registry for system registration.</param>
     /// <param name="projectileSpawner">The spawner for player projectiles.</param>
-    public void Initialize(
+    /// <param name="onTakeDamage">Callback to invoke when player takes damage.</param>
+    public void Initialise(
         InputSystem inputSystem,
         IEntityRegistry entityRegistry,
-        ProjectileSpawner projectileSpawner)
+        ProjectileSpawner projectileSpawner,
+        Action<int> onTakeDamage)
     {
         // Create and attach input provider
         var inputProvider = new PlayerInputProvider(inputSystem, MoveForce);
@@ -61,6 +65,9 @@ public class Player : BaseEntity
         // Set up weapons/projectiles
         projectileSpawner.SetPlayer(this);
         projectileSpawner.SetInputProvider(inputProvider);
+
+        // Set damage callback
+        _onTakeDamage = onTakeDamage;
     }
 
     /// <summary>
@@ -118,6 +125,10 @@ public class Player : BaseEntity
     /// </summary>
     public override void OnCollision(ICollidable other)
     {
-        // Handle collision in here!
+        // Take damage when hit by enemies or enemy projectiles
+        if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
+        {
+            _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
+        }
     }
     }
