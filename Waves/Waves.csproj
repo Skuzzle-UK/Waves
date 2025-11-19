@@ -19,6 +19,7 @@
     <Folder Include="Entities\" />
     <Folder Include="Configuration\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Components\" />
     <Folder Include="Systems\" />
     <Folder Include="Utilities\" />
   </ItemGroup>
@@ -30,11 +31,13 @@
   <ItemGroup>
     <None Remove="Assets\Audio\Music\BossBattle1.wav" />
     <None Remove="Assets\Audio\Music\Waves_001.wav" />
+    <None Remove="Assets\Audio\Music\BeautifulPaino.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Audio\Music\BossBattle1.wav" />
     <EmbeddedResource Include="Assets\Audio\Music\Waves_001.wav" />
+	  <EmbeddedResource Include="Assets\Audio\Music\BeautifulPaino.wav" />
   </ItemGroup>
 
 </Project>

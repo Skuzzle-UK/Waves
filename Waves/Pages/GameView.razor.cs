@@ -25,6 +25,23 @@ public partial class GameView : IDisposable
     public Action<string>? OnNavigate { get; set; }
 
     private Color _healthBarColour = Color.Green;
+    
+    private SettingsView? _settingsView;
+    private bool _showSettings;
+
+    private void ShowSettings()
+    {
+        _showSettings = true;
+    }
+
+    private void OnSettingsVisibilityChanged()
+    {
+        if (_settingsView != null && !_settingsView.IsVisible)
+        {
+            _showSettings = false;
+        }
+        InvokeAsync(StateHasChanged);
+    }
 
     protected override void OnInitialized()
     {
