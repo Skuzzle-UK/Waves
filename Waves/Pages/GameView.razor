@@ -2,9 +2,15 @@
 @using Waves.Core.Enums
 
 <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.DarkSeaGreen">
-    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Right">
-        <Markup Content="@($"{GameManager.Score} : SCORE")" />
-    </Align>
+    <Grid>
+        <Align Horizontal="@Spectre.Console.HorizontalAlignment.Left">
+            <Markup Foreground="_healthBarColour" Content="@GetHealthBar()" />
+
+        </Align>
+        <Align Horizontal="@Spectre.Console.HorizontalAlignment.Right">
+            <Markup Content="@($"{GameManager.Score} : SCORE")" />
+        </Align>
+    </Grid>
 </Panel>
 
 @{

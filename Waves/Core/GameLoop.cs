@@ -38,7 +38,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     public bool IsRunning => _timer != null && !_isPaused;
 
     /// <summary>
-    /// Initializes a new instance of the GameTick class.
+    /// Initialises a new instance of the GameTick class.
     /// </summary>
     /// <param name="tickRateMilliseconds">The interval between ticks in milliseconds.</param>
     /// <param name="gameManager">The game manager for automatic pause/resume integration.</param>

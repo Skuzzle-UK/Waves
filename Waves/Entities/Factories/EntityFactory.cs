@@ -30,12 +30,13 @@ public class EntityFactory : IEntityFactory
     }
 
     /// <summary>
-    /// Creates a fully initialized player at the specified position.
+    /// Creates a fully initialised player at the specified position.
+    /// Note: Player must be initialised with damage callback after creation via Initialise().
     /// </summary>
     public Player CreatePlayer(Vector2 position)
     {
         var player = new Player(position);
-        player.Initialize(_inputSystem, _entityRegistry, _projectileSpawner);
+        // Note: Caller must call player.Initialise() with damage callback
         return player;
     }
 
