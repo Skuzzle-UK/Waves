@@ -19,6 +19,11 @@ public interface IGameManager
     int Score { get; }
 
     /// <summary>
+    /// Gets the current player health.
+    /// </summary>
+    int Health { get; }
+
+    /// <summary>
     /// Event fired when the game state changes.
     /// </summary>
     event EventHandler<GameStates>? GameStateChanged;
@@ -29,7 +34,12 @@ public interface IGameManager
     event EventHandler<int>? ScoreChanged;
 
     /// <summary>
-    /// Initializes a new game session, creating all necessary entities and starting gameplay.
+    /// Event fired when the player's health changes.
+    /// </summary>
+    event EventHandler<int>? HealthChanged;
+
+    /// <summary>
+    /// Initialises a new game session, creating all necessary entities and starting gameplay.
     /// This includes player creation, initial enemy spawning, and any level setup.
     /// </summary>
     void StartNewGame();
@@ -50,4 +60,17 @@ public interface IGameManager
     /// </summary>
     /// <param name="scoreIncrement">The amount to add to the score.</param>
     void IncrementScore(int scoreIncrement);
+
+    /// <summary>
+    /// Reduces the player's health by the specified damage amount.
+    /// Triggers HealthChanged event and handles player death if health reaches 0.
+    /// </summary>
+    /// <param name="damage">The amount of damage to apply.</param>
+    void TakeDamage(int damage);
+
+    /// <summary>
+    /// Increases the player's health by the specified amount, up to the maximum health.
+    /// </summary>
+    /// <param name="amount">The amount of health to restore.</param>
+    void Heal(int amount);
 }

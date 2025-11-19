@@ -9,7 +9,7 @@ namespace Waves.Entities.Factories;
 public interface IEntityFactory
 {
     /// <summary>
-    /// Creates a fully initialized player at the specified position.
+    /// Creates a fully initialised player at the specified position.
     /// </summary>
     /// <param name="position">The starting position for the player.</param>
     /// <returns>A new player instance with all dependencies configured.</returns>

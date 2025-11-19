@@ -13,6 +13,10 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
+        // Set console encoding to UTF-8 for proper Unicode character display
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.InputEncoding = System.Text.Encoding.UTF8;
+
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args)
             .ConfigureServices(services =>
             {
