@@ -16,6 +16,7 @@ public class AudioManager : IAudioManager, IHostedService
     private float _loopVolume = 1.0f;
     private float _oneShotVolume = 1.0f;
     private float _loopSpeed = 1.0f;
+    private SoundTouchSampleProvider? _soundTouchProvider;
 
     public float BackgroundTrackVolume
     {
@@ -65,15 +66,21 @@ public class AudioManager : IAudioManager, IHostedService
         }
         set
         {
-            if (value > 2.0f)
+            if (value > 2f)
             {
-                value = 2.0f;
+                value = 2f;
             }
-            if (value < 0.25f)
+            if (value < 1f)
             {
-                value = 0.25f;
+                value = 1f;
             }
             _loopSpeed = value;
+
+            // Update the SoundTouch provider if it exists
+            if (_soundTouchProvider != null)
+            {
+                _soundTouchProvider.Tempo = value;
+            }
         }
     }
 
@@ -138,7 +145,14 @@ public class AudioManager : IAudioManager, IHostedService
         using (LoopStream loopStream = new LoopStream(audioFile))
         using (WaveOutEvent outputDevice = new WaveOutEvent())
         {
-            outputDevice.Init(loopStream);
+            // Create and configure SoundTouch for speed adjustment without pitch change
+            ISampleProvider sampleProvider = loopStream.ToSampleProvider();
+            _soundTouchProvider = new SoundTouchSampleProvider(sampleProvider)
+            {
+                Tempo = _loopSpeed
+            };
+
+            outputDevice.Init(_soundTouchProvider);
             outputDevice.Volume = BackgroundTrackVolume;
             outputDevice.Play();
 
@@ -147,6 +161,9 @@ public class AudioManager : IAudioManager, IHostedService
                 outputDevice.Volume = BackgroundTrackVolume;
                 await Task.Delay(10);
             }
+
+            // Clear the reference when playback stops
+            _soundTouchProvider = null;
         }
 
         if (_newLoopTrackSet && !_applicationLifetime.IsCancellationRequested && _demandLoopPlays)

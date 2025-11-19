@@ -10,7 +10,8 @@
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Extras" Version="2.2.1" />
-    <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251110-6f995d0" />
+    <PackageReference Include="RazorConsole.Core" Version="0.1.1" />
+    <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
     <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
 
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <None Remove="Assets\Audio\Music\BossBattle1.wav" />
+    <None Remove="Assets\Audio\Music\Waves_001.wav" />
   </ItemGroup>
 
   <ItemGroup>

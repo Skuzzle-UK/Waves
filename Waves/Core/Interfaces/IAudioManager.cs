@@ -32,8 +32,8 @@ public interface IAudioManager
 
     /// <summary>
     /// Playback speed of the loop track. Primarily used for background music.
-    /// Can be set from 0.25f to 2.0f, 1.0f being normal speed.
-    /// Values greater than 1.0f speed up playback, values less than 1.0f slow it down.
+    /// Can be set from 1.0f to 2.0f, 1.0f being normal speed.
+    /// Values greater than 1.0f speed up playback.
     /// </summary>
     float LoopSpeed { get; set; }
 
