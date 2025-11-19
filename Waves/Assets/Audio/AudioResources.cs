@@ -14,6 +14,16 @@ public static class AudioResources
         /// Main game background music track.
         /// </summary>
         public const string Waves_001 = "Assets/Audio/Music/Waves_001.wav";
+
+        /// <summary>
+        /// Menu background music track.
+        /// </summary>
+        public const string BeautifulPiano = "Assets/Audio/Music/BeautifulPaino.wav";
+
+        /// <summary>
+        /// Boss battle1 background music track.
+        /// </summary>
+        public const string BossBattle1 = "Assets/Audio/Music/BossBattle1.wav";
     }
 
     /// <summary>

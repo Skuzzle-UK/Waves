@@ -20,44 +20,59 @@
 
 @if (GameManager.CurrentGameState == GameStates.PAUSED)
 {
-    <Padder Padding="@(new(0, 2, 0, 0))" />
-    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
-        <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Yellow">
-            <Padder Padding="@(new(1, 1, 1, 1))">
-                <Rows>
-                    <Figlet Content="PAUSED" Color="@Spectre.Console.Color.Yellow" />
-                    <Padder Padding="@(new(0, 1, 0, 0))" />
-                    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
-                        <Rows>
-                            <Panel>
-                                <TextButton
+    @if (_showSettings)
+    {
+        <SettingsView @ref="_settingsView" OnVisibilityChanged="OnSettingsVisibilityChanged" />
+    }
+    else
+    {
+        <Padder Padding="@(new(0, 2, 0, 0))" />
+        <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+            <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Yellow">
+                <Padder Padding="@(new(1, 1, 1, 0))">
+                    <Rows>
+                        <Figlet Content="PAUSED" Color="@Spectre.Console.Color.Yellow" />
+                        <Padder Padding="@(new(0, 1, 0, 0))" />
+                        <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                            <Rows>
+                                <Panel>
+                                    <TextButton
                                     Content="   Resume   "
                                     OnClick="ResumeGame"
                                     BackgroundColor="@Spectre.Console.Color.Grey15"
                                     FocusedColor="@Spectre.Console.Color.Blue"
-                                />
-                            </Panel>
-                            <Panel>
-                                <TextButton
+                                    />
+                                </Panel>
+                                <Panel>
+                                    <TextButton
+                                    Content="  Settings  "
+                                    OnClick="ShowSettings"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue"
+                                    />
+                                </Panel>
+                                <Panel>
+                                    <TextButton
                                     Content=" Main Menu  "
                                     OnClick="ReturnToMainMenu"
                                     BackgroundColor="@Spectre.Console.Color.Grey15"
                                     FocusedColor="@Spectre.Console.Color.Blue" />
-                            </Panel>
-                            <Panel>
-                                <TextButton
+                                </Panel>
+                                <Panel>
+                                    <TextButton
                                     Content="    Quit    "
                                     OnClick="ExitApplication"
                                     BackgroundColor="@Spectre.Console.Color.Grey15"
                                     FocusedColor="@Spectre.Console.Color.Blue"
-                                />
-                            </Panel>
-                        </Rows>
-                    </Align>
-                </Rows>
-            </Padder>
-        </Panel>
-    </Align>
+                                    />
+                                </Panel>
+                            </Rows>
+                        </Align>
+                    </Rows>
+                </Padder>
+            </Panel>
+        </Align>
+    }
 }
 else
 {
