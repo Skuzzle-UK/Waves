@@ -64,6 +64,7 @@ public class GameManager : IGameManager
         _audioManager = audioManager;
 
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+        _audioManager.LoopSpeed = 1f;
         _audioManager.StartBackgroundTrack();
     }
 
@@ -98,7 +99,7 @@ public class GameManager : IGameManager
 
         // Start the game
         NewState(GameStates.RUNNING);
-
+        _audioManager.LoopSpeed = 1.5f;
         _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
 
         // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
