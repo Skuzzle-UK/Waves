@@ -72,11 +72,6 @@ public static class GameConstants
         public const float BaseSpeed = 1.0f;
 
         /// <summary>
-        /// Default display character for the player.
-        /// </summary>
-        public const char DefaultCharacter = '@';
-
-        /// <summary>
         /// Render priority for player (higher renders on top).
         /// </summary>
         public const int RenderPriority = 10;
@@ -111,16 +106,6 @@ public static class GameConstants
         /// Maximum distance a projectile can travel before deactivating.
         /// </summary>
         public const float MaxDistance = 1000f;
-
-        /// <summary>
-        /// Default display character for projectiles.
-        /// </summary>
-        public const char DefaultCharacter = '>';
-
-        /// <summary>
-        /// Alternative display character.
-        /// </summary>
-        public const char AlternativeCharacter = '*';
 
         /// <summary>
         /// Default direction for projectiles.

@@ -21,7 +21,7 @@ public class Projectile : BaseEntity
 
     public Projectile()
     {
-        DisplayCharacter = GameConstants.Projectile.AlternativeCharacter;
+        DisplayCharacter = '>';
         ClampToBounds = false;  // Projectiles can go off-screen
         RenderPriority = GameConstants.Projectile.RenderPriority;
         MaxDistance = GameConstants.Projectile.MaxDistance;

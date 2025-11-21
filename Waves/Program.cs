@@ -31,7 +31,8 @@ internal class Program
 
                 // Register ProjectileSpawner
                 services.AddSingleton<ProjectileSpawner>(sp => new ProjectileSpawner(
-                    sp.GetRequiredService<IEntityRegistry>()
+                    sp.GetRequiredService<IEntityRegistry>(),
+                    sp.GetRequiredService<IAudioManager>()
                 ));
 
                 // Register EntityFactory for creating all game entities
