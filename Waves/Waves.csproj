@@ -10,7 +10,8 @@
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Extras" Version="2.2.1" />
-    <PackageReference Include="RazorConsole.Core" Version="0.1.1-alpha.20251110-6f995d0" />
+    <PackageReference Include="RazorConsole.Core" Version="0.1.1" />
+    <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
     <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
 
@@ -18,6 +19,7 @@
     <Folder Include="Entities\" />
     <Folder Include="Configuration\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Components\" />
     <Folder Include="Systems\" />
     <Folder Include="Utilities\" />
   </ItemGroup>
@@ -28,11 +30,14 @@
 
   <ItemGroup>
     <None Remove="Assets\Audio\Music\BossBattle1.wav" />
+    <None Remove="Assets\Audio\Music\Waves_001.wav" />
+    <None Remove="Assets\Audio\Music\BeautifulPaino.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Audio\Music\BossBattle1.wav" />
     <EmbeddedResource Include="Assets\Audio\Music\Waves_001.wav" />
+	  <EmbeddedResource Include="Assets\Audio\Music\BeautifulPaino.wav" />
   </ItemGroup>
 
 </Project>

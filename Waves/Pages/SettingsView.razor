@@ -1,0 +1,57 @@
+﻿@using RazorConsole.Components
+
+<Padder Padding="@(new(0, 0, 0, 0))" />
+<Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+    <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Yellow">
+        <Padder Padding="@(new(1, 0, 1, 0))">
+            <Rows>
+                <Figlet Content="SETTINGS" Color="@Spectre.Console.Color.Yellow" />
+                <Padder Padding="@(new(0, 0, 0, 0))" />
+                <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                    <Rows>
+                        <Markup Content="Music Volume" />
+                        <Columns>
+                            <Panel>
+                                <TextButton Content=" - "
+                                    OnClick="DecreaseMusicVolume"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue" />
+                            </Panel>
+                            <Markup Content="@GetMusicVolumeBar()" />
+                            <Panel>
+                                <TextButton Content=" + "
+                                    OnClick="IncreaseMusicVolume"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue" />
+                            </Panel>
+                        </Columns>
+                        <Padder Padding="@(new(0, 1, 0, 0))" />
+                        <Markup Content="SFX Volume" />
+                        <Columns>
+                            <Panel>
+                                <TextButton Content=" - "
+                                    OnClick="DecreaseSfxVolume"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue" />
+                            </Panel>
+                            <Markup Content="@GetSfxVolumeBar()" />
+                            <Panel>
+                                <TextButton Content=" + "
+                                    OnClick="IncreaseSfxVolume"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue" />
+                            </Panel>
+                        </Columns>
+                        <Padder Padding="@(new(0, 1, 0, 0))" />
+                        <Panel>
+                            <TextButton Content="  <- Back   "
+                                OnClick="Back"
+                                BackgroundColor="@Spectre.Console.Color.Grey15"
+                                FocusedColor="@Spectre.Console.Color.Blue" />
+                        </Panel>
+                    </Rows>
+                </Align>
+            </Rows>
+        </Padder>
+    </Panel>
+</Align>

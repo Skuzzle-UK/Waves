@@ -22,6 +22,8 @@ public partial class MainMenu
 
     private int _currentSeed = GameConstants.Terrain.DefaultSeed;
     private string _seedInput = string.Empty;
+    private SettingsView? _settingsView;
+    private bool _showSettings;
 
     protected override void OnInitialized()
     {
@@ -63,13 +65,27 @@ public partial class MainMenu
             _currentSeed = GameConstants.Terrain.DefaultSeed;
             _seedInput = PadSeedForDisplay(_currentSeed.ToString());
         }
-        else if( int.TryParse(value[^1..], out int lastCharacter))
+        else if (int.TryParse(value[^1..], out int lastCharacter))
         {
             _currentSeed = lastCharacter;
             _seedInput = PadSeedForDisplay(lastCharacter.ToString());
         }
         value = "";
         // If invalid, keep the current value (don't update)
+    }
+
+    private void ShowSettings()
+    {
+        _showSettings = true;
+    }
+
+    private void OnSettingsVisibilityChanged()
+    {
+        if (_settingsView != null && !_settingsView.IsVisible)
+        {
+            _showSettings = false;
+        }
+        StateHasChanged();
     }
 
     private void Start()

@@ -1,49 +1,62 @@
 ﻿@using RazorConsole.Components
 
-<Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
-    <Padder Padding="@(new(0, 2, 0, 0))">
-        <Figlet Content="Waves" />
-    </Padder>
-    <Padder Padding="@(new(0, 1, 0, 0))">
-        <Markup Content="Surf to become Game Off 2025 champion" />
-    </Padder>
-    <Padder Padding="@(new(0, 0, 0,1))">
-    <Rows>
-        <Padder Padding="@(new(0, 0, 0, 1))">
-            <Markup Content="Use tab to navigate menu" />
+@if (_showSettings)
+{
+    <SettingsView @ref="_settingsView" OnVisibilityChanged="OnSettingsVisibilityChanged" />
+}
+else
+{
+    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+        <Padder Padding="@(new(0, 1, 0, 0))">
+            <Figlet Content="Waves" />
         </Padder>
-       @*  TODO: This input is sadly very broken (Visually). *@
-        <TextInput
-            Value=@_seedInput
-            ValueChanged="OnSeedChanged"
-            Placeholder="     Seed      "
-            BackgroundColor="@Spectre.Console.Color.Grey15"
-            FocusedColor="@Spectre.Console.Color.Blue"
-        />
-        <Panel>
-            <TextButton
-                Content="     Start     "
-                OnClick="Start"
-                BackgroundColor="@Spectre.Console.Color.Grey15"
-                FocusedColor="@Spectre.Console.Color.Blue"
-            />
-        </Panel>
-        <Panel>
-            <TextButton
-                Content="  Leaderboard  "
-                OnClick="NavigateToLeaderboard"
-                BackgroundColor="@Spectre.Console.Color.Grey15"
-                FocusedColor="@Spectre.Console.Color.Blue"
-            />
-        </Panel>
-        <Panel>
-            <TextButton
-                Content="     Quit      "
-                OnClick="Quit"
-                BackgroundColor="@Spectre.Console.Color.Grey15"
-                FocusedColor="@Spectre.Console.Color.Blue"
-            />
-        </Panel>
-    </Rows>
-    </Padder>
-</Align>
+        <Padder Padding="@(new(0, 0, 0, 0))">
+            <Markup Content="Surf to become Game Off 2025 champion" />
+        </Padder>
+            <Rows>
+                <Padder Padding="@(new(0, 0, 0, 1))">
+                    <Markup Content="Use tab to navigate menu" />
+                </Padder>
+                @*  TODO: This input is sadly very broken (Visually). *@
+                <TextInput
+                    Value=@_seedInput
+                    ValueChanged="OnSeedChanged"
+                    Placeholder="     Seed      "
+                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                    FocusedColor="@Spectre.Console.Color.Blue"
+                />
+                <Panel>
+                    <TextButton
+                    Content="     Start     "
+                    OnClick="Start"
+                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                    FocusedColor="@Spectre.Console.Color.Blue"
+                    />
+                </Panel>
+                <Panel>
+                    <TextButton
+                    Content="  Leaderboard  "
+                    OnClick="NavigateToLeaderboard"
+                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                    FocusedColor="@Spectre.Console.Color.Blue"
+                    />
+                </Panel>
+                <Panel>
+                    <TextButton
+                    Content="   Settings    "
+                    OnClick="ShowSettings"
+                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                    FocusedColor="@Spectre.Console.Color.Blue"
+                    />
+                </Panel>
+                <Panel>
+                    <TextButton
+                    Content="     Quit      "
+                    OnClick="Quit"
+                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                    FocusedColor="@Spectre.Console.Color.Blue"
+                    />
+                </Panel>
+            </Rows>
+    </Align>
+}
