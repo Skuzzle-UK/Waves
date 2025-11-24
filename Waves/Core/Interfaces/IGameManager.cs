@@ -42,7 +42,8 @@ public interface IGameManager
     /// Initialises a new game session, creating all necessary entities and starting gameplay.
     /// This includes player creation, initial enemy spawning, and any level setup.
     /// </summary>
-    void StartNewGame();
+    /// <param name="seed">Optional seed for terrain generation. If not provided, uses default seed.</param>
+    void StartNewGame(int? seed = null);
 
     /// <summary>
     /// Cleans up the current game session, removing entities and resetting systems.
