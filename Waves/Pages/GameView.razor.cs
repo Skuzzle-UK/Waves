@@ -24,11 +24,14 @@ public partial class GameView : IDisposable
     [Parameter]
     public Action<string>? OnNavigate { get; set; }
 
+    [Parameter]
+    public int Seed { get; set; }
+
     private Color _healthBarColour = Color.Green;
 
     protected override void OnInitialized()
     {
-        GameManager.StartNewGame();
+        GameManager.StartNewGame(Seed);
         RenderService.RenderComplete += ReRenderBlazorView;
         GameManager.GameStateChanged += OnGameStateChanged;
     }

@@ -22,6 +22,7 @@ public class GameManager : IGameManager
     private readonly IAudioManager _audioManager;
     private readonly InputSystem _inputSystem;
     private readonly ProjectileSpawner _projectileSpawner;
+    private readonly TerrainSpawner _terrainSpawner;
 
     // Store game area dimensions for calculating positions
     private readonly int _gameWidth;
@@ -46,12 +47,14 @@ public class GameManager : IGameManager
         IEntityRegistry entityRegistry,
         IAudioManager audioManager,
         InputSystem inputSystem,
-        ProjectileSpawner projectileSpawner)
+        ProjectileSpawner projectileSpawner,
+        TerrainSpawner terrainSpawner)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
         _inputSystem = inputSystem;
         _projectileSpawner = projectileSpawner;
+        _terrainSpawner = terrainSpawner;
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -70,13 +73,18 @@ public class GameManager : IGameManager
     /// <summary>
     /// Initialises a new game session with all necessary entities.
     /// </summary>
-    public void StartNewGame()
+    /// <param name="seed">Optional seed for terrain generation. If not provided, uses default seed.</param>
+    public void StartNewGame(int? seed = null)
     {
         // Prepare game state
         NewState(GameStates.PREPARING);
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
         _entityRegistry.ClearAll();
+
+        // Initialize terrain spawner with provided seed or default
+        int terrainSeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _terrainSpawner.Initialize(terrainSeed);
 
         // Create and initialise player entity with damage callback
         _currentPlayer = _entityFactory.CreatePlayer(_centerPosition);
