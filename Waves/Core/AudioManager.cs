@@ -3,6 +3,7 @@ using NAudio.Extras;
 using NAudio.Wave;
 using System.Diagnostics;
 using System.Reflection;
+using Waves.Assets.Audio;
 using Waves.Core.Interfaces;
 
 namespace Waves.Core;
@@ -17,6 +18,8 @@ public class AudioManager : IAudioManager, IHostedService
     private float _oneShotVolume = 1.0f;
     private float _loopSpeed = 1.0f;
     private SoundTouchSampleProvider? _soundTouchProvider;
+    private readonly Dictionary<string, CachedSound> _soundCache = new();
+    private bool _soundEffectsPreloaded = false;
 
     public float BackgroundTrackVolume
     {
@@ -84,24 +87,76 @@ public class AudioManager : IAudioManager, IHostedService
         }
     }
 
+    public async Task PreloadAllSoundEffects()
+    {
+        if (_soundEffectsPreloaded)
+        {
+            return; // Already preloaded
+        }
+
+        // Use reflection to get all const string fields from AudioResources.SoundEffects
+        IEnumerable<FieldInfo> soundEffectFields = typeof(AudioResources.SoundEffects)
+            .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+            .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string));
+
+        List<Task> tasks = soundEffectFields
+            .Select(field => field.GetValue(null) as string)
+            .Where(path => path != null)
+            .Select(path => PreloadSoundEffect(path!))
+            .ToList();
+
+        await Task.WhenAll(tasks);
+
+        _soundEffectsPreloaded = true;
+    }
+
+    private async Task PreloadSoundEffect(string resourcePath)
+    {
+        string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
+
+        if (_soundCache.ContainsKey(resourceName))
+        {
+            return; // Already cached
+        }
+
+        try
+        {
+            CachedSound cachedSound = new CachedSound(resourceName);
+            _soundCache[resourceName] = cachedSound;
+            Debug.WriteLine($"Preloaded sound effect: {resourceName}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to preload sound effect {resourceName}: {ex.Message}");
+        }
+    }
+
     public async Task PlayOneShot(string resourcePath)
     {
         string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
 
-        Assembly assembly = Assembly.GetExecutingAssembly();
-        using Stream? resourceStream = assembly.GetManifestResourceStream(resourceName);
-
-        if (resourceStream == null)
+        // Try to get from cache first
+        if (!_soundCache.TryGetValue(resourceName, out CachedSound? cachedSound))
         {
-            throw new FileNotFoundException($"Embedded resource not found: {resourceName}");
+            // If not cached, preload it now (fallback - shouldn't normally happen)
+            Debug.WriteLine($"Sound effect not in cache, loading on-demand: {resourceName}");
+            await PreloadSoundEffect(resourcePath);
+
+            if (!_soundCache.TryGetValue(resourceName, out cachedSound))
+            {
+                throw new FileNotFoundException($"Failed to load sound effect: {resourceName}");
+            }
         }
 
-        using (WaveFileReader audioFile = new WaveFileReader(resourceStream))
+        // Play the cached audio from memory
+        using (MemoryStream memoryStream = new MemoryStream(cachedSound.AudioData))
+        using (WaveFileReader audioFile = new WaveFileReader(memoryStream))
         using (WaveOutEvent outputDevice = new WaveOutEvent())
         {
             outputDevice.Init(audioFile);
             outputDevice.Volume = OneShotVolume;
             outputDevice.Play();
+
             while (outputDevice.PlaybackState == PlaybackState.Playing)
             {
                 outputDevice.Volume = OneShotVolume;
@@ -122,6 +177,7 @@ public class AudioManager : IAudioManager, IHostedService
         if (_applicationLifetime != cancellationToken)
         {
             _applicationLifetime = cancellationToken;
+
             return;
         }
 

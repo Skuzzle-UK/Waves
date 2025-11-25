@@ -18,7 +18,7 @@ public static class AudioResources
         /// <summary>
         /// Menu background music track.
         /// </summary>
-        public const string BeautifulPiano = "Assets/Audio/Music/BeautifulPaino.wav";
+        public const string BeautifulPiano = "Assets/Audio/Music/BeautifulPiano.wav";
 
         /// <summary>
         /// Boss battle1 background music track.
@@ -31,6 +31,24 @@ public static class AudioResources
     /// </summary>
     public static class SoundEffects
     {
-        // Add sound effect constants here as needed
+        /// <summary>
+        /// Light shooting sound
+        /// </summary>
+        public const string Shoot_001 = "Assets/Audio/SFX/Shoot_001.wav";
+
+        /// <summary>
+        /// Heavy shooting sound
+        /// </summary>
+        public const string Shoot_002 = "Assets/Audio/SFX/Shoot_002.wav";
+
+        /// <summary>
+        /// Light impact sound
+        /// </summary>
+        public const string Impact_001 = "Assets/Audio/SFX/Impact_001.wav";
+
+        /// <summary>
+        /// Heavy impact sound
+        /// </summary>
+        public const string Impact_002 = "Assets/Audio/SFX/Impact_002.wav";
     }
 }

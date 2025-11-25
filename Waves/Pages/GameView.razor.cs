@@ -7,7 +7,7 @@ using Waves.Systems;
 
 namespace Waves.Pages;
 
-public partial class GameView : IDisposable
+public partial class GameView : ComponentBase, IDisposable
 {
     [Inject]
     public IGameManager GameManager { get; set; } = null!;
