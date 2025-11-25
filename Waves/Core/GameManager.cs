@@ -87,8 +87,15 @@ public class GameManager : IGameManager
         int terrainSeed = seed ?? GameConstants.Terrain.DefaultSeed;
         _terrainSpawner.Initialize(terrainSeed);
 
+        // Create and register the wave background
+        // Position at x=3.5 so the 7-char wide wave starts at x=0
+        var waveAsset = WaveAssets.CreateAnimatedWave(_gameHeight);
+        var wave = new Wave(new Vector2(3.5f, _gameHeight / 2), waveAsset);
+        _entityRegistry.RegisterEntity(wave);
+
         // Create and initialise player entity with damage callback
-        _currentPlayer = _entityFactory.CreatePlayer(_centerPosition);
+        var playerPosition = _centerPosition - new Vector2(35, 0);
+        _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, TakeDamage);
 
         // Spawn test enemies - the one and only BRICKWALLs!
