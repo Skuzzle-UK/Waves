@@ -1,3 +1,4 @@
+using Spectre.Console;
 using Waves.Assets.BaseAssets;
 using Waves.Core.Maths;
 
@@ -37,4 +38,9 @@ public interface IRenderable
     /// Rendering priority for layering (higher values render on top).
     /// </summary>
     int RenderPriority { get; }
+
+    /// <summary>
+    /// Optional color to render this entity with. Null means no color (default).
+    /// </summary>
+    Color? RenderColor { get; }
 }
