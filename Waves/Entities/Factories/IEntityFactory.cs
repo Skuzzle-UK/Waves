@@ -30,4 +30,14 @@ public interface IEntityFactory
     /// <param name="asset">The enemy asset.</param>
     /// <returns>A new enemy instance.</returns>
     Enemy CreateEnemy(Vector2 position, IAsset asset);
+
+    /// <summary>
+    /// Creates a terrain object at the specified position.
+    /// </summary>
+    /// <param name="position">The starting position of the terrain.</param>
+    /// <param name="asset">The terrain asset.</param>
+    /// <param name="speed">The scrolling speed of the terrain.</param>
+    /// <param name="gameWidth">The width of the game area for despawn detection.</param>
+    /// <returns>A new terrain instance.</returns>
+    Terrain CreateTerrain(Vector2 position, IAsset asset, float speed, float gameWidth);
 }

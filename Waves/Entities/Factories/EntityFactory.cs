@@ -71,4 +71,22 @@ public class EntityFactory : IEntityFactory
 
         return enemy;
     }
+
+    /// <summary>
+    /// Creates a terrain object at the specified position with the given visual asset.
+    /// Terrain is automatically registered with the entity registry.
+    /// </summary>
+    public Terrain CreateTerrain(Vector2 position, IAsset asset, float speed, float gameWidth)
+    {
+        var terrain = TerrainBuilder.Create(gameWidth)
+            .WithPosition(position)
+            .WithAsset(asset)
+            .WithSpeed(speed)
+            .Build();
+
+        // Register the terrain with all relevant systems
+        _entityRegistry.RegisterEntity(terrain);
+
+        return terrain;
+    }
 }

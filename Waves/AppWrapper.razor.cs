@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
+using Waves.Core.Configuration;
 
 namespace Waves;
 
@@ -14,10 +15,16 @@ public partial class AppWrapper : ComponentBase
     private static int _panelWidth => _consoleWidth;
 
     private string _currentPage = "menu";
+    private int _gameSeed = GameConstants.Terrain.DefaultSeed;
 
     private void NavigateTo(string page)
     {
         _currentPage = page;
         StateHasChanged();
+    }
+
+    private void SetSeedAndNavigate(int seed)
+    {
+        _gameSeed = seed;
     }
 }

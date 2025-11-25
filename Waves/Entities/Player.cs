@@ -16,6 +16,7 @@ public class Player : BaseEntity
     private IInputProvider? _inputProvider;
     private Vector2 _acceleration;
     private Action<int>? _onTakeDamage;
+    private float _invulnerabilityTimer = 0f;
 
     public float Mass { get; set; }
     public float Drag { get; set; }
@@ -38,7 +39,7 @@ public class Player : BaseEntity
 
         // Set collision properties
         Layer = CollisionLayer.Player;
-        CollidesWith = CollisionLayer.Enemy | CollisionLayer.EnemyProjectile;
+        CollidesWith = CollisionLayer.Enemy | CollisionLayer.EnemyProjectile | CollisionLayer.Obstacle;
     }
 
     /// <summary>
@@ -92,6 +93,12 @@ public class Player : BaseEntity
             return;
         }
 
+        // Decrement invulnerability timer
+        if (_invulnerabilityTimer > 0)
+        {
+            _invulnerabilityTimer -= deltaTime;
+        }
+
         // Get movement input from the input provider
         if (_inputProvider != null)
         {
@@ -129,6 +136,17 @@ public class Player : BaseEntity
         if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
         {
             _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
+        }
+
+        // Take damage from terrain obstacles with invulnerability cooldown
+        if ((other.Layer & CollisionLayer.Obstacle) != 0)
+        {
+            // Only take damage if not currently invulnerable
+            if (_invulnerabilityTimer <= 0)
+            {
+                _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
+                _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
+            }
         }
     }
     }

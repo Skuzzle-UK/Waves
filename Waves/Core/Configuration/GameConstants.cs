@@ -85,6 +85,16 @@ public static class GameConstants
         /// Maximum health value for the player.
         /// </summary>
         public const int MaxHealth = 100;
+
+        /// <summary>
+        /// Duration of invulnerability after taking damage in seconds.
+        /// </summary>
+        public const float InvulnerabilityDuration = 1.0f;
+
+        /// <summary>
+        /// Damage dealt to player when hit by terrain obstacles.
+        /// </summary>
+        public const int TerrainDamage = 25;
     }
 
     /// <summary>
@@ -218,5 +228,46 @@ public static class GameConstants
         /// Height reduction for game grid (UI space).
         /// </summary>
         public const int GameGridHeightOffset = 3;
+    }
+
+    /// <summary>
+    /// Terrain entity configuration.
+    /// </summary>
+    public static class Terrain
+    {
+        /// <summary>
+        /// Minimum scrolling speed for terrain objects.
+        /// </summary>
+        public const float MinSpeed = 20f;
+
+        /// <summary>
+        /// Maximum scrolling speed for terrain objects.
+        /// </summary>
+        public const float MaxSpeed = 60f;
+
+        /// <summary>
+        /// Minimum time interval between terrain spawns in seconds.
+        /// </summary>
+        public const float MinSpawnInterval = 2.0f;
+
+        /// <summary>
+        /// Maximum time interval between terrain spawns in seconds.
+        /// </summary>
+        public const float MaxSpawnInterval = 5.0f;
+
+        /// <summary>
+        /// Render priority for terrain (behind projectiles, in front of background).
+        /// </summary>
+        public const int RenderPriority = 3;
+
+        /// <summary>
+        /// Default seed for terrain generation (configurable constant).
+        /// </summary>
+        public const int DefaultSeed = 12345;
+
+        /// <summary>
+        /// Update order for terrain spawner system.
+        /// </summary>
+        public const int SpawnerUpdateOrder = 125;
     }
 }

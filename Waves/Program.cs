@@ -35,6 +35,9 @@ internal class Program
                     sp.GetRequiredService<IAudioManager>()
                 ));
 
+                // Register TerrainSpawner
+                services.AddSingleton<TerrainSpawner>();
+
                 // Register EntityFactory for creating all game entities
                 services.AddSingleton<IEntityFactory, EntityFactory>();
 
@@ -55,6 +58,7 @@ internal class Program
                     sp.GetRequiredService<MovementSystem>(),
                     sp.GetRequiredService<CollisionSystem>(),
                     sp.GetRequiredService<ProjectileSpawner>(),
+                    sp.GetRequiredService<TerrainSpawner>(),
                     sp.GetRequiredService<ScoreSystem>(),
                     sp.GetRequiredService<GameRenderService>()));
 

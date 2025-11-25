@@ -22,6 +22,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     private readonly MovementSystem _movementSystem;
     private readonly CollisionSystem _collisionSystem;
     private readonly ProjectileSpawner _projectileSpawner;
+    private readonly TerrainSpawner _terrainSpawner;
     private readonly ScoreSystem _scoreSystem;
     private readonly GameRenderService _renderService;
 
@@ -46,6 +47,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     /// <param name="movementSystem">The movement system to register during gameplay.</param>
     /// <param name="collisionSystem">The collision system to register during gameplay.</param>
     /// <param name="projectileSpawner">The projectile spawner to register during gameplay.</param>
+    /// <param name="terrainSpawner">The terrain spawner to register during gameplay.</param>
     /// <param name="scoreSystem">The score system to register during gameplay.</param>
     /// <param name="renderService">The render service to register during gameplay.</param>
     public GameLoop(
@@ -55,6 +57,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         MovementSystem movementSystem,
         CollisionSystem collisionSystem,
         ProjectileSpawner projectileSpawner,
+        TerrainSpawner terrainSpawner,
         ScoreSystem scoreSystem,
         GameRenderService renderService)
     {
@@ -65,6 +68,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         _movementSystem = movementSystem;
         _collisionSystem = collisionSystem;
         _projectileSpawner = projectileSpawner;
+        _terrainSpawner = terrainSpawner;
         _scoreSystem = scoreSystem;
         _renderService = renderService;
 
@@ -209,6 +213,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         {
             RegisterUpdatable(_inputSystem);
             RegisterUpdatable(_scoreSystem);
+            RegisterUpdatable(_terrainSpawner);
             RegisterUpdatable(_projectileSpawner);
             RegisterUpdatable(_collisionSystem);
             RegisterUpdatable(_movementSystem);
@@ -226,6 +231,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         {
             UnregisterUpdatable(_inputSystem);
             UnregisterUpdatable(_scoreSystem);
+            UnregisterUpdatable(_terrainSpawner);
             UnregisterUpdatable(_projectileSpawner);
             UnregisterUpdatable(_collisionSystem);
             UnregisterUpdatable(_movementSystem);
