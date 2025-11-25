@@ -17,6 +17,9 @@ public class Player : BaseEntity
     private Vector2 _acceleration;
     private Action<int>? _onTakeDamage;
     private float _invulnerabilityTimer = 0f;
+    private float _flashTimer = 0f;
+    private bool _showRedFlash = false;
+    private const float FlashInterval = 0.2f; // Flash every 0.2 seconds
 
     public float Mass { get; set; }
     public float Drag { get; set; }
@@ -97,6 +100,25 @@ public class Player : BaseEntity
         if (_invulnerabilityTimer > 0)
         {
             _invulnerabilityTimer -= deltaTime;
+
+            // Handle flashing effect during invulnerability
+            _flashTimer += deltaTime;
+            if (_flashTimer >= FlashInterval)
+            {
+                _flashTimer = 0f;
+                _showRedFlash = !_showRedFlash;
+                // Flash between red and default (null = reset to default color)
+                RenderColor = _showRedFlash ? Spectre.Console.Color.Red : null;
+            }
+        }
+        else
+        {
+            // Invulnerability ended - reset to normal appearance (no color)
+            if (RenderColor.HasValue)
+            {
+                RenderColor = null;
+                _showRedFlash = false;
+            }
         }
 
         // Get movement input from the input provider

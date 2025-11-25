@@ -17,6 +17,7 @@ public class GameRenderService : IUpdatable
     private readonly object _lock = new();
 
     private char[,] _buffer;
+    private Spectre.Console.Color?[,] _colorBuffer;
     private readonly int _width;
     private readonly int _height;
 
@@ -35,6 +36,7 @@ public class GameRenderService : IUpdatable
         _width = width;
         _height = height;
         _buffer = new char[width, height];
+        _colorBuffer = new Spectre.Console.Color?[width, height];
         ClearBuffer();
     }
 
@@ -143,6 +145,7 @@ public class GameRenderService : IUpdatable
                     if (c != ' ') // Don't overwrite with spaces (allows transparency)
                     {
                         _buffer[worldX, worldY] = c;
+                        _colorBuffer[worldX, worldY] = renderable.RenderColor;
                     }
                 }
             }
@@ -182,6 +185,7 @@ public class GameRenderService : IUpdatable
         if (IsInBounds(x, y))
         {
             _buffer[x, y] = renderable.DisplayCharacter;
+            _colorBuffer[x, y] = renderable.RenderColor;
 
             // If we had to clamp and the entity wants clamping, update its actual position
             // This maintains the behavior where players are kept in bounds
@@ -219,7 +223,56 @@ public class GameRenderService : IUpdatable
     }
 
     /// <summary>
-    /// Gets the complete rendered content as a single string with line breaks.
+    /// Gets the rendered content as structured lines with colored segments.
+    /// Each line contains segments that may have different colors.
+    /// </summary>
+    public List<List<ColoredSegment>> GetRenderedLines()
+    {
+        lock (_lock)
+        {
+            var lines = new List<List<ColoredSegment>>();
+
+            for (int row = 0; row < _height; row++)
+            {
+                var segments = new List<ColoredSegment>();
+                Spectre.Console.Color? currentColor = null;
+                var currentSegment = new System.Text.StringBuilder();
+
+                for (int col = 0; col < _width; col++)
+                {
+                    var cellColor = _colorBuffer[col, row];
+                    var cellChar = _buffer[col, row];
+
+                    // Check if color changed
+                    if (cellColor != currentColor)
+                    {
+                        // Save previous segment if it has content
+                        if (currentSegment.Length > 0)
+                        {
+                            segments.Add(new ColoredSegment(currentSegment.ToString(), currentColor));
+                            currentSegment.Clear();
+                        }
+                        currentColor = cellColor;
+                    }
+
+                    currentSegment.Append(cellChar);
+                }
+
+                // Add final segment for this line
+                if (currentSegment.Length > 0)
+                {
+                    segments.Add(new ColoredSegment(currentSegment.ToString(), currentColor));
+                }
+
+                lines.Add(segments);
+            }
+
+            return lines;
+        }
+    }
+
+    /// <summary>
+    /// Gets the complete rendered content as a single string with ANSI color codes.
     /// </summary>
     public string GetRenderedContent()
     {
@@ -229,9 +282,40 @@ public class GameRenderService : IUpdatable
 
             for (int row = 0; row < _height; row++)
             {
+                Spectre.Console.Color? currentColor = null;
+                bool needsReset = false;
+
                 for (int col = 0; col < _width; col++)
                 {
-                    content.Append(_buffer[col, row]);
+                    var cellColor = _colorBuffer[col, row];
+                    var cellChar = _buffer[col, row];
+
+                    // Check if we need to change color
+                    if (cellColor != currentColor)
+                    {
+                        // Only add color codes if there's an actual color
+                        if (cellColor.HasValue)
+                        {
+                            content.Append(GetAnsiColorCode(cellColor.Value));
+                            needsReset = true;
+                        }
+                        else if (needsReset)
+                        {
+                            // Reset to default only if we previously set a color
+                            content.Append($"{(char)27}[0m");
+                            needsReset = false;
+                        }
+
+                        currentColor = cellColor;
+                    }
+
+                    content.Append(cellChar);
+                }
+
+                // Reset at end of line only if needed
+                if (needsReset)
+                {
+                    content.Append($"{(char)27}[0m");
                 }
 
                 // Add newline except for the last row
@@ -246,7 +330,29 @@ public class GameRenderService : IUpdatable
     }
 
     /// <summary>
-    /// Clears the buffer by filling it with spaces.
+    /// Converts a Spectre.Console color to an ANSI escape code.
+    /// </summary>
+    private static string GetAnsiColorCode(Spectre.Console.Color color)
+    {
+        // Using (char)27 instead of \x1b to avoid preprocessing issues
+        char esc = (char)27;
+
+        // Map common colors to ANSI codes (foreground colors)
+        if (color == Spectre.Console.Color.Red || color == Spectre.Console.Color.Red1)
+            return $"{esc}[31m";
+        if (color == Spectre.Console.Color.Green)
+            return $"{esc}[32m";
+        if (color == Spectre.Console.Color.Blue)
+            return $"{esc}[34m";
+        if (color == Spectre.Console.Color.Yellow)
+            return $"{esc}[33m";
+
+        // Default: no color
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Clears the buffer by filling it with spaces and removing colors.
     /// </summary>
     private void ClearBuffer()
     {
@@ -255,6 +361,7 @@ public class GameRenderService : IUpdatable
             for (int y = 0; y < _height; y++)
             {
                 _buffer[x, y] = GameConstants.Display.EmptyChar;
+                _colorBuffer[x, y] = null;
             }
         }
     }

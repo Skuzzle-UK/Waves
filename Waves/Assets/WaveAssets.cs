@@ -60,9 +60,9 @@ public static class WaveAssets
 
             // Add gradient
             pattern[col++, row] = '▒';
+            pattern[col++, row] = '▒';
             pattern[col++, row] = '▓';
             pattern[col++, row] = '█';
-            pattern[col++, row] = '}';
         }
 
         return new MultiCharAsset(pattern);
