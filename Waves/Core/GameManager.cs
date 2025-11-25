@@ -75,6 +75,8 @@ public class GameManager : IGameManager
     {
         // Prepare game state
         NewState(GameStates.PREPARING);
+        Task preloadSoundEffectsTask = Task.Run(() => _audioManager.PreloadAllSoundEffects());
+
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
         _entityRegistry.ClearAll();
@@ -97,6 +99,7 @@ public class GameManager : IGameManager
         CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
         CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
+        preloadSoundEffectsTask.Wait();
         // Start the game
         NewState(GameStates.RUNNING);
         _audioManager.LoopSpeed = 1.5f;

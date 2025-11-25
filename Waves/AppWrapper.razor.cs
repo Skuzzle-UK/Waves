@@ -1,6 +1,8 @@
-﻿namespace Waves;
+﻿using Microsoft.AspNetCore.Components;
 
-public partial class AppWrapper
+namespace Waves;
+
+public partial class AppWrapper : ComponentBase
 {
     public static int GameAreaHeight => _panelHeight - 2;
     public static int GameAreaWidth => _panelWidth - 4;
