@@ -60,7 +60,7 @@ public class Player : BaseEntity
         Action<int> onTakeDamage)
     {
         // Create and attach input provider
-        var inputProvider = new PlayerInputProvider(inputSystem, MoveForce);
+        PlayerInputProvider inputProvider = new PlayerInputProvider(inputSystem, MoveForce);
         SetInputProvider(inputProvider);
 
         // Register with entity systems

@@ -18,10 +18,10 @@ public static class WaveAssets
     {
         // Both frames are 7 chars wide to keep consistent positioning
         // Frame 1: narrower wave with leading space
-        var frame1 = CreateWaveFrame(height, 2, true);
+        IAsset frame1 = CreateWaveFrame(height, 2, true);
 
         // Frame 2: wider wave
-        var frame2 = CreateWaveFrame(height, 4, false);
+        IAsset frame2 = CreateWaveFrame(height, 4, false);
 
         return new AnimatedAsset(Wave.FrameTime, frame1, frame2);
     }

@@ -89,12 +89,12 @@ public class GameManager : IGameManager
 
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0
-        var waveAsset = WaveAssets.CreateAnimatedWave(_gameHeight);
-        var wave = new Wave(new Vector2(3.5f, _gameHeight / 2), waveAsset);
+        IAsset waveAsset = WaveAssets.CreateAnimatedWave(_gameHeight);
+        Wave wave = new Wave(new Vector2(3.5f, _gameHeight / 2), waveAsset);
         _entityRegistry.RegisterEntity(wave);
 
         // Create and initialise player entity with damage callback
-        var playerPosition = _centerPosition - new Vector2(35, 0);
+        Vector2 playerPosition = _centerPosition - new Vector2(35, 0);
         _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, TakeDamage);
 
@@ -136,7 +136,7 @@ public class GameManager : IGameManager
     /// </summary>
     public void TogglePause()
     {
-        var newState = CurrentGameState == GameStates.RUNNING
+        GameStates newState = CurrentGameState == GameStates.RUNNING
             ? GameStates.PAUSED
             : GameStates.RUNNING;
 
@@ -223,7 +223,7 @@ public class GameManager : IGameManager
     /// <param name="asset">Visual asset for the enemy.</param>
     private void CreateEnemyWithEventSubscription(Vector2 position, IAsset asset)
     {
-        var enemy = _entityFactory.CreateEnemy(position, asset);
+        Enemy enemy = _entityFactory.CreateEnemy(position, asset);
         enemy.OnDeath += (sender, e) =>
         {
             IncrementScore(GameConstants.Enemy.ScoreOnKill);

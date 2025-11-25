@@ -27,7 +27,7 @@ public class PlayerInputProvider : IInputProvider
     public Vector2 GetMovementVector()
     {
         // Get the movement input from the input system with the configured force
-        var movement = _inputSystem.GetMovementInput(_moveForce);
+        Vector2 movement = _inputSystem.GetMovementInput(_moveForce);
 
         // Normalize to -1 to 1 range if needed (the input system already applies force)
         // For now, we return it as-is since the InputSystem handles the force application

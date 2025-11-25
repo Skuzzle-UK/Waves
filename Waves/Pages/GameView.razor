@@ -14,8 +14,8 @@
 </Panel>
 
 @{
-    var content = GetRenderedContent();
-    var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+    string? content = GetRenderedContent();
+    string[]? lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 }
 
 @if (GameManager.CurrentGameState == GameStates.PAUSED)
@@ -76,7 +76,7 @@
 }
 else
 {
-    @foreach (var line in lines)
+    @foreach (string? line in lines)
     {
         <Markup Content="@line" />
     }

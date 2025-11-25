@@ -1,4 +1,6 @@
+using Spectre.Console;
 using System.Collections.Generic;
+using System.Text;
 using Waves.Assets.BaseAssets;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
@@ -77,7 +79,7 @@ public class GameRenderService : IUpdatable
 
             // Sort renderables by priority (lower priority renders first, higher on top)
             // Filter to only active, non-disposed entities
-            var activeRenderables = _renderables
+            List<IRenderable> activeRenderables = _renderables
                 .Where(r => r.IsActive && (r is not BaseEntity entity || !entity.IsDisposed))
                 .OrderBy(r => r.RenderPriority)
                 .ToList();
@@ -230,18 +232,18 @@ public class GameRenderService : IUpdatable
     {
         lock (_lock)
         {
-            var lines = new List<List<ColoredSegment>>();
+            List<List<ColoredSegment>> lines = new List<List<ColoredSegment>>();
 
             for (int row = 0; row < _height; row++)
             {
-                var segments = new List<ColoredSegment>();
+                List<ColoredSegment> segments = new List<ColoredSegment>();
                 Spectre.Console.Color? currentColor = null;
-                var currentSegment = new System.Text.StringBuilder();
+                StringBuilder currentSegment = new System.Text.StringBuilder();
 
                 for (int col = 0; col < _width; col++)
                 {
-                    var cellColor = _colorBuffer[col, row];
-                    var cellChar = _buffer[col, row];
+                    Color? cellColor = _colorBuffer[col, row];
+                    char cellChar = _buffer[col, row];
 
                     // Check if color changed
                     if (cellColor != currentColor)
@@ -278,7 +280,7 @@ public class GameRenderService : IUpdatable
     {
         lock (_lock)
         {
-            var content = new System.Text.StringBuilder(_width * _height + _height);
+            StringBuilder content = new System.Text.StringBuilder(_width * _height + _height);
 
             for (int row = 0; row < _height; row++)
             {
@@ -287,8 +289,8 @@ public class GameRenderService : IUpdatable
 
                 for (int col = 0; col < _width; col++)
                 {
-                    var cellColor = _colorBuffer[col, row];
-                    var cellChar = _buffer[col, row];
+                    Color? cellColor = _colorBuffer[col, row];
+                    char cellChar = _buffer[col, row];
 
                     // Check if we need to change color
                     if (cellColor != currentColor)
