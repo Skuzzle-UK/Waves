@@ -1,3 +1,5 @@
+using Waves.Assets;
+using Waves.Assets.Audio;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
@@ -12,6 +14,7 @@ namespace Waves.Systems;
 public class ProjectileSpawner : IUpdatable
 {
     private readonly IEntityRegistry _entityRegistry;
+    private readonly IAudioManager _audioManager;
     private IInputProvider? _inputProvider;
     private Player? _player;
 
@@ -20,9 +23,12 @@ public class ProjectileSpawner : IUpdatable
     /// </summary>
     public int UpdateOrder => GameConstants.UpdateOrder.ProjectileSpawner;
 
-    public ProjectileSpawner(IEntityRegistry entityRegistry)
+    public ProjectileSpawner(
+        IEntityRegistry entityRegistry,
+        IAudioManager audioManager)
     {
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
+        _audioManager = audioManager ?? throw new ArgumentNullException(nameof(entityRegistry));
     }
 
     /// <summary>
@@ -65,16 +71,23 @@ public class ProjectileSpawner : IUpdatable
             return;
         }
 
+        // TODO: Work out if I can change display char depending on powerup and add some kind of attack points to projectile
+        // TODO: Can we use animated projectiles ?
+
         // Create projectile at player's position
         Projectile projectile = ProjectileBuilder.Create()
             .WithPosition(_player.Position)
             .WithDirection(GameConstants.Projectile.DefaultDirection)
             .WithSpeed(GameConstants.Projectile.DefaultSpeed)
-            .WithDisplayChar(GameConstants.Projectile.DefaultCharacter)
+            .WithDisplayChar('>')
             .WithMaxDistance(GameConstants.Projectile.MaxDistance)
             .Build();
 
         // Register with entity registry - it handles all system registrations
         _entityRegistry.RegisterEntity(projectile);
+
+        // TODO: Work out if I can change this sfx depending on powerup. Probably needs to be added to the projectile builder.
+        // TODO: Work out if sfx can be cached for reuse or if it doesn't matter
+        _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_001);
     }
 }

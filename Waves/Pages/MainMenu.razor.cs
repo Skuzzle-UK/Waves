@@ -6,7 +6,7 @@ using Waves.Core.Interfaces;
 
 namespace Waves.Pages;
 
-public partial class MainMenu
+public partial class MainMenu : ComponentBase
 {
     [Inject]
     private IHostApplicationLifetime ApplicationLifetime { get; set; } = null!;

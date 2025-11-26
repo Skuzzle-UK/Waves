@@ -14,8 +14,8 @@
 </Panel>
 
 @{
-    var content = GetRenderedContent();
-    var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+    string? content = GetRenderedContent();
+    string[]? lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 }
 
 <Markup Content="@_topBorder" Foreground="@Spectre.Console.Color.Grey50" />
@@ -78,7 +78,7 @@
 }
 else
 {
-    @foreach (var line in lines)
+    @foreach (string? line in lines)
     {
         <Markup Content="@line" />
     }

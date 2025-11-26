@@ -82,6 +82,8 @@ public class GameManager : IGameManager
     {
         // Prepare game state
         NewState(GameStates.PREPARING);
+        Task preloadSoundEffectsTask = Task.Run(() => _audioManager.PreloadAllSoundEffects());
+
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
         _entityRegistry.ClearAll();
@@ -91,8 +93,15 @@ public class GameManager : IGameManager
         _landmassSpawner.Initialize(terrainSeed, TakeDamage);
         _terrainSpawner.Initialize(terrainSeed);
 
+        // Create and register the wave background
+        // Position at x=3.5 so the 7-char wide wave starts at x=0
+        IAsset waveAsset = WaveAssets.CreateAnimatedWave(_gameHeight);
+        Wave wave = new Wave(new Vector2(3.5f, _gameHeight / 2), waveAsset);
+        _entityRegistry.RegisterEntity(wave);
+
         // Create and initialise player entity with damage callback
-        _currentPlayer = _entityFactory.CreatePlayer(_centerPosition);
+        Vector2 playerPosition = _centerPosition - new Vector2(35, 0);
+        _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, TakeDamage);
 
         // Spawn test enemies - the one and only BRICKWALLs!
@@ -109,6 +118,7 @@ public class GameManager : IGameManager
         //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
         //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
+        preloadSoundEffectsTask.Wait();
         // Start the game
         NewState(GameStates.RUNNING);
         _audioManager.LoopSpeed = 1.5f;
@@ -133,7 +143,7 @@ public class GameManager : IGameManager
     /// </summary>
     public void TogglePause()
     {
-        var newState = CurrentGameState == GameStates.RUNNING
+        GameStates newState = CurrentGameState == GameStates.RUNNING
             ? GameStates.PAUSED
             : GameStates.RUNNING;
 
@@ -220,7 +230,7 @@ public class GameManager : IGameManager
     /// <param name="asset">Visual asset for the enemy.</param>
     private void CreateEnemyWithEventSubscription(Vector2 position, IAsset asset)
     {
-        var enemy = _entityFactory.CreateEnemy(position, asset);
+        Enemy enemy = _entityFactory.CreateEnemy(position, asset);
         enemy.OnDeath += (sender, e) =>
         {
             IncrementScore(GameConstants.Enemy.ScoreOnKill);

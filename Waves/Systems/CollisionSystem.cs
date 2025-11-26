@@ -1,3 +1,4 @@
+using Waves.Core.Collision;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Entities;
@@ -71,8 +72,8 @@ public class CollisionSystem : IUpdatable
         }
 
         // Perform AABB collision test
-        var aBounds = a.GetBounds();
-        var bBounds = b.GetBounds();
+        BoundingBox aBounds = a.GetBounds();
+        BoundingBox bBounds = b.GetBounds();
 
         if (aBounds.Intersects(bBounds))
         {

@@ -51,4 +51,6 @@ public interface IAudioManager
     /// </summary>
     float OneShotVolume { get; set; }
 
+    Task PreloadAllSoundEffects();
+
 }

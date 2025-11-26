@@ -158,7 +158,7 @@ public class EntityRegistry : IEntityRegistry
         lock (_lock)
         {
             // Unregister all entities from their systems before clearing
-            foreach (var entity in _registeredEntities.ToList())
+            foreach (BaseEntity? entity in _registeredEntities.ToList())
             {
                 UnregisterEntity(entity);
             }

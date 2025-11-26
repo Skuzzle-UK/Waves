@@ -65,6 +65,11 @@ public abstract class BaseEntity : IRenderable, ICollidable, IDisposableEntity
     public virtual int RenderPriority { get; set; } = 0;
 
     /// <summary>
+    /// Optional color to render this entity with. Null means no color (default).
+    /// </summary>
+    public virtual Spectre.Console.Color? RenderColor { get; set; } = null;
+
+    /// <summary>
     /// The collision layer this entity belongs to. Default is None (no collisions).
     /// </summary>
     public virtual CollisionLayer Layer { get; set; } = CollisionLayer.None;

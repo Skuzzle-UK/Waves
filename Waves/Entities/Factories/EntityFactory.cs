@@ -36,7 +36,7 @@ public class EntityFactory : IEntityFactory
     /// </summary>
     public Player CreatePlayer(Vector2 position)
     {
-        var player = new Player(position);
+        Player player = new Player(position);
         // Note: Caller must call player.Initialise() with damage callback
         return player;
     }
@@ -62,7 +62,7 @@ public class EntityFactory : IEntityFactory
     /// </summary>
     public Enemy CreateEnemy(Vector2 position, IAsset asset)
     {
-        var enemy = EnemyBuilder.Create(_entityRegistry)
+        Enemy enemy = EnemyBuilder.Create(_entityRegistry)
             .WithPosition(position)
             .WithAsset(asset)
             .Build();
@@ -79,7 +79,7 @@ public class EntityFactory : IEntityFactory
     /// </summary>
     public Terrain CreateTerrain(Vector2 position, IAsset asset, float speed, float gameWidth)
     {
-        var terrain = TerrainBuilder.Create(gameWidth)
+        Terrain terrain = TerrainBuilder.Create(gameWidth)
             .WithPosition(position)
             .WithAsset(asset)
             .WithSpeed(speed)
