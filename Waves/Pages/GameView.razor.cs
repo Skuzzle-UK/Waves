@@ -28,9 +28,12 @@ public partial class GameView : IDisposable
     public int Seed { get; set; }
 
     private Color _healthBarColour = Color.Green;
-    
+
     private SettingsView? _settingsView;
     private bool _showSettings;
+
+    private string _topBorder = string.Empty;
+    private string _bottomBorder = string.Empty;
 
     private void ShowSettings()
     {
@@ -48,6 +51,11 @@ public partial class GameView : IDisposable
 
     protected override void OnInitialized()
     {
+        // Initialize static borders with double horizontal line characters
+        int gameWidth = AppWrapper.GameAreaWidth;
+        _topBorder = new string('═', gameWidth);
+        _bottomBorder = new string('═', gameWidth);
+
         GameManager.StartNewGame(Seed);
         RenderService.RenderComplete += ReRenderBlazorView;
         GameManager.GameStateChanged += OnGameStateChanged;

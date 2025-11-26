@@ -285,4 +285,58 @@ public static class GameConstants
         /// </summary>
         public const int SpawnerUpdateOrder = 125;
     }
+
+    /// <summary>
+    /// Landmass entity configuration for scrolling environmental boundaries.
+    /// </summary>
+    public static class Landmass
+    {
+        /// <summary>
+        /// Base scrolling speed when AudioManager.LoopSpeed = 1.0.
+        /// Actual speed = BaseScrollSpeed * AudioManager.LoopSpeed.
+        /// </summary>
+        public const float BaseScrollSpeed = 30f;
+
+        /// <summary>
+        /// Width of each landmass chunk in characters.
+        /// </summary>
+        public const float ChunkWidth = 8f;
+
+        /// <summary>
+        /// Minimum distance between gap starts (in units).
+        /// </summary>
+        public const float MinGapDistance = 30f;
+
+        /// <summary>
+        /// Maximum distance between gap starts (in units).
+        /// </summary>
+        public const float MaxGapDistance = 60f;
+
+        /// <summary>
+        /// Minimum gap width for navigation (easier gaps).
+        /// </summary>
+        public const float MinGapWidth = 20f;
+
+        /// <summary>
+        /// Maximum gap width for navigation (more challenging).
+        /// </summary>
+        public const float MaxGapWidth = 40f;
+
+        /// <summary>
+        /// Render priority for landmass chunks.
+        /// Lower than terrain (3) but above background.
+        /// </summary>
+        public const int RenderPriority = 2;
+
+        /// <summary>
+        /// Damage dealt to player when colliding with landmass.
+        /// </summary>
+        public const int CollisionDamage = 15;
+
+        /// <summary>
+        /// Update order for landmass spawner system.
+        /// Runs at 120 (before TerrainSpawner at 125).
+        /// </summary>
+        public const int SpawnerUpdateOrder = 120;
+    }
 }
