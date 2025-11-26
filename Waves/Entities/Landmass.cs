@@ -39,6 +39,7 @@ public class Landmass : BaseEntity
         CollidesWith = CollisionLayer.Player;
         ClampToBounds = false; // Allow scrolling off-screen
         RenderPriority = GameConstants.Landmass.RenderPriority;
+        //RenderColor = Spectre.Console.Color.Yellow; // TODO Setting the rendercolour make the landmass buggy.
     }
 
     /// <summary>
