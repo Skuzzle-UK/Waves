@@ -59,13 +59,11 @@ public class Landmass : BaseEntity
 
     /// <summary>
     /// Called when this landmass collides with another entity.
-    /// Damages the player on collision.
+    /// Damage is handled by the Player entity to respect invulnerability timers.
     /// </summary>
     public override void OnCollision(ICollidable other)
     {
-        if (other.Layer == CollisionLayer.Player)
-        {
-            _onPlayerCollision?.Invoke(GameConstants.Landmass.CollisionDamage);
-        }
+        // Collision response is handled by the Player entity
+        // This prevents bypassing the player's invulnerability system
     }
 }
