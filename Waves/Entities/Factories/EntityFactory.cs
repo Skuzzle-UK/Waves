@@ -1,4 +1,5 @@
 using Waves.Assets.BaseAssets;
+using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
 using Waves.Entities.Builders;
@@ -88,5 +89,25 @@ public class EntityFactory : IEntityFactory
         _entityRegistry.RegisterEntity(terrain);
 
         return terrain;
+    }
+
+    /// <summary>
+    /// Creates a landmass chunk at the specified position with the given visual asset.
+    /// Landmass is automatically registered with the entity registry.
+    /// </summary>
+    public Landmass CreateLandmass(Vector2 position, IAsset asset, float speed, LandmassPosition lanePosition, Action<int>? damageCallback)
+    {
+        var landmass = LandmassBuilder.Create(AppWrapper.GameAreaWidth)
+            .WithPosition(position)
+            .WithAsset(asset)
+            .WithSpeed(speed)
+            .WithLanePosition(lanePosition)
+            .WithDamageCallback(damageCallback)
+            .Build();
+
+        // Register the landmass with all relevant systems
+        _entityRegistry.RegisterEntity(landmass);
+
+        return landmass;
     }
 }

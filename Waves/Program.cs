@@ -38,6 +38,9 @@ internal class Program
                 // Register TerrainSpawner
                 services.AddSingleton<TerrainSpawner>();
 
+                // Register LandmassSpawner
+                services.AddSingleton<LandmassSpawner>();
+
                 // Register EntityFactory for creating all game entities
                 services.AddSingleton<IEntityFactory, EntityFactory>();
 
@@ -58,6 +61,7 @@ internal class Program
                     sp.GetRequiredService<MovementSystem>(),
                     sp.GetRequiredService<CollisionSystem>(),
                     sp.GetRequiredService<ProjectileSpawner>(),
+                    sp.GetRequiredService<LandmassSpawner>(),
                     sp.GetRequiredService<TerrainSpawner>(),
                     sp.GetRequiredService<ScoreSystem>(),
                     sp.GetRequiredService<GameRenderService>()));

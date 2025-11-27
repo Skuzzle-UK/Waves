@@ -22,6 +22,7 @@ public class GameManager : IGameManager
     private readonly IAudioManager _audioManager;
     private readonly InputSystem _inputSystem;
     private readonly ProjectileSpawner _projectileSpawner;
+    private readonly LandmassSpawner _landmassSpawner;
     private readonly TerrainSpawner _terrainSpawner;
 
     // Store game area dimensions for calculating positions
@@ -48,12 +49,14 @@ public class GameManager : IGameManager
         IAudioManager audioManager,
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
+        LandmassSpawner landmassSpawner,
         TerrainSpawner terrainSpawner)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
         _inputSystem = inputSystem;
         _projectileSpawner = projectileSpawner;
+        _landmassSpawner = landmassSpawner;
         _terrainSpawner = terrainSpawner;
 
         _gameWidth = AppWrapper.GameAreaWidth;
@@ -85,8 +88,9 @@ public class GameManager : IGameManager
         SetHealth(GameConstants.Player.InitialHealth);
         _entityRegistry.ClearAll();
 
-        // Initialize terrain spawner with provided seed or default
+        // Initialize terrain and landmass spawners with provided seed or default
         int terrainSeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _landmassSpawner.Initialize(terrainSeed, TakeDamage);
         _terrainSpawner.Initialize(terrainSeed);
 
         // Create and register the wave background
@@ -101,18 +105,18 @@ public class GameManager : IGameManager
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, TakeDamage);
 
         // Spawn test enemies - the one and only BRICKWALLs!
-        Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
-        CreateEnemyWithEventSubscription(wallPosition, EnemyAssets.BrickWall);
+        //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
+        //CreateEnemyWithEventSubscription(wallPosition, EnemyAssets.BrickWall);
 
-        CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 4), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 8), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 4), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 8), EnemyAssets.BrickWall);
 
-        CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
-        CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
+        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
         // Start the game

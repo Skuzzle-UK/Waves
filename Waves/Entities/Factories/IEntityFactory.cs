@@ -1,4 +1,5 @@
 using Waves.Assets.BaseAssets;
+using Waves.Core.Enums;
 using Waves.Core.Maths;
 
 namespace Waves.Entities.Factories;
@@ -40,4 +41,15 @@ public interface IEntityFactory
     /// <param name="gameWidth">The width of the game area for despawn detection.</param>
     /// <returns>A new terrain instance.</returns>
     Terrain CreateTerrain(Vector2 position, IAsset asset, float speed, float gameWidth);
+
+    /// <summary>
+    /// Creates a landmass chunk at the specified position.
+    /// </summary>
+    /// <param name="position">The starting position of the landmass.</param>
+    /// <param name="asset">The landmass asset.</param>
+    /// <param name="speed">The scrolling speed of the landmass.</param>
+    /// <param name="lanePosition">The vertical lane position (Top or Bottom).</param>
+    /// <param name="damageCallback">Callback to invoke when player collides with the landmass.</param>
+    /// <returns>A new landmass instance.</returns>
+    Landmass CreateLandmass(Vector2 position, IAsset asset, float speed, LandmassPosition lanePosition, Action<int>? damageCallback);
 }

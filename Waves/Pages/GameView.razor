@@ -18,6 +18,8 @@
     string[]? lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 }
 
+<Markup Content="@_topBorder" Foreground="@Spectre.Console.Color.Grey50" />
+
 @if (GameManager.CurrentGameState == GameStates.PAUSED)
 {
     @if (_showSettings)
@@ -81,3 +83,5 @@ else
         <Markup Content="@line" />
     }
 }
+
+<Markup Content="@_bottomBorder" Foreground="@Spectre.Console.Color.Grey50" />
