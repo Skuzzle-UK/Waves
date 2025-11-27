@@ -1,4 +1,6 @@
 using Waves.Assets;
+using Waves.Assets.Audio;
+using Waves.Core;
 using Waves.Core.Configuration;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
@@ -14,6 +16,7 @@ public class Player : BaseEntity
 {
     // TODO: Look at a way we can register the projectile spawner to the player as we might want to do similar to enemies
     private IInputProvider? _inputProvider;
+    private IAudioManager? _audioManager;
     private Vector2 _acceleration;
     private Action<int>? _onTakeDamage;
     private float _invulnerabilityTimer = 0f;
@@ -52,11 +55,13 @@ public class Player : BaseEntity
     /// <param name="inputSystem">The input system for player control.</param>
     /// <param name="entityRegistry">The registry for system registration.</param>
     /// <param name="projectileSpawner">The spawner for player projectiles.</param>
+    /// <param name="audioManager">The audio manager for playing sound effects.</param>
     /// <param name="onTakeDamage">Callback to invoke when player takes damage.</param>
     public void Initialise(
         InputSystem inputSystem,
         IEntityRegistry entityRegistry,
         ProjectileSpawner projectileSpawner,
+        IAudioManager audioManager,
         Action<int> onTakeDamage)
     {
         // Create and attach input provider
@@ -69,6 +74,9 @@ public class Player : BaseEntity
         // Set up weapons/projectiles
         projectileSpawner.SetPlayer(this);
         projectileSpawner.SetInputProvider(inputProvider);
+
+        // Store audio manager reference
+        _audioManager = audioManager;
 
         // Set damage callback
         _onTakeDamage = onTakeDamage;
@@ -166,6 +174,10 @@ public class Player : BaseEntity
             // Only take damage if not currently invulnerable
             if (_invulnerabilityTimer <= 0)
             {
+                if (_audioManager is not null)
+                {
+                    _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                }
                 _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
                 _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
             }

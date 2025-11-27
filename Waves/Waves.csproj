@@ -36,6 +36,11 @@
 	<None Remove="Assets\Audio\SFX\Shoot_002.wav" />
 	<None Remove="Assets\Audio\SFX\Impact_001.wav" />
 	<None Remove="Assets\Audio\SFX\Impact_002.wav" />
+	<None Remove="Assets\Audio\SFX\Impact_003.wav" />
+	<None Remove="Assets\Audio\SFX\three.wav" />
+	<None Remove="Assets\Audio\SFX\two.wav" />
+	<None Remove="Assets\Audio\SFX\one.wav" />
+	<None Remove="Assets\Audio\SFX\surfsup.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +51,11 @@
 	<EmbeddedResource Include="Assets\Audio\SFX\Shoot_002.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\Impact_001.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\Impact_002.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Impact_003.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\three.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\two.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\one.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\surfsup.wav" />
   </ItemGroup>
 
 </Project>

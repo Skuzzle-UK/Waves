@@ -32,6 +32,26 @@ public static class AudioResources
     public static class SoundEffects
     {
         /// <summary>
+        /// Voice saying three.
+        /// </summary>
+        public const string Three = "Assets/Audio/SFX/three.wav";
+
+        /// <summary>
+        /// Voice saying two.
+        /// </summary>
+        public const string Two = "Assets/Audio/SFX/two.wav";
+
+        /// <summary>
+        /// Voice saying one.
+        /// </summary>
+        public const string One = "Assets/Audio/SFX/one.wav";
+
+        /// <summary>
+        /// Voice saying Rock On!
+        /// </summary>
+        public const string SurfsUp = "Assets/Audio/SFX/surfsup.wav";
+
+        /// <summary>
         /// Light shooting sound
         /// </summary>
         public const string Shoot_001 = "Assets/Audio/SFX/Shoot_001.wav";
@@ -50,5 +70,10 @@ public static class AudioResources
         /// Heavy impact sound
         /// </summary>
         public const string Impact_002 = "Assets/Audio/SFX/Impact_002.wav";
+
+        /// <summary>
+        /// Surfer impact sound
+        /// </summary>
+        public const string Impact_003 = "Assets/Audio/SFX/Impact_003.wav";
     }
 }

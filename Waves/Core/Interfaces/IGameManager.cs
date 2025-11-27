@@ -46,6 +46,12 @@ public interface IGameManager
     void StartNewGame(int? seed = null);
 
     /// <summary>
+    /// Starts the game after the countdown completes.
+    /// Transitions from COUNTDOWN state to RUNNING state.
+    /// </summary>
+    void StartGameAfterCountdown();
+
+    /// <summary>
     /// Cleans up the current game session, removing entities and resetting systems.
     /// Called when returning to menu or ending the game.
     /// </summary>
