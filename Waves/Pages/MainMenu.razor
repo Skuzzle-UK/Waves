@@ -4,6 +4,10 @@
 {
     <SettingsView @ref="_settingsView" OnVisibilityChanged="OnSettingsVisibilityChanged" />
 }
+else if (_showLeaderboard)
+{
+    <LeaderboardView @ref="_leaderboardView" OnVisibilityChanged="OnLeaderboardVisibilityChanged" />
+}
 else
 {
     <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">

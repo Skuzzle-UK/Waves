@@ -7,25 +7,72 @@
             <Rows>
                 <Figlet Content="GAME OVER" Color="@Spectre.Console.Color.Red" />
                 <Padder Padding="@(new(0, 1, 0, 0))" />
-                <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
-                    <Rows>
-                        <Panel>
-                            <TextButton
-                            Content="   Restart   "
-                            OnClick="OnRestartClicked"
-                            BackgroundColor="@Spectre.Console.Color.Grey15"
-                            FocusedColor="@Spectre.Console.Color.Blue"
-                            />
-                        </Panel>
-                        <Panel>
-                            <TextButton
-                            Content="  Main Menu  "
-                            OnClick="OnMainMenuClicked"
-                            BackgroundColor="@Spectre.Console.Color.Grey15"
-                            FocusedColor="@Spectre.Console.Color.Blue" />
-                        </Panel>
-                    </Rows>
-                </Align>
+
+                @if (!_scoreSubmitted)
+                {
+                    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                        <Rows>
+                            <Markup Content="@($"Final Score: {Score}")" Foreground="@Spectre.Console.Color.Yellow" />
+                            <Padder Padding="@(new(0, 1, 0, 0))" />
+                            <Markup Content="Enter your name:" />
+                            <Panel>
+                                <TextInput
+                                    @key="@_inputKey"
+                                    Value="@_playerName"
+                                    ValueChanged="OnNameChanged"
+                                    Placeholder="Enter Name"
+                                />
+                            </Panel>
+                            <Padder Padding="@(new(0, 1, 0, 0))" />
+                            @if (_isSubmitting)
+                            {
+                                <Markup Content="Submitting..." Foreground="@Spectre.Console.Color.Yellow" />
+                            }
+                            else
+                            {
+                                <Panel>
+                                    <TextButton
+                                        Content="   Submit   "
+                                        OnClick="OnSubmitClicked"
+                                        BackgroundColor="@Spectre.Console.Color.Grey15"
+                                        FocusedColor="@Spectre.Console.Color.Blue"
+                                    />
+                                </Panel>
+                            }
+                        </Rows>
+                    </Align>
+                }
+                else
+                {
+                    <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                        <Rows>
+                            @if (_submitSuccess)
+                            {
+                                <Markup Content="Score submitted successfully!" Foreground="@Spectre.Console.Color.Green" />
+                            }
+                            else
+                            {
+                                <Markup Content="Failed to submit score" Foreground="@Spectre.Console.Color.Red" />
+                            }
+                            <Padder Padding="@(new(0, 1, 0, 0))" />
+                            <Panel>
+                                <TextButton
+                                Content="   Restart   "
+                                OnClick="OnRestartClicked"
+                                BackgroundColor="@Spectre.Console.Color.Grey15"
+                                FocusedColor="@Spectre.Console.Color.Blue"
+                                />
+                            </Panel>
+                            <Panel>
+                                <TextButton
+                                Content="  Main Menu  "
+                                OnClick="OnMainMenuClicked"
+                                BackgroundColor="@Spectre.Console.Color.Grey15"
+                                FocusedColor="@Spectre.Console.Color.Blue" />
+                            </Panel>
+                        </Rows>
+                    </Align>
+                }
             </Rows>
         </Padder>
     </Panel>

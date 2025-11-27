@@ -1,0 +1,47 @@
+@using RazorConsole.Components
+
+<Padder Padding="@(new(0, 0, 0, 0))" />
+<Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+    <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Yellow">
+        <Padder Padding="@(new(1, 0, 1, 0))">
+            <Rows>
+                <Figlet Content="LEADERBOARD" Color="@Spectre.Console.Color.Yellow" />
+                <Padder Padding="@(new(0, 1, 0, 0))" />
+                <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                    <Rows>
+                        @if (_isLoading)
+                        {
+                            <Markup Content="Loading..." Foreground="@Spectre.Console.Color.Yellow" />
+                        }
+                        else if (_loadError)
+                        {
+                            <Markup Content="Failed to load leaderboard" Foreground="@Spectre.Console.Color.Red" />
+                        }
+                        else if (_entries.Count == 0)
+                        {
+                            <Markup Content="No scores yet!" Foreground="@Spectre.Console.Color.Grey" />
+                        }
+                        else
+                        {
+                            <Markup Content="╔════╦══════════════════════════════════════════╦═══════╗" />
+                            <Markup Content="║ #  ║  NAME                                    ║ SCORE ║" />
+                            <Markup Content="╠════╬══════════════════════════════════════════╬═══════╣" />
+                            @foreach (var entry in _entries)
+                            {
+                                <Markup Content="@GetLeaderboardRow(entry)" />
+                            }
+                            <Markup Content="╚════╩══════════════════════════════════════════╩═══════╝" />
+                        }
+                        <Padder Padding="@(new(0, 1, 0, 0))" />
+                    </Rows>
+                    <Panel>
+                        <TextButton Content="  <- Back   "
+                                    OnClick="Back"
+                                    BackgroundColor="@Spectre.Console.Color.Grey15"
+                                    FocusedColor="@Spectre.Console.Color.Blue" />
+                    </Panel>
+                </Align>
+            </Rows>
+        </Padder>
+    </Panel>
+</Align>

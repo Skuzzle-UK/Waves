@@ -8,9 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.11" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Extras" Version="2.2.1" />
-    <PackageReference Include="RazorConsole.Core" Version="0.1.1" />
+    <PackageReference Include="RazorConsole.Core" Version="0.2.1" />
     <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
     <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>

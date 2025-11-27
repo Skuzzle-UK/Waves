@@ -24,6 +24,8 @@ public partial class MainMenu : ComponentBase
     private string _seedInput = string.Empty;
     private SettingsView? _settingsView;
     private bool _showSettings;
+    private LeaderboardView? _leaderboardView;
+    private bool _showLeaderboard;
 
     protected override void OnInitialized()
     {
@@ -85,7 +87,16 @@ public partial class MainMenu : ComponentBase
         {
             _showSettings = false;
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnLeaderboardVisibilityChanged()
+    {
+        if (_leaderboardView != null && !_leaderboardView.IsVisible)
+        {
+            _showLeaderboard = false;
+        }
+        InvokeAsync(StateHasChanged);
     }
 
     private void Start()
@@ -97,7 +108,7 @@ public partial class MainMenu : ComponentBase
 
     private void NavigateToLeaderboard()
     {
-        // Implement leaderboard navigation if needed
+        _showLeaderboard = true;
     }
 
     private void Quit()

@@ -5,6 +5,7 @@ using Waves.Core;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Entities.Factories;
+using Waves.Services;
 using Waves.Systems;
 
 namespace Waves;
@@ -52,6 +53,9 @@ internal class Program
 
                 services.AddSingleton<IAudioManager, AudioManager>();
                 services.AddHostedService<AudioManager>();
+
+                // Register HttpClient for LeaderboardService
+                services.AddHttpClient<ILeaderboardService, LeaderboardService>();
 
                 // Register GameLoop with all game systems injected
                 services.AddSingleton<IGameLoop>(sp => new GameLoop(
