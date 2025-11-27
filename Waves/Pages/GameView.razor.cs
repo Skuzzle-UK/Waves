@@ -39,6 +39,9 @@ public partial class GameView : ComponentBase, IDisposable
     private int _countdownValue = 3;
     private System.Threading.Timer? _countdownTimer;
 
+    private SettingsView? _settingsView;
+    private bool _showSettings = false;
+
     private void ShowSettings()
     {
         _showSettings = true;
