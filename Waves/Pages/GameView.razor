@@ -26,7 +26,7 @@
 }
 else if (GameManager.CurrentGameState == GameStates.GAME_OVER)
 {
-    <GameOverView OnRestart="RestartGame" OnMainMenu="ReturnToMainMenu" />
+    <GameOverView Score="@GameManager.Score" OnRestart="RestartGame" OnMainMenu="ReturnToMainMenu" />
 }
 else if (GameManager.CurrentGameState == GameStates.PAUSED)
 {

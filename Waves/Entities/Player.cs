@@ -217,19 +217,12 @@ public class Player : BaseEntity
         // Handle terrain obstacles (islands, boats) with invulnerability cooldown
         if ((other.Layer & CollisionLayer.Obstacle) != 0 && _invulnerabilityTimer <= 0)
         {
-
+            if (_audioManager is not null)
+            {
+                _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+            }
             _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
             _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
-            // Only take damage if not currently invulnerable
-            if (_invulnerabilityTimer <= 0)
-            {
-                if (_audioManager is not null)
-                {
-                    _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
-                }
-                _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
-                _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
-            }
         }
     }
 

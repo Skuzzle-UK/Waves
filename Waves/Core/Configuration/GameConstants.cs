@@ -341,4 +341,26 @@ public static class GameConstants
         /// </summary>
         public const int SpawnerUpdateOrder = 120;
     }
+
+    /// <summary>
+    /// Online leaderboard configuration.
+    /// </summary>
+    public static class Leaderboard
+    {
+        /// <summary>
+        /// Base URL for the leaderboard API endpoints.
+        /// </summary>
+        public const string BaseUrl = "https://skuzzle.com/waves/";
+
+        /// <summary>
+        /// Secret key for validating score submissions.
+        /// Used to generate SHA256 hash: hash(name + score + secretKey).
+        /// </summary>
+        public const string SecretKey = "ACoolSecretWord"; // Replace with your actual secret key
+
+        /// <summary>
+        /// Default number of top scores to retrieve.
+        /// </summary>
+        public const int DefaultTopScoresLimit = 5;
+    }
 }

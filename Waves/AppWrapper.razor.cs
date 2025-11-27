@@ -20,7 +20,7 @@ public partial class AppWrapper : ComponentBase
     private void NavigateTo(string page)
     {
         _currentPage = page;
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void SetSeedAndNavigate(int seed)
