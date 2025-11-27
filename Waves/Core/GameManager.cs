@@ -102,7 +102,7 @@ public class GameManager : IGameManager
         // Create and initialise player entity with damage callback
         Vector2 playerPosition = _centerPosition - new Vector2(35, 0);
         _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
-        _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, TakeDamage);
+        _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, _audioManager, TakeDamage);
 
         // Spawn test enemies - the one and only BRICKWALLs!
         //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
@@ -119,10 +119,8 @@ public class GameManager : IGameManager
         //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
-        // Start the game
-        NewState(GameStates.RUNNING);
-        _audioManager.LoopSpeed = 1.5f;
-        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
+        // Start the countdown before running the game
+        NewState(GameStates.COUNTDOWN);
 
         // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
         // Expecting a loop in here that can accept all game states and act upon them accordingly.. i.e. pause should instantiate a pause message.
@@ -136,6 +134,16 @@ public class GameManager : IGameManager
         _entityRegistry.ClearAll();
         NewState(GameStates.ENDED);
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+    }
+
+    /// <summary>
+    /// Starts the game after countdown completes.
+    /// </summary>
+    public void StartGameAfterCountdown()
+    {
+        NewState(GameStates.RUNNING);
+        _audioManager.LoopSpeed = 1.5f;
+        _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
     }
 
     /// <summary>

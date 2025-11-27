@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
 using Spectre.Console;
+using Waves.Assets.Audio;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Systems;
@@ -21,6 +22,9 @@ public partial class GameView : ComponentBase, IDisposable
     [Inject]
     public IHostApplicationLifetime ApplicationLifetime { get; set; } = null!;
 
+    [Inject]
+    public IAudioManager AudioManager { get; set; } = null!;
+
     [Parameter]
     public Action<string>? OnNavigate { get; set; }
 
@@ -32,6 +36,23 @@ public partial class GameView : ComponentBase, IDisposable
     private string _topBorder = string.Empty;
     private string _bottomBorder = string.Empty;
 
+    private int _countdownValue = 3;
+    private System.Threading.Timer? _countdownTimer;
+
+    private void ShowSettings()
+    {
+        _showSettings = true;
+    }
+
+    private void OnSettingsVisibilityChanged()
+    {
+        if (_settingsView != null && !_settingsView.IsVisible)
+        {
+            _showSettings = false;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnInitialized()
     {
         // Initialize static borders with double horizontal line characters
@@ -39,14 +60,56 @@ public partial class GameView : ComponentBase, IDisposable
         _topBorder = new string('═', gameWidth);
         _bottomBorder = new string('═', gameWidth);
 
-        GameManager.StartNewGame(Seed);
+        // Subscribe to events BEFORE starting the game to catch state changes
         RenderService.RenderComplete += ReRenderBlazorView;
         GameManager.GameStateChanged += OnGameStateChanged;
+
+        GameManager.StartNewGame(Seed);
     }
 
     private void OnGameStateChanged(object? sender, GameStates newState)
     {
+        // Start countdown timer when entering countdown state
+        if (newState == GameStates.COUNTDOWN)
+        {
+            StartCountdown();
+        }
+
         // Re-render when game state changes to show/hide pause menu
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void StartCountdown()
+    {
+        AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
+        _countdownValue = 3;
+        _countdownTimer = new System.Threading.Timer(CountdownTick, null, 1000, 1000);
+    }
+
+    private void CountdownTick(object? state)
+    {
+        _countdownValue--;
+
+        switch (_countdownValue)
+        {
+            case 2:
+                AudioManager.PlayOneShot(AudioResources.SoundEffects.Two);
+                break;
+            case 1:
+                AudioManager.PlayOneShot(AudioResources.SoundEffects.One);
+                break;
+            case 0:
+                AudioManager.PlayOneShot(AudioResources.SoundEffects.SurfsUp);
+                break;
+        }
+
+        if (_countdownValue <= 0)
+        {
+            _countdownTimer?.Dispose();
+            _countdownTimer = null;
+            GameManager.StartGameAfterCountdown();
+        }
+
         InvokeAsync(StateHasChanged);
     }
 
@@ -118,6 +181,9 @@ public partial class GameView : ComponentBase, IDisposable
 
     public void Dispose()
     {
+        _countdownTimer?.Dispose();
+        _countdownTimer = null;
+
         RenderService.RenderComplete -= ReRenderBlazorView;
         GameManager.GameStateChanged -= OnGameStateChanged;
 

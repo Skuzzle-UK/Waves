@@ -40,6 +40,26 @@ public static class AudioResources
         /// Boing sound
         /// </summary>
         public const string Boing = "Assets/Audio/SFX/Boing.wav";
+        
+        /// <summary>
+        /// Voice saying three.
+        /// </summary>
+        public const string Three = "Assets/Audio/SFX/three.wav";
+
+        /// <summary>
+        /// Voice saying two.
+        /// </summary>
+        public const string Two = "Assets/Audio/SFX/two.wav";
+
+        /// <summary>
+        /// Voice saying one.
+        /// </summary>
+        public const string One = "Assets/Audio/SFX/one.wav";
+
+        /// <summary>
+        /// Voice saying Rock On!
+        /// </summary>
+        public const string SurfsUp = "Assets/Audio/SFX/surfsup.wav";
 
         /// <summary>
         /// Light shooting sound
@@ -60,5 +80,10 @@ public static class AudioResources
         /// Heavy impact sound
         /// </summary>
         public const string Impact_002 = "Assets/Audio/SFX/Impact_002.wav";
+
+        /// <summary>
+        /// Surfer impact sound
+        /// </summary>
+        public const string Impact_003 = "Assets/Audio/SFX/Impact_003.wav";
     }
 }

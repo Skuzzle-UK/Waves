@@ -18,7 +18,13 @@
     string[]? lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 }
 
-@if (GameManager.CurrentGameState == GameStates.GAME_OVER)
+@if (GameManager.CurrentGameState == GameStates.COUNTDOWN)
+{
+    <Align Vertical="@Spectre.Console.VerticalAlignment.Middle">
+        <Figlet Content="@_countdownValue.ToString()" Color="@Spectre.Console.Color.Cyan1" />
+    </Align>
+}
+else if (GameManager.CurrentGameState == GameStates.GAME_OVER)
 {
     <GameOverView OnRestart="RestartGame" OnMainMenu="ReturnToMainMenu" />
 }
