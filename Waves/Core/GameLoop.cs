@@ -192,6 +192,11 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
                 Start();
                 break;
 
+            case GameStates.COUNTDOWN:
+                // Pause the game loop during countdown
+                Pause();
+                break;
+
             case GameStates.RUNNING:
                 Resume();
                 break;

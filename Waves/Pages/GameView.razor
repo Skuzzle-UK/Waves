@@ -20,7 +20,13 @@
 
 <Markup Content="@_topBorder" Foreground="@Spectre.Console.Color.Grey50" />
 
-@if (GameManager.CurrentGameState == GameStates.PAUSED)
+@if (GameManager.CurrentGameState == GameStates.COUNTDOWN)
+{
+    <Align Vertical="@Spectre.Console.VerticalAlignment.Middle">
+        <Figlet Content="@_countdownValue.ToString()" Color="@Spectre.Console.Color.Cyan1" />
+    </Align>
+}
+else if (GameManager.CurrentGameState == GameStates.PAUSED)
 {
     @if (_showSettings)
     {
