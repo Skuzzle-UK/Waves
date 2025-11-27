@@ -33,14 +33,14 @@ public partial class GameView : ComponentBase, IDisposable
 
     private Color _healthBarColour = Color.Green;
 
-    private SettingsView? _settingsView;
-    private bool _showSettings;
-
     private string _topBorder = string.Empty;
     private string _bottomBorder = string.Empty;
 
     private int _countdownValue = 3;
     private System.Threading.Timer? _countdownTimer;
+
+    private SettingsView? _settingsView;
+    private bool _showSettings = false;
 
     private void ShowSettings()
     {
@@ -163,6 +163,12 @@ public partial class GameView : ComponentBase, IDisposable
     private void ResumeGame()
     {
         GameManager.TogglePause();
+    }
+
+    private void RestartGame()
+    {
+        GameManager.ExitGame();
+        GameManager.StartNewGame(Seed);
     }
 
     private void ExitApplication()

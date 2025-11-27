@@ -1,0 +1,32 @@
+@using RazorConsole.Components
+
+<Padder Padding="@(new(0, 0, 0, 0))" />
+<Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+    <Panel Height="21" Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.Red">
+        <Padder Padding="@(new(1, 0, 1, 0))">
+            <Rows>
+                <Figlet Content="GAME OVER" Color="@Spectre.Console.Color.Red" />
+                <Padder Padding="@(new(0, 1, 0, 0))" />
+                <Align Horizontal="@Spectre.Console.HorizontalAlignment.Center">
+                    <Rows>
+                        <Panel>
+                            <TextButton
+                            Content="   Restart   "
+                            OnClick="OnRestartClicked"
+                            BackgroundColor="@Spectre.Console.Color.Grey15"
+                            FocusedColor="@Spectre.Console.Color.Blue"
+                            />
+                        </Panel>
+                        <Panel>
+                            <TextButton
+                            Content="  Main Menu  "
+                            OnClick="OnMainMenuClicked"
+                            BackgroundColor="@Spectre.Console.Color.Grey15"
+                            FocusedColor="@Spectre.Console.Color.Blue" />
+                        </Panel>
+                    </Rows>
+                </Align>
+            </Rows>
+        </Padder>
+    </Panel>
+</Align>

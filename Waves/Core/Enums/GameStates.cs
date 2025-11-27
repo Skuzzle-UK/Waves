@@ -6,5 +6,6 @@ public enum GameStates
     COUNTDOWN,
     RUNNING,
     PAUSED,
+    GAME_OVER,
     ENDED
 }
