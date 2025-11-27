@@ -200,6 +200,11 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
                 Pause();
                 break;
 
+            case GameStates.GAME_OVER:
+                // Pause the game loop when showing game over screen
+                Pause();
+                break;
+
             case GameStates.ENDED:
                 // Unregister game systems when game ends
                 UnregisterGameSystems();

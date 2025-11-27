@@ -198,8 +198,10 @@ public class GameManager : IGameManager
 
         if (Health <= 0)
         {
-            // Handle player death - end the game
-            NewState(GameStates.ENDED);
+            // Handle player death - show game over screen
+            _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+            _audioManager.PlayOneShot(AudioResources.SoundEffects.Death);
+            NewState(GameStates.GAME_OVER);
         }
     }
 

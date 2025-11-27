@@ -29,25 +29,8 @@ public partial class GameView : ComponentBase, IDisposable
 
     private Color _healthBarColour = Color.Green;
 
-    private SettingsView? _settingsView;
-    private bool _showSettings;
-
     private string _topBorder = string.Empty;
     private string _bottomBorder = string.Empty;
-
-    private void ShowSettings()
-    {
-        _showSettings = true;
-    }
-
-    private void OnSettingsVisibilityChanged()
-    {
-        if (_settingsView != null && !_settingsView.IsVisible)
-        {
-            _showSettings = false;
-        }
-        InvokeAsync(StateHasChanged);
-    }
 
     protected override void OnInitialized()
     {
@@ -114,6 +97,12 @@ public partial class GameView : ComponentBase, IDisposable
     private void ResumeGame()
     {
         GameManager.TogglePause();
+    }
+
+    private void RestartGame()
+    {
+        GameManager.ExitGame();
+        GameManager.StartNewGame(Seed);
     }
 
     private void ExitApplication()

@@ -32,6 +32,16 @@ public static class AudioResources
     public static class SoundEffects
     {
         /// <summary>
+        /// Death sound
+        /// </summary>
+        public const string Death = "Assets/Audio/SFX/Death.wav";
+
+        /// <summary>
+        /// Boing sound
+        /// </summary>
+        public const string Boing = "Assets/Audio/SFX/Boing.wav";
+
+        /// <summary>
         /// Light shooting sound
         /// </summary>
         public const string Shoot_001 = "Assets/Audio/SFX/Shoot_001.wav";
