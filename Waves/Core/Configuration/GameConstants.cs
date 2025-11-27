@@ -95,6 +95,23 @@ public static class GameConstants
         /// Damage dealt to player when hit by terrain obstacles.
         /// </summary>
         public const int TerrainDamage = 25;
+
+        /// <summary>
+        /// Damage dealt to player when colliding with landmass boundaries.
+        /// </summary>
+        public const int LandmassDamage = 20;
+
+        /// <summary>
+        /// Duration of invulnerability after landmass collision in seconds.
+        /// Shorter than terrain invulnerability to allow rapid bouncing gameplay.
+        /// </summary>
+        public const float LandmassInvulnerabilityDuration = 0.3f;
+
+        /// <summary>
+        /// Multiplier for bounce velocity when hitting landmass.
+        /// 1.0 = perfect reflection, 1.5 = amplified bounce.
+        /// </summary>
+        public const float BounceMultiplier = 1000f;
     }
 
     /// <summary>

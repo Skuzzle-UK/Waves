@@ -17,9 +17,13 @@ public class Player : BaseEntity
     private Vector2 _acceleration;
     private Action<int>? _onTakeDamage;
     private float _invulnerabilityTimer = 0f;
+    private float _landmassInvulnerabilityTimer = 0f;
     private float _flashTimer = 0f;
     private bool _showRedFlash = false;
+    private bool _skipDragNextFrame = false;
+    private float _bounceSpeedTimer = 0f;
     private const float FlashInterval = 0.2f; // Flash every 0.2 seconds
+    private const float BounceSpeedDuration = 0.2f; // Allow higher speed for 0.2 seconds after bounce
 
     public float Mass { get; set; }
     public float Drag { get; set; }
@@ -96,12 +100,23 @@ public class Player : BaseEntity
             return;
         }
 
-        // Decrement invulnerability timer
+        // Decrement invulnerability timers
         if (_invulnerabilityTimer > 0)
         {
             _invulnerabilityTimer -= deltaTime;
+        }
+        if (_landmassInvulnerabilityTimer > 0)
+        {
+            _landmassInvulnerabilityTimer -= deltaTime;
+        }
+        if (_bounceSpeedTimer > 0)
+        {
+            _bounceSpeedTimer -= deltaTime;
+        }
 
-            // Handle flashing effect during invulnerability
+        // Handle flashing effect during invulnerability (if either timer active)
+        if (_invulnerabilityTimer > 0 || _landmassInvulnerabilityTimer > 0)
+        {
             _flashTimer += deltaTime;
             if (_flashTimer >= FlashInterval)
             {
@@ -113,7 +128,7 @@ public class Player : BaseEntity
         }
         else
         {
-            // Invulnerability ended - reset to normal appearance (no color)
+            // Both timers ended - reset to normal appearance (no color)
             if (RenderColor.HasValue)
             {
                 RenderColor = null;
@@ -134,12 +149,21 @@ public class Player : BaseEntity
         // Apply acceleration to velocity
         Velocity += _acceleration * deltaTime;
 
-        // Apply drag
-        Velocity *= Drag;
+        // Apply drag (skip if we just bounced to preserve bounce velocity)
+        if (!_skipDragNextFrame)
+        {
+            Velocity *= Drag;
+        }
+        else
+        {
+            _skipDragNextFrame = false;
+        }
 
         // Clamp velocity to max speed (for each axis independently)
+        // Allow higher vertical speed temporarily after bounce
+        float maxVerticalSpeed = _bounceSpeedTimer > 0 ? MaxSpeed.Y * 10f : MaxSpeed.Y;
         float clampedX = Math.Clamp(Velocity.X, -MaxSpeed.X, MaxSpeed.X);
-        float clampedY = Math.Clamp(Velocity.Y, -MaxSpeed.Y, MaxSpeed.Y);
+        float clampedY = Math.Clamp(Velocity.Y, -maxVerticalSpeed, maxVerticalSpeed);
         Velocity = new Vector2(clampedX, clampedY);
 
         // Apply velocity to position
@@ -154,21 +178,78 @@ public class Player : BaseEntity
     /// </summary>
     public override void OnCollision(ICollidable other)
     {
-        // Take damage when hit by enemies or enemy projectiles
+        // Handle landmass collisions with bounce physics
+        if (other is Landmass landmass)
+        {
+            // Only bounce and take damage if not currently invulnerable to landmass
+            if (_landmassInvulnerabilityTimer <= 0f)
+            {
+                // Take damage
+                _onTakeDamage?.Invoke(GameConstants.Player.LandmassDamage);
+
+                // Apply bounce physics based on wall position
+                ApplyBounce(landmass.LanePosition);
+
+                // Start invulnerability window AFTER applying bounce
+                // This ensures the timer is set even if multiple landmass chunks collide in the same frame
+                _landmassInvulnerabilityTimer = GameConstants.Player.LandmassInvulnerabilityDuration;
+
+            }
+
+            return; // Early return - don't process as generic obstacle
+        }
+
+        // Handle enemy/projectile collisions (instant damage, no invulnerability)
         if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
         {
             _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
+            return;
         }
 
-        // Take damage from terrain obstacles with invulnerability cooldown
-        if ((other.Layer & CollisionLayer.Obstacle) != 0)
+        // Handle terrain obstacles (islands, boats) with invulnerability cooldown
+        if ((other.Layer & CollisionLayer.Obstacle) != 0 && _invulnerabilityTimer <= 0)
         {
-            // Only take damage if not currently invulnerable
-            if (_invulnerabilityTimer <= 0)
-            {
-                _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
-                _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
-            }
+
+            _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
+            _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
         }
     }
+
+    /// <summary>
+    /// Applies bounce physics when colliding with landmass boundaries.
+    /// Reverses and amplifies vertical velocity while preserving horizontal momentum.
+    /// </summary>
+    /// <param name="wallPosition">The position of the wall (Top or Bottom)</param>
+    private void ApplyBounce(LandmassPosition wallPosition)
+    {
+        // Reverse and amplify vertical velocity for bounce effect
+        // Preserve horizontal velocity for smooth surfing flow
+        float bounceVelocityY = -Velocity.Y * GameConstants.Player.BounceMultiplier;
+
+        // Don't clamp bounce velocity here - allow it to exceed normal max speed temporarily
+        // The velocity clamping in Update() will handle it with the temporary 2x speed limit
+
+        // Apply bounce with directional validation
+        // Top wall should always bounce downward (positive Y)
+        // Bottom wall should always bounce upward (negative Y)
+        if (wallPosition == LandmassPosition.Top)
+        {
+            // Ensure we're bouncing downward from top wall
+            Velocity = new Vector2(Velocity.X, Math.Max(bounceVelocityY, 0));
+        }
+        else // LandmassPosition.Bottom
+        {
+            // Ensure we're bouncing upward from bottom wall
+            Velocity = new Vector2(Velocity.X, Math.Min(bounceVelocityY, 0));
+        }
+
+        // Reset acceleration to prevent lingering input forces from fighting the bounce
+        _acceleration = Vector2.Zero;
+
+        // Skip drag on next frame to preserve bounce velocity
+        _skipDragNextFrame = true;
+
+        // Allow higher speed temporarily to let bounce velocity through
+        _bounceSpeedTimer = BounceSpeedDuration;
     }
+}
