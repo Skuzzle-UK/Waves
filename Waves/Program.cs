@@ -35,8 +35,8 @@ internal class Program
 
                 services.AddSingleton<TerrainSpawner>();
                 services.AddSingleton<LandmassSpawner>();
-                services.AddSingleton<IEntityFactory, EntityFactory>();                services.AddSingleton<IGameSpeedManager, GameSpeedManager>();
-
+                services.AddSingleton<IEntityFactory, EntityFactory>();
+                services.AddSingleton<IGameProgressionManager, GameProgressionManager>();
                 services.AddSingleton<IGameManager, GameManager>();
                 services.AddSingleton<ScoreSystem>(sp => new ScoreSystem(sp.GetRequiredService<IGameManager>()));
                 services.AddSingleton<IAudioManager, AudioManager>();
