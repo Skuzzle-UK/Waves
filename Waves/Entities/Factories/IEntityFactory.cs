@@ -52,4 +52,13 @@ public interface IEntityFactory
     /// <param name="damageCallback">Callback to invoke when player collides with the landmass.</param>
     /// <returns>A new landmass instance.</returns>
     Landmass CreateLandmass(Vector2 position, IAsset asset, float speed, LandmassPosition lanePosition, Action<int>? damageCallback);
+
+    /// <summary>
+    /// Creates Boss1 at the specified position.
+    /// </summary>
+    /// <param name="position">The starting position of the boss.</param>
+    /// <param name="asset">The boss asset.</param>
+    /// <param name="maxHealth">Maximum health for the boss.</param>
+    /// <returns>A new Boss1 instance.</returns>
+    Boss1 CreateBoss1(Vector2 position, IAsset asset, int maxHealth = 500);
 }

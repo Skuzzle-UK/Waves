@@ -24,6 +24,11 @@ public interface IGameManager
     int Health { get; }
 
     /// <summary>
+    /// Gets whether the game is currently in a boss battle.
+    /// </summary>
+    bool IsBossBattle { get; }
+
+    /// <summary>
     /// Event fired when the game state changes.
     /// </summary>
     event EventHandler<GameStates>? GameStateChanged;

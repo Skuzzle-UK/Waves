@@ -20,7 +20,7 @@ public class GameManager : IGameManager, IUpdatable
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
     private readonly IAudioManager _audioManager;
-    private readonly IGameSpeedManager _speedManager;
+    private readonly IGameProgressionManager _progressionManager;
     private readonly InputSystem _inputSystem;
     private readonly ProjectileSpawner _projectileSpawner;
     private readonly LandmassSpawner _landmassSpawner;
@@ -36,7 +36,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float TargetSpeed = 2.0f;
-    private const float RampDuration = 180f; // 3 minutes in seconds
+    private const float RampDuration = 5f; // TODO: Reset to 180 for 3 minutes
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
 
@@ -44,6 +44,10 @@ public class GameManager : IGameManager, IUpdatable
     public GameStates CurrentGameState { get; private set; }
     public int Score { get; private set; }
     public int Health { get; private set; }
+    public bool IsBossBattle { get; private set; }
+
+    // Boss tracking
+    private Boss1? _currentBoss;
 
     // Update order for game manager (before spawners so speed is updated first)
     public int UpdateOrder => 110;
@@ -57,7 +61,7 @@ public class GameManager : IGameManager, IUpdatable
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
         IAudioManager audioManager,
-        IGameSpeedManager speedManager,
+        IGameProgressionManager progressionManager,
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
         LandmassSpawner landmassSpawner,
@@ -65,7 +69,7 @@ public class GameManager : IGameManager, IUpdatable
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
-        _speedManager = speedManager;
+        _progressionManager = progressionManager;
         _inputSystem = inputSystem;
         _projectileSpawner = projectileSpawner;
         _landmassSpawner = landmassSpawner;
@@ -79,7 +83,7 @@ public class GameManager : IGameManager, IUpdatable
         CurrentGameState = GameStates.ENDED;
         Score = GameConstants.Scoring.InitialScore;
         Health = GameConstants.Player.InitialHealth;
-        _speedManager.CurrentSpeed = _levelStartSpeed;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
         _levelElapsedGameTime = 0f;
         _audioManager = audioManager;
 
@@ -101,7 +105,10 @@ public class GameManager : IGameManager, IUpdatable
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
         _levelElapsedGameTime = 0f;
-        _speedManager.CurrentSpeed = _levelStartSpeed;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _progressionManager.IsBossBattle = false;
+        IsBossBattle = false;
+        _currentBoss = null;
         _entityRegistry.ClearAll();
 
         // Initialize terrain and landmass spawners with provided seed or default
@@ -154,7 +161,7 @@ public class GameManager : IGameManager, IUpdatable
     public void StartGameAfterCountdown()
     {
         NewState(GameStates.RUNNING);
-        _audioManager.LoopSpeed = _speedManager.CurrentSpeed;
+        _audioManager.LoopSpeed = _progressionManager.CurrentSpeed;
         _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
     }
 
@@ -273,16 +280,61 @@ public class GameManager : IGameManager, IUpdatable
         // Increment elapsed time
         _levelElapsedGameTime += GameConstants.Timing.FixedDeltaTime;
 
-        // Calculate progress (0.0 to 1.0)
-        float progress = Math.Min(_levelElapsedGameTime / RampDuration, 1.0f);
+        // Check if level is complete (3 minutes elapsed) and spawn boss
+        if (!IsBossBattle && _levelElapsedGameTime >= RampDuration)
+        {
+            StartBossBattle();
+            return;
+        }
 
-        // Calculate current speed using linear interpolation
-        float currentSpeed = _levelStartSpeed + (TargetSpeed - _levelStartSpeed) * progress;
+        // Only progress speed during normal gameplay (not boss battle)
+        if (!IsBossBattle)
+        {
+            // Calculate progress (0.0 to 1.0)
+            float progress = Math.Min(_levelElapsedGameTime / RampDuration, 1.0f);
 
-        // Update speed manager
-        _speedManager.CurrentSpeed = currentSpeed;
+            // Calculate current speed using linear interpolation
+            float currentSpeed = _levelStartSpeed + (TargetSpeed - _levelStartSpeed) * progress;
 
-        // Update audio manager loop speed to match
-        _audioManager.LoopSpeed = currentSpeed;
+            // Update progression manager
+            _progressionManager.CurrentSpeed = currentSpeed;
+
+            // Update audio manager loop speed to match
+            _audioManager.LoopSpeed = currentSpeed;
+        }
+    }
+
+    /// <summary>
+    /// Starts the boss battle after the level timer completes.
+    /// </summary>
+    private void StartBossBattle()
+    {
+        IsBossBattle = true;
+        _progressionManager.IsBossBattle = true;
+
+        // Reset game speed to 1.0f (slows terrain/landmass back down)
+        _progressionManager.CurrentSpeed = 1.0f;
+
+        // Change music to boss battle theme at normal speed
+        _audioManager.LoopSpeed = 1.0f;
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BossBattle1);
+
+        // Spawn Boss1 on the right side of the screen
+        Vector2 bossPosition = new Vector2(_gameWidth, (_gameHeight / 2) - 1);
+        _currentBoss = _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 3000);
+
+        // Subscribe to boss defeat event
+        _currentBoss.OnDefeated += OnBossDefeated;
+    }
+
+    /// <summary>
+    /// Called when the boss is defeated.
+    /// </summary>
+    private void OnBossDefeated(object? sender, EventArgs e)
+    {
+        // Award points for defeating the boss
+        IncrementScore(1000);
+
+        // TODO: Transition to next level or victory screen
     }
 }
