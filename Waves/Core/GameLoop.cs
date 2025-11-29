@@ -227,6 +227,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         {
             RegisterUpdatable(_inputSystem);
             RegisterUpdatable(_scoreSystem);
+            RegisterUpdatable((IUpdatable)_gameManager);
             RegisterUpdatable(_landmassSpawner);
             RegisterUpdatable(_terrainSpawner);
             RegisterUpdatable(_projectileSpawner);
@@ -246,6 +247,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         {
             UnregisterUpdatable(_inputSystem);
             UnregisterUpdatable(_scoreSystem);
+            UnregisterUpdatable((IUpdatable)_gameManager);
             UnregisterUpdatable(_landmassSpawner);
             UnregisterUpdatable(_terrainSpawner);
             UnregisterUpdatable(_projectileSpawner);

@@ -44,7 +44,7 @@ public static class GameConstants
         /// <summary>
         /// Player's mass affects acceleration from forces.
         /// </summary>
-        public const float Mass = 2.0f;
+        public const float Mass = 1.5f;
 
         /// <summary>
         /// Drag coefficient for player movement (0-1, where 1 is no drag).
@@ -54,17 +54,17 @@ public static class GameConstants
         /// <summary>
         /// Maximum horizontal speed for the player.
         /// </summary>
-        public const float MaxSpeedHorizontal = 20.0f;
+        public const float MaxSpeedHorizontal = 25.0f;
 
         /// <summary>
         /// Maximum vertical speed for the player.
         /// </summary>
-        public const float MaxSpeedVertical = 5.0f;
+        public const float MaxSpeedVertical = 9.0f;
 
         /// <summary>
         /// Force applied when player moves.
         /// </summary>
-        public const float MoveForce = 300f;
+        public const float MoveForce = 500f;
 
         /// <summary>
         /// Base movement speed (not used in physics-based movement).
@@ -111,7 +111,7 @@ public static class GameConstants
         /// Multiplier for bounce velocity when hitting landmass.
         /// 1.0 = perfect reflection, 1.5 = amplified bounce.
         /// </summary>
-        public const float BounceMultiplier = 1000f;
+        public const float BounceMultiplier = 5f;
     }
 
     /// <summary>

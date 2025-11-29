@@ -15,11 +15,12 @@ namespace Waves.Core;
 /// Manages the complete game lifecycle including state, score, and entity orchestration.
 /// Combines state management with game logic for unified control.
 /// </summary>
-public class GameManager : IGameManager
+public class GameManager : IGameManager, IUpdatable
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
     private readonly IAudioManager _audioManager;
+    private readonly IGameSpeedManager _speedManager;
     private readonly InputSystem _inputSystem;
     private readonly ProjectileSpawner _projectileSpawner;
     private readonly LandmassSpawner _landmassSpawner;
@@ -33,10 +34,19 @@ public class GameManager : IGameManager
     // Store current player reference
     private Player? _currentPlayer;
 
+    // Speed progression settings
+    private const float TargetSpeed = 2.0f;
+    private const float RampDuration = 180f; // 3 minutes in seconds
+    private float _levelStartSpeed = 1.0f;
+    private float _levelElapsedGameTime;
+
     // State management properties
     public GameStates CurrentGameState { get; private set; }
     public int Score { get; private set; }
     public int Health { get; private set; }
+
+    // Update order for game manager (before spawners so speed is updated first)
+    public int UpdateOrder => 110;
 
     // Events
     public event EventHandler<GameStates>? GameStateChanged;
@@ -47,6 +57,7 @@ public class GameManager : IGameManager
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
         IAudioManager audioManager,
+        IGameSpeedManager speedManager,
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
         LandmassSpawner landmassSpawner,
@@ -54,6 +65,7 @@ public class GameManager : IGameManager
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
+        _speedManager = speedManager;
         _inputSystem = inputSystem;
         _projectileSpawner = projectileSpawner;
         _landmassSpawner = landmassSpawner;
@@ -67,10 +79,12 @@ public class GameManager : IGameManager
         CurrentGameState = GameStates.ENDED;
         Score = GameConstants.Scoring.InitialScore;
         Health = GameConstants.Player.InitialHealth;
+        _speedManager.CurrentSpeed = _levelStartSpeed;
+        _levelElapsedGameTime = 0f;
         _audioManager = audioManager;
 
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
-        _audioManager.LoopSpeed = 1f;
+        _audioManager.LoopSpeed = _levelStartSpeed;
         _audioManager.StartBackgroundTrack();
     }
 
@@ -86,6 +100,8 @@ public class GameManager : IGameManager
 
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
+        _levelElapsedGameTime = 0f;
+        _speedManager.CurrentSpeed = _levelStartSpeed;
         _entityRegistry.ClearAll();
 
         // Initialize terrain and landmass spawners with provided seed or default
@@ -119,11 +135,7 @@ public class GameManager : IGameManager
         //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
-        // Start the countdown before running the game
         NewState(GameStates.COUNTDOWN);
-
-        // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
-        // Expecting a loop in here that can accept all game states and act upon them accordingly.. i.e. pause should instantiate a pause message.
     }
 
     /// <summary>
@@ -142,7 +154,7 @@ public class GameManager : IGameManager
     public void StartGameAfterCountdown()
     {
         NewState(GameStates.RUNNING);
-        _audioManager.LoopSpeed = 1.5f;
+        _audioManager.LoopSpeed = _speedManager.CurrentSpeed;
         _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
     }
 
@@ -245,5 +257,32 @@ public class GameManager : IGameManager
         {
             IncrementScore(GameConstants.Enemy.ScoreOnKill);
         };
+    }
+
+    /// <summary>
+    /// Called each game tick to update game speed progression.
+    /// </summary>
+    public void Update()
+    {
+        // Only progress speed when game is actually running
+        if (CurrentGameState != GameStates.RUNNING)
+        {
+            return;
+        }
+
+        // Increment elapsed time
+        _levelElapsedGameTime += GameConstants.Timing.FixedDeltaTime;
+
+        // Calculate progress (0.0 to 1.0)
+        float progress = Math.Min(_levelElapsedGameTime / RampDuration, 1.0f);
+
+        // Calculate current speed using linear interpolation
+        float currentSpeed = _levelStartSpeed + (TargetSpeed - _levelStartSpeed) * progress;
+
+        // Update speed manager
+        _speedManager.CurrentSpeed = currentSpeed;
+
+        // Update audio manager loop speed to match
+        _audioManager.LoopSpeed = currentSpeed;
     }
 }
