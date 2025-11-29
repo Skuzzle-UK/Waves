@@ -52,4 +52,6 @@ public interface IEntityFactory
     /// <param name="damageCallback">Callback to invoke when player collides with the landmass.</param>
     /// <returns>A new landmass instance.</returns>
     Landmass CreateLandmass(Vector2 position, IAsset asset, float speed, LandmassPosition lanePosition, Action<int>? damageCallback);
+
+    EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage);
 }

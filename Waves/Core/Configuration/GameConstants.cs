@@ -112,6 +112,11 @@ public static class GameConstants
         /// 1.0 = perfect reflection, 1.5 = amplified bounce.
         /// </summary>
         public const float BounceMultiplier = 1000f;
+
+        /// <summary>
+        /// Damage dealt to player when colliding with enemies.
+        /// </summary>
+        public const int EnemyDamage = 20;
     }
 
     /// <summary>
@@ -208,7 +213,9 @@ public static class GameConstants
 
         // 100-199: Game logic systems
         public const int ScoreSystem = 100;
+        public const int EnemySpawner = 130;
         public const int ProjectileSpawner = 150;
+        public const int EnemyAISystem = 160;
 
         // 200-299: Physics and collision (reserved for future)
         public const int CollisionDetection = 250;
@@ -340,6 +347,127 @@ public static class GameConstants
         /// Runs at 120 (before TerrainSpawner at 125).
         /// </summary>
         public const int SpawnerUpdateOrder = 120;
+    }
+
+    /// <summary>
+    /// Enemy projectile configuration.
+    /// </summary>
+    public static class EnemyProjectile
+    {
+        /// <summary>
+        /// Default speed for enemy projectiles.
+        /// </summary>
+        public const float DefaultSpeed = 120f;
+
+        /// <summary>
+        /// Fast speed for charged enemy projectiles.
+        /// </summary>
+        public const float FastSpeed = 200f;
+
+        /// <summary>
+        /// Maximum distance enemy projectiles can travel.
+        /// </summary>
+        public const float MaxDistance = 800f;
+
+        /// <summary>
+        /// Default damage dealt by enemy projectiles.
+        /// </summary>
+        public const int DefaultDamage = 5;
+
+        /// <summary>
+        /// Damage dealt by charged enemy projectiles.
+        /// </summary>
+        public const int ChargedDamage = 15;
+
+        /// <summary>
+        /// Render priority for enemy projectiles (between player projectiles and enemies).
+        /// </summary>
+        public const int RenderPriority = 6;
+    }
+
+    /// <summary>
+    /// Enemy AI system configuration.
+    /// </summary>
+    public static class EnemyAI
+    {
+        // Movement constants
+        /// <summary>
+        /// Speed for stationary turret enemies (no movement).
+        /// </summary>
+        public const float StationarySpeed = 0f;
+
+        /// <summary>
+        /// Speed for patrolling enemies.
+        /// </summary>
+        public const float PatrolSpeed = 30f;
+
+        /// <summary>
+        /// Speed for aggressive chaser enemies.
+        /// </summary>
+        public const float ChaseSpeed = 50f;
+
+        /// <summary>
+        /// Vertical range for patrol movement.
+        /// </summary>
+        public const float PatrolRange = 15f;
+
+        // Shooting constants
+        /// <summary>
+        /// Fire interval for rapid fire pattern.
+        /// </summary>
+        public const float RapidFireInterval = 0.8f;
+
+        /// <summary>
+        /// Interval between shots in a burst.
+        /// </summary>
+        public const float BurstFireInterval = 0.2f;
+
+        /// <summary>
+        /// Number of shots in a burst.
+        /// </summary>
+        public const int BurstSize = 3;
+
+        /// <summary>
+        /// Cooldown after a burst fire.
+        /// </summary>
+        public const float BurstCooldown = 3.0f;
+
+        /// <summary>
+        /// Charge time for charged shot pattern.
+        /// </summary>
+        public const float ChargeTime = 2.5f;
+
+        // Terrain avoidance constants
+        /// <summary>
+        /// Lookahead time for threat detection (seconds).
+        /// </summary>
+        public const float ThreatLookaheadTime = 1.5f;
+
+        /// <summary>
+        /// Force applied for terrain avoidance.
+        /// </summary>
+        public const float AvoidanceForce = 100f;
+
+        /// <summary>
+        /// Safe distance from terrain obstacles.
+        /// </summary>
+        public const float SafeDistance = 8f;
+
+        // Spawning constants
+        /// <summary>
+        /// Base spawn interval for enemies.
+        /// </summary>
+        public const float BaseSpawnInterval = 5.0f;
+
+        /// <summary>
+        /// Minimum spawn interval for enemies.
+        /// </summary>
+        public const float MinSpawnInterval = 2.0f;
+
+        /// <summary>
+        /// Maximum spawn interval for enemies.
+        /// </summary>
+        public const float MaxSpawnInterval = 6.0f;
     }
 
     /// <summary>

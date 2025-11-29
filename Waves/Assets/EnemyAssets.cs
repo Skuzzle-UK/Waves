@@ -7,7 +7,7 @@ namespace Waves.Assets;
 /// </summary>
 public static class EnemyAssets
 {
-    public static readonly IAsset Basic = new SingleCharAsset('☺');
+    public static readonly IAsset Basic = new MultiCharAsset("🪓");
 
     public static readonly IAsset Shark = new MultiCharAsset(
         "  /|",

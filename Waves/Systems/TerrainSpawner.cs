@@ -3,6 +3,7 @@ using Waves.Assets.BaseAssets;
 using Waves.Core.Configuration;
 using Waves.Core.Interfaces;
 using Waves.Core.Maths;
+using Waves.Entities;
 using Waves.Entities.Factories;
 
 namespace Waves.Systems;
@@ -15,6 +16,7 @@ public class TerrainSpawner : IUpdatable
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
+    private readonly EnemyAISystem _enemyAISystem;
     private readonly int _gameWidth;
     private readonly int _gameHeight;
 
@@ -41,10 +43,12 @@ public class TerrainSpawner : IUpdatable
 
     public TerrainSpawner(
         IEntityFactory entityFactory,
-        IEntityRegistry entityRegistry)
+        IEntityRegistry entityRegistry,
+        EnemyAISystem enemyAISystem)
     {
         _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
+        _enemyAISystem = enemyAISystem ?? throw new ArgumentNullException(nameof(enemyAISystem));
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -124,7 +128,10 @@ public class TerrainSpawner : IUpdatable
             GameConstants.Terrain.MinSpeed);
 
         // Create and register the terrain entity
-        _entityFactory.CreateTerrain(spawnPosition, selectedAsset, randomSpeed, _gameWidth);
+        Terrain terrain = _entityFactory.CreateTerrain(spawnPosition, selectedAsset, randomSpeed, _gameWidth);
+
+        // Register with AI system for terrain avoidance
+        _enemyAISystem.RegisterTerrain(terrain);
     }
 
     /// <summary>

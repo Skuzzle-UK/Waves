@@ -1,4 +1,5 @@
-﻿using Waves.Core.Configuration;
+﻿using Waves.Core.AI;
+using Waves.Core.Configuration;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 
@@ -26,6 +27,18 @@ public class Enemy : BaseEntity
     /// Event fired when the enemy dies (health reaches 0).
     /// </summary>
     public event EventHandler? OnDeath;
+
+    /// <summary>
+    /// AI behavior controlling this enemy's movement and decisions.
+    /// </summary>
+    public IAIBehavior? AIBehavior { get; set; }
+
+    /// <summary>
+    /// Shooting pattern for this enemy's projectiles.
+    /// </summary>
+    public IShootingPattern? ShootingPattern { get; set; }
+
+    private float _shootCooldown;
 
     public Enemy(IEntityRegistry entityRegistry)
     {
@@ -55,6 +68,35 @@ public class Enemy : BaseEntity
         {
             OnDeath?.Invoke(this, EventArgs.Empty);
             _entityRegistry.DisposeEntity(this);
+        }
+    }
+
+    /// <summary>
+    /// Updates the shooting cooldown timer.
+    /// </summary>
+    /// <param name="deltaTime">Time elapsed since last update.</param>
+    public void UpdateShootCooldown(float deltaTime)
+    {
+        if (_shootCooldown > 0)
+        {
+            _shootCooldown -= deltaTime;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the enemy can shoot (cooldown has expired).
+    /// </summary>
+    /// <returns>True if the enemy can shoot, false otherwise.</returns>
+    public bool CanShoot() => _shootCooldown <= 0 && ShootingPattern != null;
+
+    /// <summary>
+    /// Resets the shooting cooldown based on the current shooting pattern.
+    /// </summary>
+    public void ResetShootCooldown()
+    {
+        if (ShootingPattern != null)
+        {
+            _shootCooldown = ShootingPattern.GetCooldownTime();
         }
     }
 

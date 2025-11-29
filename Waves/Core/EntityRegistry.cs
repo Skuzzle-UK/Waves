@@ -13,7 +13,6 @@ public class EntityRegistry : IEntityRegistry
     private readonly MovementSystem _movementSystem;
     private readonly GameRenderService _renderService;
     private readonly CollisionSystem _collisionSystem;
-    // Future systems can be added here (AudioSystem, etc.)
 
     private readonly List<BaseEntity> _registeredEntities = new();
     private readonly object _lock = new();
@@ -56,9 +55,8 @@ public class EntityRegistry : IEntityRegistry
                 _collisionSystem.RegisterCollidable(collidable);
             }
 
-            // Future: Register with other systems based on capabilities
-            // if (entity is IAudible audible)
-            //     _audioSystem.Register(audible);
+            // Note: Enemies and Terrain are registered with EnemyAISystem
+            // directly by their respective spawners to avoid circular dependencies
         }
     }
 
@@ -89,7 +87,8 @@ public class EntityRegistry : IEntityRegistry
                 _collisionSystem.UnregisterCollidable(collidable);
             }
 
-            // Future: Unregister from other systems
+            // Note: Enemies and Terrain are unregistered from EnemyAISystem
+            // automatically when they become inactive/disposed
         }
     }
 

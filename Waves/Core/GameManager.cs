@@ -24,6 +24,8 @@ public class GameManager : IGameManager
     private readonly ProjectileSpawner _projectileSpawner;
     private readonly LandmassSpawner _landmassSpawner;
     private readonly TerrainSpawner _terrainSpawner;
+    private readonly EnemySpawner _enemySpawner;
+    private readonly EnemyAISystem _enemyAISystem;
 
     // Store game area dimensions for calculating positions
     private readonly int _gameWidth;
@@ -50,7 +52,9 @@ public class GameManager : IGameManager
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
         LandmassSpawner landmassSpawner,
-        TerrainSpawner terrainSpawner)
+        TerrainSpawner terrainSpawner,
+        EnemySpawner enemySpawner,
+        EnemyAISystem enemyAISystem)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
@@ -58,6 +62,8 @@ public class GameManager : IGameManager
         _projectileSpawner = projectileSpawner;
         _landmassSpawner = landmassSpawner;
         _terrainSpawner = terrainSpawner;
+        _enemySpawner = enemySpawner;
+        _enemyAISystem = enemyAISystem;
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -93,6 +99,10 @@ public class GameManager : IGameManager
         _landmassSpawner.Initialize(terrainSeed, TakeDamage);
         _terrainSpawner.Initialize(terrainSeed);
 
+        // Initialize enemy spawner with seed and scoring callback
+        int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _enemySpawner.Initialize(enemySeed, IncrementScore);
+
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0
         IAsset waveAsset = WaveAssets.CreateAnimatedWave(_gameHeight);
@@ -103,6 +113,9 @@ public class GameManager : IGameManager
         Vector2 playerPosition = _centerPosition - new Vector2(35, 0);
         _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, _audioManager, TakeDamage);
+
+        // Pass player reference to AI system
+        _enemyAISystem.SetPlayer(_currentPlayer);
 
         // Spawn test enemies - the one and only BRICKWALLs!
         //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
