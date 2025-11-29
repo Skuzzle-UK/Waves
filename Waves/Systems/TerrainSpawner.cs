@@ -10,11 +10,13 @@ namespace Waves.Systems;
 /// <summary>
 /// System that procedurally spawns terrain objects (islands and boats) at regular intervals.
 /// Uses a seeded random number generator for deterministic terrain generation.
+/// Terrain speeds scale with GameSpeedManager.CurrentSpeed.
 /// </summary>
 public class TerrainSpawner : IUpdatable
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
+    private readonly IGameSpeedManager _speedManager;
     private readonly int _gameWidth;
     private readonly int _gameHeight;
 
@@ -41,10 +43,12 @@ public class TerrainSpawner : IUpdatable
 
     public TerrainSpawner(
         IEntityFactory entityFactory,
-        IEntityRegistry entityRegistry)
+        IEntityRegistry entityRegistry,
+        IGameSpeedManager speedManager)
     {
         _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
+        _speedManager = speedManager ?? throw new ArgumentNullException(nameof(speedManager));
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -118,13 +122,17 @@ public class TerrainSpawner : IUpdatable
         // This way it starts scrolling in immediately and looks natural
         Vector2 spawnPosition = new Vector2(_gameWidth - 1, randomY);
 
-        // Generate random speed within configured range
-        float randomSpeed = (float)(_random.NextDouble() *
+        // Generate random speed within configured range, scaled by current game speed
+        float baseRandomSpeed = (float)(_random.NextDouble() *
             (GameConstants.Terrain.MaxSpeed - GameConstants.Terrain.MinSpeed) +
             GameConstants.Terrain.MinSpeed);
 
+        float gameSpeed = _speedManager.CurrentSpeed;
+        float terrainMultiplier = (gameSpeed * 3.0f) - 2.0f;
+        float scaledSpeed = baseRandomSpeed * terrainMultiplier;
+
         // Create and register the terrain entity
-        _entityFactory.CreateTerrain(spawnPosition, selectedAsset, randomSpeed, _gameWidth);
+        _entityFactory.CreateTerrain(spawnPosition, selectedAsset, scaledSpeed, _gameWidth);
     }
 
     /// <summary>
