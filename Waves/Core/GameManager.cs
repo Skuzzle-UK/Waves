@@ -54,7 +54,6 @@ public class GameManager : IGameManager, IUpdatable
     // Boss tracking
     private BaseBoss? _currentBoss;
     private int _currentBossIndex = 0;
-    private const int TotalBosses = 6;
     private bool _endlessModeActive = false; // No more bosses after Boss6
 
     // Update order for game manager (before spawners so speed is updated first)
