@@ -19,4 +19,10 @@ public static class EnemyAssets
         @"❮╼●▓╼●▓[▓❱",
         @" ▔▔▔▔▔▔▔▔"
     );
+
+    public static readonly IAsset Kamikaze = new MultiCharAsset(
+        "  !  ",
+        " /!\\ ",
+        "<<*>>"
+    );
 }

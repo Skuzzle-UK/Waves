@@ -132,7 +132,7 @@ public class EntityFactory : IEntityFactory
     /// Creates an enemy projectile at the specified position.
     /// Projectile is automatically registered with the entity registry.
     /// </summary>
-    public EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage)
+    public EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage, string? soundEffect)
     {
         EnemyProjectile projectile = EnemyProjectileBuilder.Create()
             .WithPosition(position)
@@ -142,6 +142,10 @@ public class EntityFactory : IEntityFactory
 
         // Register the projectile with all relevant systems
         _entityRegistry.RegisterEntity(projectile);
+        if (soundEffect != null)
+        {
+            _audioManager?.PlayOneShot(soundEffect);
+        }
 
         return projectile;
     }

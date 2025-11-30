@@ -38,6 +38,11 @@ public class Enemy : BaseEntity
     /// </summary>
     public IShootingPattern? ShootingPattern { get; set; }
 
+    /// <summary>
+    /// Whether this enemy applies knockback on collision.
+    /// </summary>
+    public bool ApplyKnockback { get; set; }
+
     private float _shootCooldown;
 
     public Enemy(IEntityRegistry entityRegistry)

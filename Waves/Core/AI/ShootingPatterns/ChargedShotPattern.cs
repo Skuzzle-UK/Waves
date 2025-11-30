@@ -1,3 +1,4 @@
+using Waves.Assets.Audio;
 using Waves.Core.Configuration;
 using Waves.Core.Maths;
 using Waves.Entities;
@@ -25,7 +26,8 @@ public class ChargedShotPattern : IShootingPattern
         var projectile = factory.CreateEnemyProjectile(
             source.Position,
             targetDirection,
-            GameConstants.EnemyProjectile.ChargedDamage
+            GameConstants.EnemyProjectile.ChargedDamage,
+            AudioResources.SoundEffects.EightBit.Shoot_002
         );
 
         // Set higher speed for charged shot

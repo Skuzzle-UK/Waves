@@ -90,5 +90,13 @@ public static class AudioResources
         /// Surfer impact sound
         /// </summary>
         public const string Impact_003 = "Assets/Audio/SFX/Impact_003.wav";
+
+        public static class EightBit
+        {
+            public const string Explosion_001 = "Assets/Audio/SFX/Explosion_8Bit_001.wav";
+            public const string Shoot_001 = "Assets/Audio/SFX/Shoot_8Bit_001.wav";
+            public const string Shoot_002 = "Assets/Audio/SFX/Shoot_8Bit_002.wav";
+            public const string Shoot_003 = "Assets/Audio/SFX/Shoot_8Bit_003.wav";
+        }
     }
 }

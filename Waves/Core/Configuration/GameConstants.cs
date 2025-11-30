@@ -117,6 +117,16 @@ public static class GameConstants
         /// Damage dealt to player when colliding with enemies.
         /// </summary>
         public const int EnemyDamage = 20;
+
+        /// <summary>
+        /// Damage dealt to player when hit by kamikaze enemies.
+        /// </summary>
+        public const int KamikazeDamage = 30;
+
+        /// <summary>
+        /// Multiplier for knockback velocity when hit by kamikaze enemies.
+        /// </summary>
+        public const float KamikazeKnockbackMultiplier = 500f;
     }
 
     /// <summary>

@@ -158,16 +158,27 @@ public class EnemySpawner : IUpdatable
             case AIType.StationaryTurret:
                 enemy.AIBehavior = new StationaryTurretBehavior();
                 enemy.ShootingPattern = new RapidFirePattern();
+                enemy.Health = 80;
                 break;
 
             case AIType.VerticalPatrol:
                 enemy.AIBehavior = new VerticalPatrolBehavior();
                 enemy.ShootingPattern = new BurstFirePattern();
+                enemy.Health = 10;
                 break;
 
             case AIType.AggressiveChaser:
                 enemy.AIBehavior = new AggressiveChaserBehavior();
                 enemy.ShootingPattern = new ChargedShotPattern();
+                enemy.Health = 30;
+                break;
+
+            case AIType.KamikazeCharger:
+                enemy.AIBehavior = new KamikazeChargerBehavior();
+                enemy.ShootingPattern = null; // Kamikaze enemies don't shoot
+                enemy.Health = 50;
+                enemy.Speed = GameConstants.Enemy.DefaultSpeed * 1.5f; // Faster movement
+                enemy.ApplyKnockback = true; // Enable knockback physics
                 break;
         }
 
@@ -206,29 +217,24 @@ public class EnemySpawner : IUpdatable
         float progress = Math.Min(_gameDuration / 90f, 1.0f);
         float roll = (float)_random.NextDouble();
 
-        // Early game (0-30s): 70% Turret, 30% Patrol, 0% Chaser
+        // Early game (0-30s): 60% Turret, 30% Patrol, 10% Kamikaze, 0% Chaser
         if (progress < 0.33f)
         {
-            return roll < 0.7f ? AIType.StationaryTurret : AIType.VerticalPatrol;
-        }
-        // Mid game (30-90s): 40% Turret, 40% Patrol, 20% Chaser
-        else if (progress < 1.0f)
-        {
-            if (roll < 0.4f)
+            if (roll < 0.6f)
             {
                 return AIType.StationaryTurret;
             }
-            else if (roll < 0.8f)
+            else if (roll < 0.9f)
             {
                 return AIType.VerticalPatrol;
             }
             else
             {
-                return AIType.AggressiveChaser;
+                return AIType.KamikazeCharger;
             }
         }
-        // Late game (90s+): 30% Turret, 30% Patrol, 40% Chaser
-        else
+        // Mid game (30-90s): 30% Turret, 30% Patrol, 20% Kamikaze, 20% Chaser
+        else if (progress < 1.0f)
         {
             if (roll < 0.3f)
             {
@@ -237,6 +243,30 @@ public class EnemySpawner : IUpdatable
             else if (roll < 0.6f)
             {
                 return AIType.VerticalPatrol;
+            }
+            else if (roll < 0.8f)
+            {
+                return AIType.KamikazeCharger;
+            }
+            else
+            {
+                return AIType.AggressiveChaser;
+            }
+        }
+        // Late game (90s+): 20% Turret, 20% Patrol, 30% Kamikaze, 30% Chaser
+        else
+        {
+            if (roll < 0.2f)
+            {
+                return AIType.StationaryTurret;
+            }
+            else if (roll < 0.4f)
+            {
+                return AIType.VerticalPatrol;
+            }
+            else if (roll < 0.7f)
+            {
+                return AIType.KamikazeCharger;
             }
             else
             {
@@ -255,6 +285,7 @@ public class EnemySpawner : IUpdatable
             AIType.StationaryTurret => EnemyAssets.WarShip,  // Solid, stationary look
             AIType.VerticalPatrol => EnemyAssets.Shark,        // Mobile, threatening
             AIType.AggressiveChaser => EnemyAssets.Basic,      // Fast, simple
+            AIType.KamikazeCharger => EnemyAssets.Kamikaze,    // Explosive, dangerous
             _ => EnemyAssets.WarShip
         };
     }

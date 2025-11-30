@@ -51,6 +51,7 @@
     <EmbeddedResource Include="Assets\Audio\Music\BossBattle1.wav" />
     <EmbeddedResource Include="Assets\Audio\Music\Waves_001.wav" />
 	<EmbeddedResource Include="Assets\Audio\Music\BeautifulPiano.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Explosion_8Bit_001.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\Death.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\Boing.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\Shoot_001.wav" />
