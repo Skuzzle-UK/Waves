@@ -26,6 +26,8 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     private readonly TerrainSpawner _terrainSpawner;
     private readonly ScoreSystem _scoreSystem;
     private readonly GameRenderService _renderService;
+    private readonly EnemySpawner _enemySpawner;
+    private readonly EnemyAISystem _enemyAISystem;
 
     private bool _gameSystemsRegistered = false;
 
@@ -52,6 +54,8 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     /// <param name="terrainSpawner">The terrain spawner to register during gameplay.</param>
     /// <param name="scoreSystem">The score system to register during gameplay.</param>
     /// <param name="renderService">The render service to register during gameplay.</param>
+    /// <param name="enemySpawner">The enemy spawner to register during gameplay.</param>
+    /// <param name="enemyAISystem">The enemy AI system to register during gameplay.</param>
     public GameLoop(
         int tickRateMilliseconds,
         IGameManager gameManager,
@@ -62,7 +66,9 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         LandmassSpawner landmassSpawner,
         TerrainSpawner terrainSpawner,
         ScoreSystem scoreSystem,
-        GameRenderService renderService)
+        GameRenderService renderService,
+        EnemySpawner enemySpawner,
+        EnemyAISystem enemyAISystem)
     {
         _tickRateMilliseconds = tickRateMilliseconds;
         _gameManager = gameManager;
@@ -75,6 +81,8 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         _terrainSpawner = terrainSpawner;
         _scoreSystem = scoreSystem;
         _renderService = renderService;
+        _enemySpawner = enemySpawner;
+        _enemyAISystem = enemyAISystem;
 
         // Subscribe to game state changes for automatic pause/resume
         _gameManager.GameStateChanged += OnGameStateChanged;
@@ -230,7 +238,9 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
             RegisterUpdatable((IUpdatable)_gameManager);
             RegisterUpdatable(_landmassSpawner);
             RegisterUpdatable(_terrainSpawner);
+            RegisterUpdatable(_enemySpawner);
             RegisterUpdatable(_projectileSpawner);
+            RegisterUpdatable(_enemyAISystem);
             RegisterUpdatable(_collisionSystem);
             RegisterUpdatable(_movementSystem);
             RegisterUpdatable(_renderService);
@@ -250,7 +260,9 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
             UnregisterUpdatable((IUpdatable)_gameManager);
             UnregisterUpdatable(_landmassSpawner);
             UnregisterUpdatable(_terrainSpawner);
+            UnregisterUpdatable(_enemySpawner);
             UnregisterUpdatable(_projectileSpawner);
+            UnregisterUpdatable(_enemyAISystem);
             UnregisterUpdatable(_collisionSystem);
             UnregisterUpdatable(_movementSystem);
             UnregisterUpdatable(_renderService);

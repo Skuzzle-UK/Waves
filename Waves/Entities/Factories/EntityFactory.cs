@@ -127,4 +127,22 @@ public class EntityFactory : IEntityFactory
 
         return boss;
     }
+
+    /// <summary>
+    /// Creates an enemy projectile at the specified position.
+    /// Projectile is automatically registered with the entity registry.
+    /// </summary>
+    public EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage)
+    {
+        EnemyProjectile projectile = EnemyProjectileBuilder.Create()
+            .WithPosition(position)
+            .WithDirection(direction)
+            .WithDamage(damage)
+            .Build();
+
+        // Register the projectile with all relevant systems
+        _entityRegistry.RegisterEntity(projectile);
+
+        return projectile;
+    }
 }

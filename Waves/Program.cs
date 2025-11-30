@@ -35,6 +35,12 @@ internal class Program
 
                 services.AddSingleton<TerrainSpawner>();
                 services.AddSingleton<LandmassSpawner>();
+
+                // Register Enemy AI systems
+                services.AddSingleton<EnemyAISystem>();
+                services.AddSingleton<EnemySpawner>();
+
+                // Register EntityFactory for creating all game entities
                 services.AddSingleton<IEntityFactory, EntityFactory>();
                 services.AddSingleton<IGameProgressionManager, GameProgressionManager>();
                 services.AddSingleton<IGameManager, GameManager>();
@@ -52,7 +58,9 @@ internal class Program
                     sp.GetRequiredService<LandmassSpawner>(),
                     sp.GetRequiredService<TerrainSpawner>(),
                     sp.GetRequiredService<ScoreSystem>(),
-                    sp.GetRequiredService<GameRenderService>()));
+                    sp.GetRequiredService<GameRenderService>(),
+                    sp.GetRequiredService<EnemySpawner>(),
+                    sp.GetRequiredService<EnemyAISystem>()));
 
                 services.AddHostedService<GameLoop>(sp => (GameLoop)sp.GetRequiredService<IGameLoop>());
             })

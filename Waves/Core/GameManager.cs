@@ -25,6 +25,8 @@ public class GameManager : IGameManager, IUpdatable
     private readonly ProjectileSpawner _projectileSpawner;
     private readonly LandmassSpawner _landmassSpawner;
     private readonly TerrainSpawner _terrainSpawner;
+    private readonly EnemySpawner _enemySpawner;
+    private readonly EnemyAISystem _enemyAISystem;
 
     // Store game area dimensions for calculating positions
     private readonly int _gameWidth;
@@ -36,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float TargetSpeed = 2.0f;
-    private const float RampDuration = 5f; // TODO: Reset to 180 for 3 minutes
+    private const float RampDuration = 180f; // TODO: Reset to 180 for 3 minutes
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
 
@@ -65,7 +67,9 @@ public class GameManager : IGameManager, IUpdatable
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
         LandmassSpawner landmassSpawner,
-        TerrainSpawner terrainSpawner)
+        TerrainSpawner terrainSpawner,
+        EnemySpawner enemySpawner,
+        EnemyAISystem enemyAISystem)
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
@@ -74,6 +78,8 @@ public class GameManager : IGameManager, IUpdatable
         _projectileSpawner = projectileSpawner;
         _landmassSpawner = landmassSpawner;
         _terrainSpawner = terrainSpawner;
+        _enemySpawner = enemySpawner;
+        _enemyAISystem = enemyAISystem;
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -109,12 +115,25 @@ public class GameManager : IGameManager, IUpdatable
         _progressionManager.IsBossBattle = false;
         IsBossBattle = false;
         _currentBoss = null;
+
+        // Clear specialized systems first (AI system tracks enemies/terrain separately)
+        _enemyAISystem.Reset();
+
+        // Then clear entity registry (unregisters from core systems)
         _entityRegistry.ClearAll();
+
+        // Reset spawner states (clears any internal tracking)
+        _enemySpawner.Reset();
+        _terrainSpawner.Reset();
 
         // Initialize terrain and landmass spawners with provided seed or default
         int terrainSeed = seed ?? GameConstants.Terrain.DefaultSeed;
         _landmassSpawner.Initialize(terrainSeed, TakeDamage);
         _terrainSpawner.Initialize(terrainSeed);
+
+        // Initialize enemy spawner with seed and scoring callback
+        int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _enemySpawner.Initialize(enemySeed, IncrementScore);
 
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0
@@ -126,6 +145,9 @@ public class GameManager : IGameManager, IUpdatable
         Vector2 playerPosition = _centerPosition - new Vector2(35, 0);
         _currentPlayer = _entityFactory.CreatePlayer(playerPosition);
         _currentPlayer.Initialise(_inputSystem, _entityRegistry, _projectileSpawner, _audioManager, TakeDamage);
+
+        // Pass player reference to AI system
+        _enemyAISystem.SetPlayer(_currentPlayer);
 
         // Spawn test enemies - the one and only BRICKWALLs!
         //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
@@ -150,7 +172,12 @@ public class GameManager : IGameManager, IUpdatable
     /// </summary>
     public void ExitGame()
     {
+        // Clear specialized systems first (AI system tracks enemies/terrain separately)
+        _enemyAISystem.Reset();
+
+        // Then clear entity registry (unregisters from core systems)
         _entityRegistry.ClearAll();
+
         NewState(GameStates.ENDED);
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
     }

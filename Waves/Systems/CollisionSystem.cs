@@ -48,6 +48,12 @@ public class CollisionSystem : IUpdatable
                 CheckAndHandleCollision(snapshot[i], snapshot[j]);
             }
         }
+
+        // Clean up disposed entities from the list
+        lock (_lock)
+        {
+            _collidables.RemoveAll(c => c is BaseEntity entity && (entity.IsDisposed || !entity.IsActive));
+        }
     }
 
     private void CheckAndHandleCollision(ICollidable a, ICollidable b)

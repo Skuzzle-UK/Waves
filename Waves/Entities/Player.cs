@@ -207,7 +207,19 @@ public class Player : BaseEntity
             return; // Early return - don't process as generic obstacle
         }
 
-        // Handle enemy/projectile collisions with invulnerability flash
+        // Handle enemy projectile collisions (instant damage, no invulnerability)
+        if (other.Layer == CollisionLayer.EnemyProjectile && other is EnemyProjectile proj)
+        {
+            _onTakeDamage?.Invoke(proj.Damage);
+            return;
+        }
+
+        // Handle enemy collisions (instant damage, no invulnerability)
+        if (other.Layer == CollisionLayer.Enemy) 
+        { 
+            // Handle enemy/projectile collisions with invulnerability flash
+            _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage); 
+        }
         if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
         {
             // Only take damage if not currently invulnerable
