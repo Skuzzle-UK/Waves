@@ -71,9 +71,6 @@ public class ProjectileSpawner : IUpdatable
             return;
         }
 
-        // TODO: Work out if I can change display char depending on powerup and add some kind of attack points to projectile
-        // TODO: Can we use animated projectiles ?
-
         // Create projectile at player's position
         Projectile projectile = ProjectileBuilder.Create()
             .WithPosition(_player.Position)
@@ -86,8 +83,6 @@ public class ProjectileSpawner : IUpdatable
         // Register with entity registry - it handles all system registrations
         _entityRegistry.RegisterEntity(projectile);
 
-        // TODO: Work out if I can change this sfx depending on powerup. Probably needs to be added to the projectile builder.
-        // TODO: Work out if sfx can be cached for reuse or if it doesn't matter
-        _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_001);
+        _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_001);
     }
 }

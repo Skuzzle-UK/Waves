@@ -56,4 +56,10 @@ public interface IEntityRegistry
     /// Useful for game reset or cleanup.
     /// </summary>
     void ClearAll();
+
+    /// <summary>
+    /// Clears all enemy projectiles from the game.
+    /// Useful for clearing the screen when a boss is defeated.
+    /// </summary>
+    void ClearEnemyProjectiles();
 }

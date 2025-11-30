@@ -45,6 +45,11 @@
 	<None Remove="Assets\Audio\SFX\two.wav" />
 	<None Remove="Assets\Audio\SFX\one.wav" />
 	<None Remove="Assets\Audio\SFX\surfsup.wav" />
+	<None Remove="Assets\Audio\SFX\Moo.wav" />
+	<None Remove="Assets\Audio\SFX\Breath.wav" />
+	<None Remove="Assets\Audio\SFX\Horn.wav" />
+	<None Remove="Assets\Audio\SFX\Smurf.wav" />
+	<None Remove="Assets\Audio\SFX\Tiger.wav" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +69,11 @@
 	<EmbeddedResource Include="Assets\Audio\SFX\two.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\one.wav" />
 	<EmbeddedResource Include="Assets\Audio\SFX\surfsup.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Moo.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Breath.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Horn.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Smurf.wav" />
+	<EmbeddedResource Include="Assets\Audio\SFX\Tiger.wav" />
   </ItemGroup>
 
 </Project>

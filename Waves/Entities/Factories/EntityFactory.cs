@@ -121,10 +121,62 @@ public class EntityFactory : IEntityFactory
     public Boss1 CreateBoss1(Vector2 position, IAsset asset, int maxHealth = 500)
     {
         Boss1 boss = new Boss1(asset, position, maxHealth, _entityRegistry, _audioManager);
-
-        // Register the boss with all relevant systems
         _entityRegistry.RegisterEntity(boss);
+        return boss;
+    }
 
+    /// <summary>
+    /// Creates Boss2 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss2 CreateBoss2(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss2 boss = new Boss2(asset, position, maxHealth, _entityRegistry, _audioManager);
+        _entityRegistry.RegisterEntity(boss);
+        return boss;
+    }
+
+    /// <summary>
+    /// Creates Boss3 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss3 CreateBoss3(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss3 boss = new Boss3(asset, position, maxHealth, _entityRegistry, _audioManager);
+        _entityRegistry.RegisterEntity(boss);
+        return boss;
+    }
+
+    /// <summary>
+    /// Creates Boss4 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss4 CreateBoss4(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss4 boss = new Boss4(asset, position, maxHealth, _entityRegistry, _audioManager);
+        _entityRegistry.RegisterEntity(boss);
+        return boss;
+    }
+
+    /// <summary>
+    /// Creates Boss5 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss5 CreateBoss5(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss5 boss = new Boss5(asset, position, maxHealth, _entityRegistry, _audioManager);
+        _entityRegistry.RegisterEntity(boss);
+        return boss;
+    }
+
+    /// <summary>
+    /// Creates Boss6 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss6 CreateBoss6(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss6 boss = new Boss6(asset, position, maxHealth, _entityRegistry, _audioManager);
+        _entityRegistry.RegisterEntity(boss);
         return boss;
     }
 

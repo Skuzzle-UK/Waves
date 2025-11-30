@@ -1,3 +1,4 @@
+using Waves.Core.Enums;
 using Waves.Core.Interfaces;
 using Waves.Entities;
 using Waves.Systems;
@@ -189,6 +190,24 @@ public class EntityRegistry : IEntityRegistry
         lock (_lock)
         {
             return _registeredEntities.Contains(entity);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void ClearEnemyProjectiles()
+    {
+        lock (_lock)
+        {
+            // Find all enemy projectiles and deactivate them
+            List<BaseEntity> projectilesToRemove = _registeredEntities
+                .Where(e => e is ICollidable collidable &&
+                           (collidable.Layer & CollisionLayer.EnemyProjectile) != 0)
+                .ToList();
+
+            foreach (BaseEntity projectile in projectilesToRemove)
+            {
+                projectile.IsActive = false; // Deactivate instead of unregistering
+            }
         }
     }
 }

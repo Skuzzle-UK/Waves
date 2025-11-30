@@ -62,5 +62,30 @@ public interface IEntityFactory
     /// <returns>A new Boss1 instance.</returns>
     Boss1 CreateBoss1(Vector2 position, IAsset asset, int maxHealth = 500);
 
+    /// <summary>
+    /// Creates Boss2 at the specified position.
+    /// </summary>
+    Boss2 CreateBoss2(Vector2 position, IAsset asset, int maxHealth = 500);
+
+    /// <summary>
+    /// Creates Boss3 at the specified position.
+    /// </summary>
+    Boss3 CreateBoss3(Vector2 position, IAsset asset, int maxHealth = 500);
+
+    /// <summary>
+    /// Creates Boss4 at the specified position.
+    /// </summary>
+    Boss4 CreateBoss4(Vector2 position, IAsset asset, int maxHealth = 500);
+
+    /// <summary>
+    /// Creates Boss5 at the specified position.
+    /// </summary>
+    Boss5 CreateBoss5(Vector2 position, IAsset asset, int maxHealth = 500);
+
+    /// <summary>
+    /// Creates Boss6 at the specified position.
+    /// </summary>
+    Boss6 CreateBoss6(Vector2 position, IAsset asset, int maxHealth = 500);
+
     EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage, string? soundEffect);
 }

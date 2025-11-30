@@ -192,7 +192,11 @@ public class Player : BaseEntity
             // Only bounce and take damage if not currently invulnerable to landmass
             if (_landmassInvulnerabilityTimer <= 0f)
             {
-                // Take damage
+                // Play impact sound and take damage
+                if (_audioManager is not null)
+                {
+                    _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                }
                 _onTakeDamage?.Invoke(GameConstants.Player.LandmassDamage);
 
                 // Apply bounce physics based on wall position
@@ -210,6 +214,10 @@ public class Player : BaseEntity
         // Handle enemy projectile collisions (instant damage, no invulnerability)
         if (other.Layer == CollisionLayer.EnemyProjectile && other is EnemyProjectile proj)
         {
+            if (_audioManager is not null)
+            {
+                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+            }
             _onTakeDamage?.Invoke(proj.Damage);
             _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
             return;

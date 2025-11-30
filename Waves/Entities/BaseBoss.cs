@@ -1,3 +1,4 @@
+using Waves.Assets.Audio;
 using Waves.Assets.BaseAssets;
 using Waves.Core.Configuration;
 using Waves.Core.Enums;
@@ -47,6 +48,41 @@ public abstract class BaseBoss : BaseEntity
     /// </summary>
     protected Vector2 HomePosition { get; set; }
 
+    /// <summary>
+    /// Audio manager for playing sound effects.
+    /// </summary>
+    protected IAudioManager? AudioManager { get; private set; }
+
+    /// <summary>
+    /// Reference to the player for targeting calculations.
+    /// </summary>
+    protected Player? Player { get; private set; }
+
+    /// <summary>
+    /// Timer for how long the boss should flash after taking damage.
+    /// </summary>
+    private float _damageFlashTimer = 0f;
+
+    /// <summary>
+    /// Timer for toggling the flash color.
+    /// </summary>
+    private float _flashTimer = 0f;
+
+    /// <summary>
+    /// Whether to show red flash (toggles on/off).
+    /// </summary>
+    private bool _showRedFlash = false;
+
+    /// <summary>
+    /// Duration of the damage flash effect.
+    /// </summary>
+    private const float DamageFlashDuration = 0.2f;
+
+    /// <summary>
+    /// Interval for toggling flash color (same as player).
+    /// </summary>
+    private const float FlashInterval = 0.2f;
+
     protected BaseBoss()
     {
         // Configure boss properties
@@ -61,13 +97,22 @@ public abstract class BaseBoss : BaseEntity
     /// <summary>
     /// Initializes the boss with starting health and position.
     /// </summary>
-    protected void Initialize(int maxHealth, Vector2 homePosition)
+    protected void Initialize(int maxHealth, Vector2 homePosition, IAudioManager audioManager)
     {
         MaxHealth = maxHealth;
         CurrentHealth = maxHealth;
         HomePosition = homePosition;
         Position = homePosition;
         ElapsedTime = 0f;
+        AudioManager = audioManager;
+    }
+
+    /// <summary>
+    /// Sets the player reference for targeting calculations.
+    /// </summary>
+    public void SetPlayer(Player player)
+    {
+        Player = player;
     }
 
     /// <summary>
@@ -81,6 +126,30 @@ public abstract class BaseBoss : BaseEntity
         }
 
         ElapsedTime += deltaTime;
+
+        // Handle flashing effect during damage flash (same as player)
+        if (_damageFlashTimer > 0)
+        {
+            _damageFlashTimer -= deltaTime;
+
+            _flashTimer += deltaTime;
+            if (_flashTimer >= FlashInterval)
+            {
+                _flashTimer = 0f;
+                _showRedFlash = !_showRedFlash;
+                // Flash between red and default (null = reset to default color)
+                RenderColor = _showRedFlash ? Spectre.Console.Color.Red : null;
+            }
+        }
+        else
+        {
+            // Flash timer ended - reset to normal appearance (no color)
+            if (RenderColor.HasValue)
+            {
+                RenderColor = null;
+                _showRedFlash = false;
+            }
+        }
 
         // Call boss-specific update logic
         UpdateBehavior(deltaTime);
@@ -105,6 +174,15 @@ public abstract class BaseBoss : BaseEntity
 
         CurrentHealth -= damage;
         CurrentHealth = Math.Max(0, CurrentHealth);
+
+        // Play impact sound effect
+        _ = AudioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_002);
+
+        // Trigger red flash effect - immediately show red
+        _damageFlashTimer = DamageFlashDuration;
+        _flashTimer = 0f;
+        _showRedFlash = true;
+        RenderColor = Spectre.Console.Color.Red;
 
         OnDamaged?.Invoke(this, damage);
 

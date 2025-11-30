@@ -7,7 +7,6 @@ namespace Waves.Assets;
 /// </summary>
 public static class PlayerAssets
 {
-    // TODO: Can we make an AnimatedMultiCharAsset ?
     public static readonly IAsset Surfer = new MultiCharAsset(
         "     o ",
         "   /|\\ ",

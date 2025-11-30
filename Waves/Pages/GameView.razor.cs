@@ -37,7 +37,9 @@ public partial class GameView : ComponentBase, IDisposable
     private string _bottomBorder = string.Empty;
 
     private int _countdownValue = 3;
+    private string _countdownText = "3";
     private System.Threading.Timer? _countdownTimer;
+    private bool _isPostBossCountdown = false;
 
     private SettingsView? _settingsView;
     private bool _showSettings = false;
@@ -75,6 +77,8 @@ public partial class GameView : ComponentBase, IDisposable
         // Start countdown timer when entering countdown state
         if (newState == GameStates.COUNTDOWN)
         {
+            // Check if this is after a boss battle (boss battle flag would have been set)
+            _isPostBossCountdown = GameManager.IsBossBattle == false && GameManager.Score > 0;
             StartCountdown();
         }
 
@@ -84,9 +88,23 @@ public partial class GameView : ComponentBase, IDisposable
 
     private void StartCountdown()
     {
-        AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
-        _countdownValue = 3;
-        _countdownTimer = new System.Threading.Timer(CountdownTick, null, 1000, 1000);
+        // If this is after a boss battle, show "NICE" first
+        if (_isPostBossCountdown)
+        {
+            _countdownValue = 4;
+            _countdownText = "NICE";
+            _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Moo, true);
+            // Show "NICE" for 3 seconds, then tick every 1 second
+            _countdownTimer = new System.Threading.Timer(CountdownTick, null, 3000, 1000);
+        }
+        else
+        {
+            _countdownValue = 3;
+            _countdownText = "3";
+            _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
+            // Normal countdown: tick every 1 second
+            _countdownTimer = new System.Threading.Timer(CountdownTick, null, 1000, 1000);
+        }
     }
 
     private void CountdownTick(object? state)
@@ -95,14 +113,21 @@ public partial class GameView : ComponentBase, IDisposable
 
         switch (_countdownValue)
         {
+            case 3:
+                _countdownText = "3";
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
+                break;
             case 2:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.Two);
+                _countdownText = "2";
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Two);
                 break;
             case 1:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.One);
+                _countdownText = "1";
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.One);
                 break;
             case 0:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.SurfsUp);
+                _countdownText = "0";
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.SurfsUp);
                 break;
         }
 
@@ -110,6 +135,7 @@ public partial class GameView : ComponentBase, IDisposable
         {
             _countdownTimer?.Dispose();
             _countdownTimer = null;
+            _isPostBossCountdown = false;
             GameManager.StartGameAfterCountdown();
         }
 

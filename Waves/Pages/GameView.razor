@@ -21,7 +21,7 @@
 @if (GameManager.CurrentGameState == GameStates.COUNTDOWN)
 {
     <Align Vertical="@Spectre.Console.VerticalAlignment.Middle">
-        <Figlet Content="@_countdownValue.ToString()" Color="@Spectre.Console.Color.Cyan1" />
+        <Figlet Content="@_countdownText" Color="@Spectre.Console.Color.Cyan1" />
     </Align>
 }
 else if (GameManager.CurrentGameState == GameStates.GAME_OVER)
