@@ -110,7 +110,7 @@ public class Boss1 : BaseBoss
     private void FireProjectiles()
     {
         // Play firing sound effect once (not per projectile)
-        _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_003);
+        _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_003);
 
         // 50% chance to fire 2 projectiles, 50% chance to fire 1
         int projectileCount = _random.Next(2) == 0 ? 1 : 2;

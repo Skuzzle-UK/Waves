@@ -163,7 +163,7 @@ public abstract class BaseBoss : BaseEntity
         CurrentHealth = Math.Max(0, CurrentHealth);
 
         // Play impact sound effect
-        AudioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_002);
+        _ = AudioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_002);
 
         // Trigger red flash effect - immediately show red
         _damageFlashTimer = DamageFlashDuration;

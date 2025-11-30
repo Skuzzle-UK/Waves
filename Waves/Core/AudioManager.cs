@@ -21,6 +21,10 @@ public class AudioManager : IAudioManager, IHostedService
     private readonly Dictionary<string, CachedSound> _soundCache = new();
     private bool _soundEffectsPreloaded = false;
 
+    // Limit concurrent sound effects to prevent audio stuttering
+    private const int MaxConcurrentSoundEffects = 10;
+    private readonly SemaphoreSlim _sfxSemaphore = new(MaxConcurrentSoundEffects, MaxConcurrentSoundEffects);
+
     public float BackgroundTrackVolume
     {
         get
@@ -133,35 +137,53 @@ public class AudioManager : IAudioManager, IHostedService
 
     public async Task PlayOneShot(string resourcePath)
     {
-        string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
-
-        // Try to get from cache first
-        if (!_soundCache.TryGetValue(resourceName, out CachedSound? cachedSound))
+        // Try to acquire a slot for playing this sound effect
+        // If we're already at the limit, skip this sound to prevent stuttering
+        bool acquired = await _sfxSemaphore.WaitAsync(0);
+        if (!acquired)
         {
-            // If not cached, preload it now (fallback - shouldn't normally happen)
-            Debug.WriteLine($"Sound effect not in cache, loading on-demand: {resourceName}");
-            await PreloadSoundEffect(resourcePath);
-
-            if (!_soundCache.TryGetValue(resourceName, out cachedSound))
-            {
-                throw new FileNotFoundException($"Failed to load sound effect: {resourceName}");
-            }
+            // Too many concurrent sound effects - drop this one
+            Debug.WriteLine($"Skipped sound effect (limit reached): {resourcePath}");
+            return;
         }
 
-        // Play the cached audio from memory
-        using (MemoryStream memoryStream = new MemoryStream(cachedSound.AudioData))
-        using (WaveFileReader audioFile = new WaveFileReader(memoryStream))
-        using (WaveOutEvent outputDevice = new WaveOutEvent())
+        try
         {
-            outputDevice.Init(audioFile);
-            outputDevice.Volume = OneShotVolume;
-            outputDevice.Play();
+            string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
 
-            while (outputDevice.PlaybackState == PlaybackState.Playing)
+            // Try to get from cache first
+            if (!_soundCache.TryGetValue(resourceName, out CachedSound? cachedSound))
             {
-                outputDevice.Volume = OneShotVolume;
-                await Task.Delay(10);
+                // If not cached, preload it now (fallback - shouldn't normally happen)
+                Debug.WriteLine($"Sound effect not in cache, loading on-demand: {resourceName}");
+                await PreloadSoundEffect(resourcePath);
+
+                if (!_soundCache.TryGetValue(resourceName, out cachedSound))
+                {
+                    throw new FileNotFoundException($"Failed to load sound effect: {resourceName}");
+                }
             }
+
+            // Play the cached audio from memory
+            using (MemoryStream memoryStream = new MemoryStream(cachedSound.AudioData))
+            using (WaveFileReader audioFile = new WaveFileReader(memoryStream))
+            using (WaveOutEvent outputDevice = new WaveOutEvent())
+            {
+                outputDevice.Init(audioFile);
+                outputDevice.Volume = OneShotVolume;
+                outputDevice.Play();
+
+                while (outputDevice.PlaybackState == PlaybackState.Playing)
+                {
+                    outputDevice.Volume = OneShotVolume;
+                    await Task.Delay(10);
+                }
+            }
+        }
+        finally
+        {
+            // Release the semaphore slot when the sound finishes
+            _sfxSemaphore.Release();
         }
     }
 

@@ -88,6 +88,6 @@ public class ProjectileSpawner : IUpdatable
 
         // TODO: Work out if I can change this sfx depending on powerup. Probably needs to be added to the projectile builder.
         // TODO: Work out if sfx can be cached for reuse or if it doesn't matter
-        _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_001);
+        _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_001);
     }
 }

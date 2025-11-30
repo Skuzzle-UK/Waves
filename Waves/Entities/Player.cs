@@ -195,7 +195,7 @@ public class Player : BaseEntity
                 // Play impact sound and take damage
                 if (_audioManager is not null)
                 {
-                    _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                    _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
                 }
                 _onTakeDamage?.Invoke(GameConstants.Player.LandmassDamage);
 
@@ -216,7 +216,7 @@ public class Player : BaseEntity
         {
             if (_audioManager is not null)
             {
-                _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             }
             _onTakeDamage?.Invoke(proj.Damage);
             return;
@@ -228,7 +228,7 @@ public class Player : BaseEntity
             // Handle enemy/projectile collisions with invulnerability flash
             if (_audioManager is not null)
             {
-                _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             }
             _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage);
         }
@@ -239,7 +239,7 @@ public class Player : BaseEntity
             {
                 if (_audioManager is not null)
                 {
-                    _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                    _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
                 }
                 _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
                 _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
@@ -258,7 +258,7 @@ public class Player : BaseEntity
         {
             if (_audioManager is not null)
             {
-                _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             }
             _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
             _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;

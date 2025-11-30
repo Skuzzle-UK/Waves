@@ -41,6 +41,8 @@ public class GameManager : IGameManager, IUpdatable
     private const float RampDuration = 10f;
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
+    private const float MaxLevelStartSpeed = 1.5f;
+    private const float SpeedIncreasePerLevel = 0.1f;
 
     // State management properties
     public GameStates CurrentGameState { get; private set; }
@@ -240,7 +242,7 @@ public class GameManager : IGameManager, IUpdatable
         {
             // Handle player death - show game over screen
             _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
-            _audioManager.PlayOneShot(AudioResources.SoundEffects.Death);
+            _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Death);
             NewState(GameStates.GAME_OVER);
         }
     }
@@ -342,12 +344,38 @@ public class GameManager : IGameManager, IUpdatable
 
     /// <summary>
     /// Called when the boss is defeated.
+    /// Transitions back to a new level with increased difficulty.
     /// </summary>
     private void OnBossDefeated(object? sender, EventArgs e)
     {
         // Award points for defeating the boss
         IncrementScore(1000);
 
-        // TODO: Transition to next level or victory screen
+        // Increase level start speed (capped at maximum)
+        _levelStartSpeed = Math.Min(_levelStartSpeed + SpeedIncreasePerLevel, MaxLevelStartSpeed);
+
+        // Prepare for next level
+        StartNextLevel();
+    }
+
+    /// <summary>
+    /// Starts the next level after boss defeat.
+    /// Resets level timer and shows countdown before resuming gameplay.
+    /// </summary>
+    private void StartNextLevel()
+    {
+        // Reset level state
+        _levelElapsedGameTime = 0f;
+        IsBossBattle = false;
+        _progressionManager.IsBossBattle = false;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _currentBoss = null;
+
+        // Switch back to menu music during countdown
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+        _audioManager.LoopSpeed = 1.0f;
+
+        // Show countdown before starting next level
+        NewState(GameStates.COUNTDOWN);
     }
 }

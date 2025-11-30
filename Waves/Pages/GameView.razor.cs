@@ -84,7 +84,7 @@ public partial class GameView : ComponentBase, IDisposable
 
     private void StartCountdown()
     {
-        AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
+        _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Three);
         _countdownValue = 3;
         _countdownTimer = new System.Threading.Timer(CountdownTick, null, 1000, 1000);
     }
@@ -96,13 +96,13 @@ public partial class GameView : ComponentBase, IDisposable
         switch (_countdownValue)
         {
             case 2:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.Two);
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.Two);
                 break;
             case 1:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.One);
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.One);
                 break;
             case 0:
-                AudioManager.PlayOneShot(AudioResources.SoundEffects.SurfsUp);
+                _ = AudioManager.PlayOneShot(AudioResources.SoundEffects.SurfsUp);
                 break;
         }
 
