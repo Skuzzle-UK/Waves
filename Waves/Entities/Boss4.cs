@@ -9,36 +9,35 @@ using Waves.Entities.Builders;
 namespace Waves.Entities;
 
 /// <summary>
-/// First boss encounter - a powerful stationary enemy with light animations.
-/// Appears at the end of level 1 after 3 minutes of gameplay.
-/// Fires projectiles at the player from various heights.
+/// Fourth boss - spread shot pattern.
+/// Fires 3 projectiles simultaneously at different heights.
 /// </summary>
-public class Boss1 : BaseBoss
+public class Boss4 : BaseBoss
 {
     private readonly IEntityRegistry _entityRegistry;
     private readonly IAudioManager _audioManager;
     private readonly Random _random;
 
     private float _animationTimer;
-    private const float AnimationSpeed = 2.0f; // Oscillation frequency
+    private const float AnimationSpeed = 1.8f;
 
     // Entrance animation state
-    private const float EntranceDuration = 2.0f; // 2 seconds entrance
-    private const float EntranceDistance = 25.0f; // Move units left
+    private const float EntranceDuration = 2.0f;
+    private const float EntranceDistance = 25.0f;
     private float _entranceTimer;
     private Vector2 _spawnPosition;
     private Vector2 _finalPosition;
     private bool _entranceComplete;
 
-    // Projectile firing state
+    // Projectile firing state - spread shot
     private float _fireTimer;
-    private const float MinFireInterval = 1.0f; // Minimum time between shots
-    private const float MaxFireInterval = 2.5f; // Maximum time between shots
+    private const float MinFireInterval = 1.2f;
+    private const float MaxFireInterval = 2.0f;
     private float _nextFireTime;
     private const float ProjectileSpeed = 70f;
-    private const int BossHeight = 5; // Height of the boss visual
+    private const int BossHeight = 11;
 
-    public Boss1(IAsset asset, Vector2 homePosition, int maxHealth, IEntityRegistry entityRegistry, IAudioManager audioManager, int? seed = null)
+    public Boss4(IAsset asset, Vector2 homePosition, int maxHealth, IEntityRegistry entityRegistry, IAudioManager audioManager, int? seed = null)
     {
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
         _audioManager = audioManager ?? throw new ArgumentNullException(nameof(audioManager));
@@ -47,57 +46,40 @@ public class Boss1 : BaseBoss
         Asset = asset;
         Initialize(maxHealth, homePosition, audioManager);
 
-        // Set up entrance animation positions
         _spawnPosition = homePosition;
         _finalPosition = new Vector2(homePosition.X - EntranceDistance, homePosition.Y);
         _entranceTimer = 0f;
         _entranceComplete = false;
 
-        // Set up projectile firing
         _fireTimer = 0f;
         _nextFireTime = GetRandomFireInterval();
     }
 
-    /// <summary>
-    /// Boss1 behavior: entrance animation followed by slight vertical oscillation and projectile firing.
-    /// </summary>
     protected override void UpdateBehavior(float deltaTime)
     {
-        // Entrance phase: move in from the right
         if (!_entranceComplete)
         {
             _entranceTimer += deltaTime;
-
-            // Calculate progress (0.0 to 1.0)
             float progress = Math.Min(_entranceTimer / EntranceDuration, 1.0f);
-
-            // Linear interpolation from spawn to final position
             float currentX = _spawnPosition.X + (_finalPosition.X - _spawnPosition.X) * progress;
             Position = new Vector2(currentX, _spawnPosition.Y);
 
-            // Check if entrance is complete
             if (_entranceTimer >= EntranceDuration)
             {
                 _entranceComplete = true;
-                // Update HomePosition to the final position for oscillation
                 HomePosition = _finalPosition;
             }
         }
-        // Normal behavior phase: gentle oscillation and firing
         else
         {
             _animationTimer += deltaTime * AnimationSpeed;
-
-            // Gentle vertical oscillation (±2 units)
-            float oscillation = MathF.Sin(_animationTimer) * 2.0f;
-
+            float oscillation = MathF.Sin(_animationTimer) * 1.5f;
             Position = new Vector2(HomePosition.X, HomePosition.Y + oscillation);
 
-            // Handle projectile firing
             _fireTimer += deltaTime;
             if (_fireTimer >= _nextFireTime)
             {
-                FireProjectiles();
+                FireSpreadShot();
                 _fireTimer = 0f;
                 _nextFireTime = GetRandomFireInterval();
             }
@@ -105,42 +87,33 @@ public class Boss1 : BaseBoss
     }
 
     /// <summary>
-    /// Fires 1 or 2 projectiles at random heights from the boss.
+    /// Fires 3 projectiles in a spread pattern (top, middle, bottom).
     /// </summary>
-    private void FireProjectiles()
+    private void FireSpreadShot()
     {
-        // Play firing sound effect once (not per projectile)
         _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Shoot_003);
 
-        // 50% chance to fire 2 projectiles, 50% chance to fire 1
-        int projectileCount = _random.Next(2) == 0 ? 1 : 2;
+        // Fire at top, middle, and bottom of boss
+        float[] yOffsets = { -BossHeight / 2f, 0f, BossHeight / 2f };
 
-        for (int i = 0; i < projectileCount; i++)
+        foreach (float yOffset in yOffsets)
         {
-            // Random Y offset within the boss's height (-2 to +2 from center)
-            float yOffset = (float)(_random.NextDouble() * BossHeight) - (BossHeight / 2f);
             Vector2 spawnPosition = new Vector2(Position.X - 3, Position.Y + yOffset);
 
-            // Create animated projectile moving left
             Projectile projectile = ProjectileBuilder.Create()
                 .WithPosition(spawnPosition)
-                .WithDirection(Vector2.Left) // Move towards player (left)
+                .WithDirection(Vector2.Left)
                 .WithSpeed(ProjectileSpeed)
-                .WithAsset(ProjectileAssets.SpinningProjectile)
+                .WithDisplayChar('+')
                 .Build();
 
-            // Set collision properties for enemy projectile
             projectile.Layer = CollisionLayer.EnemyProjectile;
             projectile.CollidesWith = CollisionLayer.Player;
 
-            // Register the projectile
             _entityRegistry.RegisterEntity(projectile);
         }
     }
 
-    /// <summary>
-    /// Gets a random fire interval between min and max.
-    /// </summary>
     private float GetRandomFireInterval()
     {
         return (float)(_random.NextDouble() * (MaxFireInterval - MinFireInterval) + MinFireInterval);

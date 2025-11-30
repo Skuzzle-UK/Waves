@@ -90,5 +90,30 @@ public static class AudioResources
         /// Surfer impact sound
         /// </summary>
         public const string Impact_003 = "Assets/Audio/SFX/Impact_003.wav";
+
+        /// <summary>
+        /// Boss death sound
+        /// </summary>
+        public const string Moo = "Assets/Audio/SFX/Moo.wav";
+
+        /// <summary>
+        /// Boss shoot sound
+        /// </summary>
+        public const string Breath = "Assets/Audio/SFX/Breath.wav";
+
+        /// <summary>
+        /// Horn shoot sound
+        /// </summary>
+        public const string Horn = "Assets/Audio/SFX/Horn.wav";
+
+        /// <summary>
+        /// Smurf sound
+        /// </summary>
+        public const string Smurf = "Assets/Audio/SFX/Smurf.wav";
+
+        /// <summary>
+        /// Tiger sound
+        /// </summary>
+        public const string Tiger = "Assets/Audio/SFX/Tiger.wav";
     }
 }

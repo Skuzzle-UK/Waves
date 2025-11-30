@@ -37,10 +37,13 @@ public class GameManager : IGameManager, IUpdatable
     private Player? _currentPlayer;
 
     // Speed progression settings
-    private const float TargetSpeed = 2.0f;
-    private const float RampDuration = 180f; // TODO: Reset to 180 for 3 minutes
+    private const float BaseTargetSpeed = 2.0f;
+    private const float RampDuration = 120f;
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
+    private const float MaxLevelStartSpeed = 1.5f; // Cap until all bosses defeated once
+    private const float SpeedIncreasePerLevel = 0.1f;
+    private bool _allBossesDefeatedOnce = false;
 
     // State management properties
     public GameStates CurrentGameState { get; private set; }
@@ -49,7 +52,9 @@ public class GameManager : IGameManager, IUpdatable
     public bool IsBossBattle { get; private set; }
 
     // Boss tracking
-    private Boss1? _currentBoss;
+    private BaseBoss? _currentBoss;
+    private int _currentBossIndex = 0;
+    private bool _endlessModeActive = false; // No more bosses after Boss6
 
     // Update order for game manager (before spawners so speed is updated first)
     public int UpdateOrder => 110;
@@ -115,6 +120,9 @@ public class GameManager : IGameManager, IUpdatable
         _progressionManager.IsBossBattle = false;
         IsBossBattle = false;
         _currentBoss = null;
+        _currentBossIndex = 0; // Reset boss progression
+        _allBossesDefeatedOnce = false; // Reset speed cap flag
+        _endlessModeActive = false; // Reset endless mode
 
         // Clear specialized systems first (AI system tracks enemies/terrain separately)
         _enemyAISystem.Reset();
@@ -148,20 +156,6 @@ public class GameManager : IGameManager, IUpdatable
 
         // Pass player reference to AI system
         _enemyAISystem.SetPlayer(_currentPlayer);
-
-        // Spawn test enemies - the one and only BRICKWALLs!
-        //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
-        //CreateEnemyWithEventSubscription(wallPosition, EnemyAssets.BrickWall);
-
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 8), EnemyAssets.BrickWall);
-
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
         NewState(GameStates.COUNTDOWN);
@@ -254,7 +248,7 @@ public class GameManager : IGameManager, IUpdatable
         {
             // Handle player death - show game over screen
             _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
-            _audioManager.PlayOneShot(AudioResources.SoundEffects.Death);
+            _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Death);
             NewState(GameStates.GAME_OVER);
         }
     }
@@ -307,11 +301,18 @@ public class GameManager : IGameManager, IUpdatable
         // Increment elapsed time
         _levelElapsedGameTime += GameConstants.Timing.FixedDeltaTime;
 
-        // Check if level is complete (3 minutes elapsed) and spawn boss
-        if (!IsBossBattle && _levelElapsedGameTime >= RampDuration)
+        // Check if level is complete and spawn boss (unless in endless mode)
+        if (!IsBossBattle && !_endlessModeActive && _levelElapsedGameTime >= RampDuration)
         {
             StartBossBattle();
             return;
+        }
+
+        // In endless mode, increase base speed and reset timer to keep ramping
+        if (_endlessModeActive && _levelElapsedGameTime >= RampDuration)
+        {
+            _levelStartSpeed += SpeedIncreasePerLevel; // Keep increasing base speed
+            _levelElapsedGameTime = 0f; // Reset to ramp from new base speed
         }
 
         // Only progress speed during normal gameplay (not boss battle)
@@ -320,19 +321,24 @@ public class GameManager : IGameManager, IUpdatable
             // Calculate progress (0.0 to 1.0)
             float progress = Math.Min(_levelElapsedGameTime / RampDuration, 1.0f);
 
+            // Calculate dynamic target speed (increases with level difficulty)
+            // After beating all bosses once, target speed continues to climb
+            float targetSpeed = _allBossesDefeatedOnce ? _levelStartSpeed + 0.5f : BaseTargetSpeed;
+
             // Calculate current speed using linear interpolation
-            float currentSpeed = _levelStartSpeed + (TargetSpeed - _levelStartSpeed) * progress;
+            float currentSpeed = _levelStartSpeed + (targetSpeed - _levelStartSpeed) * progress;
 
             // Update progression manager
             _progressionManager.CurrentSpeed = currentSpeed;
 
-            // Update audio manager loop speed to match
-            _audioManager.LoopSpeed = currentSpeed;
+            // Update audio manager loop speed to match (capped at 2.0 for audio)
+            _audioManager.LoopSpeed = Math.Min(currentSpeed, 2.0f);
         }
     }
 
     /// <summary>
     /// Starts the boss battle after the level timer completes.
+    /// Cycles through bosses in order (Boss1 -> Boss2 -> ... -> Boss6 -> Boss1).
     /// </summary>
     private void StartBossBattle()
     {
@@ -346,9 +352,26 @@ public class GameManager : IGameManager, IUpdatable
         _audioManager.LoopSpeed = 1.0f;
         _audioManager.SetBackgroundTrack(AudioResources.Music.BossBattle1);
 
-        // Spawn Boss1 on the right side of the screen
+        // Spawn boss on the right side of the screen
         Vector2 bossPosition = new Vector2(_gameWidth, (_gameHeight / 2) - 1);
-        _currentBoss = _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 3000);
+
+        // Cycle through bosses in order based on _currentBossIndex
+        _currentBoss = _currentBossIndex switch
+        {
+            0 => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 2500),
+            1 => _entityFactory.CreateBoss2(bossPosition, BossAssets.Boss2, maxHealth: 4000),
+            2 => _entityFactory.CreateBoss3(bossPosition, BossAssets.Boss3, maxHealth: 4500),
+            3 => _entityFactory.CreateBoss4(bossPosition, BossAssets.Boss4, maxHealth: 4800),
+            4 => _entityFactory.CreateBoss5(bossPosition, BossAssets.Boss5, maxHealth: 5200),
+            5 => _entityFactory.CreateBoss6(bossPosition, BossAssets.Boss6, maxHealth: 6500),
+            _ => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 8000) // Fallback
+        };
+
+        // Set player reference for targeting calculations
+        if (_currentPlayer != null)
+        {
+            _currentBoss.SetPlayer(_currentPlayer);
+        }
 
         // Subscribe to boss defeat event
         _currentBoss.OnDefeated += OnBossDefeated;
@@ -356,12 +379,75 @@ public class GameManager : IGameManager, IUpdatable
 
     /// <summary>
     /// Called when the boss is defeated.
+    /// Transitions back to a new level with increased difficulty.
     /// </summary>
     private void OnBossDefeated(object? sender, EventArgs e)
     {
+        // Clear all enemy projectiles from the screen
+        _entityRegistry.ClearEnemyProjectiles();
+
         // Award points for defeating the boss
         IncrementScore(1000);
 
-        // TODO: Transition to next level or victory screen
+        // Check if this was Boss6 - if so, activate endless mode
+        if (_currentBossIndex == 5) // Boss6 just defeated
+        {
+            _endlessModeActive = true;
+            _allBossesDefeatedOnce = true;
+            _levelStartSpeed += SpeedIncreasePerLevel;
+            StartEndlessMode();
+            return;
+        }
+
+        // Advance to next boss
+        _currentBossIndex++;
+
+        // Increase level start speed (capped until all bosses defeated)
+        _levelStartSpeed = Math.Min(_levelStartSpeed + SpeedIncreasePerLevel, MaxLevelStartSpeed);
+
+        // Prepare for next level
+        StartNextLevel();
+    }
+
+    /// <summary>
+    /// Starts the next level after boss defeat.
+    /// Resets level timer and shows countdown before resuming gameplay.
+    /// </summary>
+    private void StartNextLevel()
+    {
+        // Reset level state
+        _levelElapsedGameTime = 0f;
+        IsBossBattle = false;
+        _progressionManager.IsBossBattle = false;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _currentBoss = null;
+
+        // Switch back to menu music during countdown
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+        _audioManager.LoopSpeed = 1.0f;
+
+        // Show countdown before starting next level
+        NewState(GameStates.COUNTDOWN);
+    }
+
+    /// <summary>
+    /// Starts endless mode after defeating Boss6.
+    /// No more boss battles - just continuous gameplay with ever-increasing speed.
+    /// </summary>
+    private void StartEndlessMode()
+    {
+        // Reset level state for endless play
+        _levelElapsedGameTime = 0f;
+        IsBossBattle = false;
+        _progressionManager.IsBossBattle = false;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _currentBoss = null;
+
+        // Switch back to menu music during countdown
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
+        _audioManager.LoopSpeed = 1.0f;
+
+        // Show countdown before starting endless mode
+        NewState(GameStates.COUNTDOWN);
     }
 }
