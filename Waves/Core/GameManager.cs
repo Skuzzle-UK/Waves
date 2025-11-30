@@ -38,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float BaseTargetSpeed = 2.0f;
-    private const float RampDuration = 5f; // TODO: Adjust this back to something logical like 120f (2 minutes)
+    private const float RampDuration = 120f; // TODO: Adjust this back to something logical like 120f (2 minutes)
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
     private const float MaxLevelStartSpeed = 1.5f; // Cap until all bosses defeated once
@@ -141,8 +141,8 @@ public class GameManager : IGameManager, IUpdatable
         _terrainSpawner.Initialize(terrainSeed);
 
         // Initialize enemy spawner with seed and scoring callback
-        //int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
-        //_enemySpawner.Initialize(enemySeed, IncrementScore);
+        int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _enemySpawner.Initialize(enemySeed, IncrementScore);
 
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0
@@ -359,14 +359,20 @@ public class GameManager : IGameManager, IUpdatable
         // Cycle through bosses in order based on _currentBossIndex
         _currentBoss = _currentBossIndex switch
         {
-            0 => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 25),
-            1 => _entityFactory.CreateBoss2(bossPosition, BossAssets.Boss2, maxHealth: 40),
-            2 => _entityFactory.CreateBoss3(bossPosition, BossAssets.Boss3, maxHealth: 45),
-            3 => _entityFactory.CreateBoss4(bossPosition, BossAssets.Boss4, maxHealth: 48),
-            4 => _entityFactory.CreateBoss5(bossPosition, BossAssets.Boss5, maxHealth: 52),
-            5 => _entityFactory.CreateBoss6(bossPosition, BossAssets.Boss6, maxHealth: 65),
-            _ => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 80) // Fallback
+            0 => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 2500),
+            1 => _entityFactory.CreateBoss2(bossPosition, BossAssets.Boss2, maxHealth: 4000),
+            2 => _entityFactory.CreateBoss3(bossPosition, BossAssets.Boss3, maxHealth: 4500),
+            3 => _entityFactory.CreateBoss4(bossPosition, BossAssets.Boss4, maxHealth: 4800),
+            4 => _entityFactory.CreateBoss5(bossPosition, BossAssets.Boss5, maxHealth: 5200),
+            5 => _entityFactory.CreateBoss6(bossPosition, BossAssets.Boss6, maxHealth: 6500),
+            _ => _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 8000) // Fallback
         };
+
+        // Set player reference for targeting calculations
+        if (_currentPlayer != null)
+        {
+            _currentBoss.SetPlayer(_currentPlayer);
+        }
 
         // Subscribe to boss defeat event
         _currentBoss.OnDefeated += OnBossDefeated;

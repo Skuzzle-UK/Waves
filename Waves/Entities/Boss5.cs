@@ -87,7 +87,7 @@ public class Boss5 : BaseBoss
     }
 
     /// <summary>
-    /// Fires a single heavy, slow-moving projectile.
+    /// Fires a single heavy, slow-moving projectile aimed at the player.
     /// </summary>
     private void FireHeavyShot()
     {
@@ -96,9 +96,16 @@ public class Boss5 : BaseBoss
         float yOffset = (float)(_random.NextDouble() * BossHeight) - (BossHeight / 2f);
         Vector2 spawnPosition = new Vector2(Position.X - 3, Position.Y + yOffset);
 
+        // Calculate direction towards player if available, otherwise fire left
+        Vector2 direction = Vector2.Left;
+        if (Player != null && Player.IsActive)
+        {
+            direction = (Player.Position - spawnPosition).Normalized();
+        }
+
         Projectile projectile = ProjectileBuilder.Create()
             .WithPosition(spawnPosition)
-            .WithDirection(Vector2.Left)
+            .WithDirection(direction)
             .WithSpeed(ProjectileSpeed)
             .WithDisplayChar('█')
             .Build();

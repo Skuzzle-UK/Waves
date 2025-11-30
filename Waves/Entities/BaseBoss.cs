@@ -54,6 +54,11 @@ public abstract class BaseBoss : BaseEntity
     protected IAudioManager? AudioManager { get; private set; }
 
     /// <summary>
+    /// Reference to the player for targeting calculations.
+    /// </summary>
+    protected Player? Player { get; private set; }
+
+    /// <summary>
     /// Timer for how long the boss should flash after taking damage.
     /// </summary>
     private float _damageFlashTimer = 0f;
@@ -100,6 +105,14 @@ public abstract class BaseBoss : BaseEntity
         Position = homePosition;
         ElapsedTime = 0f;
         AudioManager = audioManager;
+    }
+
+    /// <summary>
+    /// Sets the player reference for targeting calculations.
+    /// </summary>
+    public void SetPlayer(Player player)
+    {
+        Player = player;
     }
 
     /// <summary>

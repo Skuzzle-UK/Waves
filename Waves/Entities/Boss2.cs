@@ -87,21 +87,28 @@ public class Boss2 : BaseBoss
     }
 
     /// <summary>
-    /// Fires 3 projectiles rapidly in succession.
+    /// Fires 3 projectiles rapidly in succession aimed at the player.
     /// </summary>
     private void FireRapidBurst()
     {
         _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Breath);
 
-        // Fire 3 projectiles
+        // Fire 3 projectiles aimed at player
         for (int i = 0; i < 3; i++)
         {
             float yOffset = (float)(_random.NextDouble() * BossHeight) - (BossHeight / 2f);
             Vector2 spawnPosition = new Vector2(Position.X - 3, Position.Y + yOffset);
 
+            // Calculate direction towards player if available, otherwise fire left
+            Vector2 direction = Vector2.Left;
+            if (Player != null && Player.IsActive)
+            {
+                direction = (Player.Position - spawnPosition).Normalized();
+            }
+
             Projectile projectile = ProjectileBuilder.Create()
                 .WithPosition(spawnPosition)
-                .WithDirection(Vector2.Left)
+                .WithDirection(direction)
                 .WithSpeed(ProjectileSpeed)
                 .WithDisplayChar('*')
                 .Build();
