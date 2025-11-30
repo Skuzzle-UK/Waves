@@ -26,20 +26,14 @@ internal class Program
                 services.AddSingleton<InputSystem>();
                 services.AddSingleton<CollisionSystem>();
                 services.AddSingleton<GameRenderService>(sp => new GameRenderService(AppWrapper.GameAreaWidth, AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset));
-
-                // Register EntityRegistry
                 services.AddSingleton<IEntityRegistry, EntityRegistry>();
 
-                // Register ProjectileSpawner
                 services.AddSingleton<ProjectileSpawner>(sp => new ProjectileSpawner(
                     sp.GetRequiredService<IEntityRegistry>(),
                     sp.GetRequiredService<IAudioManager>()
                 ));
 
-                // Register TerrainSpawner
                 services.AddSingleton<TerrainSpawner>();
-
-                // Register LandmassSpawner
                 services.AddSingleton<LandmassSpawner>();
 
                 // Register Enemy AI systems
@@ -48,20 +42,12 @@ internal class Program
 
                 // Register EntityFactory for creating all game entities
                 services.AddSingleton<IEntityFactory, EntityFactory>();
-
-                // Register GameManager (combined state and orchestration)
+                services.AddSingleton<IGameProgressionManager, GameProgressionManager>();
                 services.AddSingleton<IGameManager, GameManager>();
-
-                // Register ScoreSystem with GameManager dependency
                 services.AddSingleton<ScoreSystem>(sp => new ScoreSystem(sp.GetRequiredService<IGameManager>()));
-
                 services.AddSingleton<IAudioManager, AudioManager>();
                 services.AddHostedService<AudioManager>();
-
-                // Register HttpClient for LeaderboardService
                 services.AddHttpClient<ILeaderboardService, LeaderboardService>();
-
-                // Register GameLoop with all game systems injected
                 services.AddSingleton<IGameLoop>(sp => new GameLoop(
                     GameConstants.Timing.TickRateMilliseconds,
                     sp.GetRequiredService<IGameManager>(),

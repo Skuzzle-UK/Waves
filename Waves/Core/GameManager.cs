@@ -15,11 +15,12 @@ namespace Waves.Core;
 /// Manages the complete game lifecycle including state, score, and entity orchestration.
 /// Combines state management with game logic for unified control.
 /// </summary>
-public class GameManager : IGameManager
+public class GameManager : IGameManager, IUpdatable
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
     private readonly IAudioManager _audioManager;
+    private readonly IGameProgressionManager _progressionManager;
     private readonly InputSystem _inputSystem;
     private readonly ProjectileSpawner _projectileSpawner;
     private readonly LandmassSpawner _landmassSpawner;
@@ -35,10 +36,23 @@ public class GameManager : IGameManager
     // Store current player reference
     private Player? _currentPlayer;
 
+    // Speed progression settings
+    private const float TargetSpeed = 2.0f;
+    private const float RampDuration = 5f; // TODO: Reset to 180 for 3 minutes
+    private float _levelStartSpeed = 1.0f;
+    private float _levelElapsedGameTime;
+
     // State management properties
     public GameStates CurrentGameState { get; private set; }
     public int Score { get; private set; }
     public int Health { get; private set; }
+    public bool IsBossBattle { get; private set; }
+
+    // Boss tracking
+    private Boss1? _currentBoss;
+
+    // Update order for game manager (before spawners so speed is updated first)
+    public int UpdateOrder => 110;
 
     // Events
     public event EventHandler<GameStates>? GameStateChanged;
@@ -49,6 +63,7 @@ public class GameManager : IGameManager
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
         IAudioManager audioManager,
+        IGameProgressionManager progressionManager,
         InputSystem inputSystem,
         ProjectileSpawner projectileSpawner,
         LandmassSpawner landmassSpawner,
@@ -58,6 +73,7 @@ public class GameManager : IGameManager
     {
         _entityFactory = entityFactory;
         _entityRegistry = entityRegistry;
+        _progressionManager = progressionManager;
         _inputSystem = inputSystem;
         _projectileSpawner = projectileSpawner;
         _landmassSpawner = landmassSpawner;
@@ -73,10 +89,12 @@ public class GameManager : IGameManager
         CurrentGameState = GameStates.ENDED;
         Score = GameConstants.Scoring.InitialScore;
         Health = GameConstants.Player.InitialHealth;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _levelElapsedGameTime = 0f;
         _audioManager = audioManager;
 
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
-        _audioManager.LoopSpeed = 1f;
+        _audioManager.LoopSpeed = _levelStartSpeed;
         _audioManager.StartBackgroundTrack();
     }
 
@@ -92,6 +110,11 @@ public class GameManager : IGameManager
 
         SetScore(GameConstants.Scoring.InitialScore);
         SetHealth(GameConstants.Player.InitialHealth);
+        _levelElapsedGameTime = 0f;
+        _progressionManager.CurrentSpeed = _levelStartSpeed;
+        _progressionManager.IsBossBattle = false;
+        IsBossBattle = false;
+        _currentBoss = null;
         _entityRegistry.ClearAll();
 
         // Initialize terrain and landmass spawners with provided seed or default
@@ -132,11 +155,7 @@ public class GameManager : IGameManager
         //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
-        // Start the countdown before running the game
         NewState(GameStates.COUNTDOWN);
-
-        // TODO: Perform game logic here like spawning enemies and obstacles.. levels etc
-        // Expecting a loop in here that can accept all game states and act upon them accordingly.. i.e. pause should instantiate a pause message.
     }
 
     /// <summary>
@@ -155,7 +174,7 @@ public class GameManager : IGameManager
     public void StartGameAfterCountdown()
     {
         NewState(GameStates.RUNNING);
-        _audioManager.LoopSpeed = 1.5f;
+        _audioManager.LoopSpeed = _progressionManager.CurrentSpeed;
         _audioManager.SetBackgroundTrack(AudioResources.Music.Waves_001);
     }
 
@@ -258,5 +277,77 @@ public class GameManager : IGameManager
         {
             IncrementScore(GameConstants.Enemy.ScoreOnKill);
         };
+    }
+
+    /// <summary>
+    /// Called each game tick to update game speed progression.
+    /// </summary>
+    public void Update()
+    {
+        // Only progress speed when game is actually running
+        if (CurrentGameState != GameStates.RUNNING)
+        {
+            return;
+        }
+
+        // Increment elapsed time
+        _levelElapsedGameTime += GameConstants.Timing.FixedDeltaTime;
+
+        // Check if level is complete (3 minutes elapsed) and spawn boss
+        if (!IsBossBattle && _levelElapsedGameTime >= RampDuration)
+        {
+            StartBossBattle();
+            return;
+        }
+
+        // Only progress speed during normal gameplay (not boss battle)
+        if (!IsBossBattle)
+        {
+            // Calculate progress (0.0 to 1.0)
+            float progress = Math.Min(_levelElapsedGameTime / RampDuration, 1.0f);
+
+            // Calculate current speed using linear interpolation
+            float currentSpeed = _levelStartSpeed + (TargetSpeed - _levelStartSpeed) * progress;
+
+            // Update progression manager
+            _progressionManager.CurrentSpeed = currentSpeed;
+
+            // Update audio manager loop speed to match
+            _audioManager.LoopSpeed = currentSpeed;
+        }
+    }
+
+    /// <summary>
+    /// Starts the boss battle after the level timer completes.
+    /// </summary>
+    private void StartBossBattle()
+    {
+        IsBossBattle = true;
+        _progressionManager.IsBossBattle = true;
+
+        // Reset game speed to 1.0f (slows terrain/landmass back down)
+        _progressionManager.CurrentSpeed = 1.0f;
+
+        // Change music to boss battle theme at normal speed
+        _audioManager.LoopSpeed = 1.0f;
+        _audioManager.SetBackgroundTrack(AudioResources.Music.BossBattle1);
+
+        // Spawn Boss1 on the right side of the screen
+        Vector2 bossPosition = new Vector2(_gameWidth, (_gameHeight / 2) - 1);
+        _currentBoss = _entityFactory.CreateBoss1(bossPosition, BossAssets.Boss1, maxHealth: 3000);
+
+        // Subscribe to boss defeat event
+        _currentBoss.OnDefeated += OnBossDefeated;
+    }
+
+    /// <summary>
+    /// Called when the boss is defeated.
+    /// </summary>
+    private void OnBossDefeated(object? sender, EventArgs e)
+    {
+        // Award points for defeating the boss
+        IncrementScore(1000);
+
+        // TODO: Transition to next level or victory screen
     }
 }

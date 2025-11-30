@@ -72,6 +72,11 @@ public static class AudioResources
         public const string Shoot_002 = "Assets/Audio/SFX/Shoot_002.wav";
 
         /// <summary>
+        /// Long shooting sound
+        /// </summary>
+        public const string Shoot_003 = "Assets/Audio/SFX/Shoot_003.wav";
+
+        /// <summary>
         /// Light impact sound
         /// </summary>
         public const string Impact_001 = "Assets/Audio/SFX/Impact_001.wav";

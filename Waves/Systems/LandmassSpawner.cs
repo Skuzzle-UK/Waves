@@ -11,13 +11,13 @@ namespace Waves.Systems;
 /// <summary>
 /// System that continuously spawns landmass chunks at the top and bottom of the screen.
 /// Creates a canyon-like environment with procedurally generated gaps for navigation.
-/// Scrolling speed is synchronized with AudioManager.LoopSpeed.
+/// Scrolling speed is synchronized with GameProgressionManager.CurrentSpeed.
 /// </summary>
 public class LandmassSpawner : IUpdatable
 {
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
-    private readonly IAudioManager _audioManager;
+    private readonly IGameProgressionManager _progressionManager;
     private readonly int _gameWidth;
     private readonly int _gameHeight;
 
@@ -41,11 +41,11 @@ public class LandmassSpawner : IUpdatable
     public LandmassSpawner(
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
-        IAudioManager audioManager)
+        IGameProgressionManager progressionManager)
     {
         _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
-        _audioManager = audioManager ?? throw new ArgumentNullException(nameof(audioManager));
+        _progressionManager = progressionManager ?? throw new ArgumentNullException(nameof(progressionManager));
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -118,13 +118,14 @@ public class LandmassSpawner : IUpdatable
     }
 
     /// <summary>
-    /// Calculates the current scrolling speed based on audio tempo.
+    /// Calculates the current scrolling speed based on game speed.
     /// </summary>
     private float CalculateScrollSpeed()
     {
         float baseSpeed = GameConstants.Landmass.BaseScrollSpeed;
-        float currentTempo = _audioManager.LoopSpeed;
-        return baseSpeed * currentTempo;
+        float gameSpeed = _progressionManager.CurrentSpeed;
+        float terrainMultiplier = (gameSpeed * 3.0f) - 2.0f;
+        return baseSpeed * terrainMultiplier;
     }
 
     /// <summary>

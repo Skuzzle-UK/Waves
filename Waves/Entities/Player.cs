@@ -215,9 +215,25 @@ public class Player : BaseEntity
         }
 
         // Handle enemy collisions (instant damage, no invulnerability)
-        if (other.Layer == CollisionLayer.Enemy)
+        if (other.Layer == CollisionLayer.Enemy) 
+        { 
+            // Handle enemy/projectile collisions with invulnerability flash
+            _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage); 
+        }
+        if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
         {
-            _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage);
+            // Only take damage if not currently invulnerable
+            if (_invulnerabilityTimer <= 0)
+            {
+                _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
+                _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
+
+                // Deactivate projectile if it hit us
+                if (other is Projectile projectile)
+                {
+                    projectile.IsActive = false;
+                }
+            }
             return;
         }
 

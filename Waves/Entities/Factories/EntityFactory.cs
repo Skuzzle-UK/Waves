@@ -16,6 +16,7 @@ public class EntityFactory : IEntityFactory
     private readonly InputSystem _inputSystem;
     private readonly IEntityRegistry _entityRegistry;
     private readonly ProjectileSpawner _projectileSpawner;
+    private readonly IAudioManager _audioManager;
 
     /// <summary>
     /// Creates a new entity factory with dependencies injected from DI.
@@ -23,11 +24,13 @@ public class EntityFactory : IEntityFactory
     public EntityFactory(
         InputSystem inputSystem,
         IEntityRegistry entityRegistry,
-        ProjectileSpawner projectileSpawner)
+        ProjectileSpawner projectileSpawner,
+        IAudioManager audioManager)
     {
         _inputSystem = inputSystem;
         _entityRegistry = entityRegistry;
         _projectileSpawner = projectileSpawner;
+        _audioManager = audioManager;
     }
 
     /// <summary>
@@ -109,6 +112,20 @@ public class EntityFactory : IEntityFactory
         _entityRegistry.RegisterEntity(landmass);
 
         return landmass;
+    }
+
+    /// <summary>
+    /// Creates Boss1 at the specified position with the given visual asset.
+    /// Boss is automatically registered with the entity registry.
+    /// </summary>
+    public Boss1 CreateBoss1(Vector2 position, IAsset asset, int maxHealth = 500)
+    {
+        Boss1 boss = new Boss1(asset, position, maxHealth, _entityRegistry, _audioManager);
+
+        // Register the boss with all relevant systems
+        _entityRegistry.RegisterEntity(boss);
+
+        return boss;
     }
 
     /// <summary>
