@@ -252,10 +252,10 @@ public class EnemySpawner : IUpdatable
     {
         return aiType switch
         {
-            AIType.StationaryTurret => EnemyAssets.BrickWall,  // Solid, stationary look
+            AIType.StationaryTurret => EnemyAssets.WarShip,  // Solid, stationary look
             AIType.VerticalPatrol => EnemyAssets.Shark,        // Mobile, threatening
             AIType.AggressiveChaser => EnemyAssets.Basic,      // Fast, simple
-            _ => EnemyAssets.BrickWall
+            _ => EnemyAssets.WarShip
         };
     }
 }

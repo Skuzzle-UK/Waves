@@ -100,5 +100,11 @@ public class MovementSystem : IUpdatable
                 Console.WriteLine($"Error updating entity {entity.Id}: {ex.Message}");
             }
         }
+
+        // Clean up disposed entities from the list
+        lock (_lock)
+        {
+            _entities.RemoveAll(e => e.IsDisposed || !e.IsActive);
+        }
     }
 }

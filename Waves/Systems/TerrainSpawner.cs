@@ -46,7 +46,7 @@ public class TerrainSpawner : IUpdatable
     public TerrainSpawner(
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
-        IGameProgressionManager progressionManager
+        IGameProgressionManager progressionManager,
         EnemyAISystem enemyAISystem)
     {
         _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));

@@ -38,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float TargetSpeed = 2.0f;
-    private const float RampDuration = 5f; // TODO: Reset to 180 for 3 minutes
+    private const float RampDuration = 180f; // TODO: Reset to 180 for 3 minutes
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
 
@@ -115,7 +115,16 @@ public class GameManager : IGameManager, IUpdatable
         _progressionManager.IsBossBattle = false;
         IsBossBattle = false;
         _currentBoss = null;
+
+        // Clear specialized systems first (AI system tracks enemies/terrain separately)
+        _enemyAISystem.Reset();
+
+        // Then clear entity registry (unregisters from core systems)
         _entityRegistry.ClearAll();
+
+        // Reset spawner states (clears any internal tracking)
+        _enemySpawner.Reset();
+        _terrainSpawner.Reset();
 
         // Initialize terrain and landmass spawners with provided seed or default
         int terrainSeed = seed ?? GameConstants.Terrain.DefaultSeed;
@@ -163,7 +172,12 @@ public class GameManager : IGameManager, IUpdatable
     /// </summary>
     public void ExitGame()
     {
+        // Clear specialized systems first (AI system tracks enemies/terrain separately)
+        _enemyAISystem.Reset();
+
+        // Then clear entity registry (unregisters from core systems)
         _entityRegistry.ClearAll();
+
         NewState(GameStates.ENDED);
         _audioManager.SetBackgroundTrack(AudioResources.Music.BeautifulPiano);
     }

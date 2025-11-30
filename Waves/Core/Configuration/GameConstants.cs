@@ -79,7 +79,7 @@ public static class GameConstants
         /// <summary>
         /// Initial health value for the player.
         /// </summary>
-        public const int InitialHealth = 100;
+        public const int InitialHealth = 1000;
 
         /// <summary>
         /// Maximum health value for the player.
@@ -399,7 +399,7 @@ public static class GameConstants
         /// <summary>
         /// Speed for patrolling enemies.
         /// </summary>
-        public const float PatrolSpeed = 30f;
+        public const float PatrolSpeed = 15f;
 
         /// <summary>
         /// Speed for aggressive chaser enemies.
@@ -409,7 +409,7 @@ public static class GameConstants
         /// <summary>
         /// Vertical range for patrol movement.
         /// </summary>
-        public const float PatrolRange = 15f;
+        public const float PatrolRange = 6f;
 
         // Shooting constants
         /// <summary>
