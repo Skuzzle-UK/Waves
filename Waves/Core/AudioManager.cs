@@ -135,16 +135,22 @@ public class AudioManager : IAudioManager, IHostedService
         }
     }
 
-    public async Task PlayOneShot(string resourcePath)
+    public async Task PlayOneShot(string resourcePath, bool priority = false)
     {
-        // Try to acquire a slot for playing this sound effect
-        // If we're already at the limit, skip this sound to prevent stuttering
-        bool acquired = await _sfxSemaphore.WaitAsync(0);
-        if (!acquired)
+        bool acquired = false;
+
+        // Priority sounds bypass the limit
+        if (!priority)
         {
-            // Too many concurrent sound effects - drop this one
-            Debug.WriteLine($"Skipped sound effect (limit reached): {resourcePath}");
-            return;
+            // Try to acquire a slot for playing this sound effect
+            // If we're already at the limit, skip this sound to prevent stuttering
+            acquired = await _sfxSemaphore.WaitAsync(0);
+            if (!acquired)
+            {
+                // Too many concurrent sound effects - drop this one
+                Debug.WriteLine($"Skipped sound effect (limit reached): {resourcePath}");
+                return;
+            }
         }
 
         try
@@ -182,8 +188,11 @@ public class AudioManager : IAudioManager, IHostedService
         }
         finally
         {
-            // Release the semaphore slot when the sound finishes
-            _sfxSemaphore.Release();
+            // Release the semaphore slot when the sound finishes (only if we acquired it)
+            if (acquired)
+            {
+                _sfxSemaphore.Release();
+            }
         }
     }
 

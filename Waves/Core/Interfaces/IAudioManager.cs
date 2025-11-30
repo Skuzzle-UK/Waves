@@ -42,8 +42,9 @@ public interface IAudioManager
     /// This is primarily for sound effects.
     /// </summary>
     /// <param name="resourcePath">Resource path (e.g., "Assets/Audio/sound.wav")</param>
+    /// <param name="priority">If true, bypasses the concurrent sound effect limit</param>
     /// <returns></returns>
-    Task PlayOneShot(string resourcePath);
+    Task PlayOneShot(string resourcePath, bool priority = false);
 
     /// <summary>
     /// Volume of the one shot audio tracks. Primarily used for sound effects.
