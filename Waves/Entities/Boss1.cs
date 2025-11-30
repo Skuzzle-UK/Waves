@@ -45,7 +45,7 @@ public class Boss1 : BaseBoss
         _random = seed.HasValue ? new Random(seed.Value) : new Random();
 
         Asset = asset;
-        Initialize(maxHealth, homePosition);
+        Initialize(maxHealth, homePosition, audioManager);
 
         // Set up entrance animation positions
         _spawnPosition = homePosition;

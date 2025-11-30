@@ -38,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float TargetSpeed = 2.0f;
-    private const float RampDuration = 180f; // TODO: Reset to 180 for 3 minutes
+    private const float RampDuration = 10f;
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
 
@@ -132,8 +132,8 @@ public class GameManager : IGameManager, IUpdatable
         _terrainSpawner.Initialize(terrainSeed);
 
         // Initialize enemy spawner with seed and scoring callback
-        int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
-        _enemySpawner.Initialize(enemySeed, IncrementScore);
+        //int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        //_enemySpawner.Initialize(enemySeed, IncrementScore);
 
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0
@@ -148,20 +148,6 @@ public class GameManager : IGameManager, IUpdatable
 
         // Pass player reference to AI system
         _enemyAISystem.SetPlayer(_currentPlayer);
-
-        // Spawn test enemies - the one and only BRICKWALLs!
-        //Vector2 wallPosition = new Vector2(_gameWidth - 10, _gameHeight / 2);
-        //CreateEnemyWithEventSubscription(wallPosition, EnemyAssets.BrickWall);
-
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 10, _gameHeight / 2 - 8), EnemyAssets.BrickWall);
-
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 4), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 + 8), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 4 ), EnemyAssets.BrickWall);
-        //CreateEnemyWithEventSubscription(new(_gameWidth - 16, _gameHeight / 2 - 8 ), EnemyAssets.BrickWall);
 
         preloadSoundEffectsTask.Wait();
         NewState(GameStates.COUNTDOWN);
