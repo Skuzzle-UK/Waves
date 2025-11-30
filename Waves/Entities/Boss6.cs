@@ -44,7 +44,7 @@ public class Boss6 : BaseBoss
         Initialize(maxHealth, homePosition, audioManager);
 
         _spawnPosition = homePosition;
-        _finalPosition = new Vector2(homePosition.X - EntranceDistance - 5, homePosition.Y); // 5 chars further left
+        _finalPosition = new Vector2(homePosition.X - EntranceDistance - 9, homePosition.Y);
         _entranceTimer = 0f;
         _entranceComplete = false;
 
