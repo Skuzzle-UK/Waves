@@ -478,6 +478,11 @@ public static class GameConstants
         /// Maximum spawn interval for enemies.
         /// </summary>
         public const float MaxSpawnInterval = 6.0f;
+
+        /// <summary>
+        /// Speed at which enemies flee when boss battle starts.
+        /// </summary>
+        public const float FleeSpeed = 150f;
     }
 
     /// <summary>

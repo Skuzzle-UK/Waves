@@ -7,11 +7,14 @@ namespace Waves.Assets;
 /// </summary>
 public static class EnemyAssets
 {
-    public static readonly IAsset Basic = new MultiCharAsset("O.o");
+    public static readonly IAsset Basic = new MultiCharAsset(
+        " ▲",
+        "╼◉▎",
+        " ▼");
 
-    public static readonly IAsset Shark = new MultiCharAsset(
-        "  /|",
-        "~~~~~~"
+    public static readonly IAsset SharkWithLasers = new MultiCharAsset(
+        @"╼●╮▗ ",
+        @" ≤■■▶❮  "
     );
 
     public static readonly IAsset WarShip = new MultiCharAsset(
@@ -21,8 +24,8 @@ public static class EnemyAssets
     );
 
     public static readonly IAsset Kamikaze = new MultiCharAsset(
-        "  !  ",
-        " /!\\ ",
-        "<<*>>"
+        @" ╭╽╮",
+        @"╼▩█▩╾",
+        @" ╰╿╯"
     );
 }

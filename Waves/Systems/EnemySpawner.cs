@@ -20,6 +20,7 @@ public class EnemySpawner : IUpdatable
     private readonly IEntityFactory _entityFactory;
     private readonly IEntityRegistry _entityRegistry;
     private readonly EnemyAISystem _enemyAISystem;
+    private readonly IGameProgressionManager _progressionManager;
     private readonly int _gameWidth;
     private readonly int _gameHeight;
 
@@ -44,11 +45,13 @@ public class EnemySpawner : IUpdatable
     public EnemySpawner(
         IEntityFactory entityFactory,
         IEntityRegistry entityRegistry,
-        EnemyAISystem enemyAISystem)
+        EnemyAISystem enemyAISystem,
+        IGameProgressionManager progressionManager)
     {
         _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
         _entityRegistry = entityRegistry ?? throw new ArgumentNullException(nameof(entityRegistry));
         _enemyAISystem = enemyAISystem ?? throw new ArgumentNullException(nameof(enemyAISystem));
+        _progressionManager = progressionManager ?? throw new ArgumentNullException(nameof(progressionManager));
 
         _gameWidth = AppWrapper.GameAreaWidth;
         _gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
@@ -94,6 +97,12 @@ public class EnemySpawner : IUpdatable
     public void Update()
     {
         if (!_isInitialized || _random == null)
+        {
+            return;
+        }
+
+        // Stop spawning enemies during boss battles
+        if (_progressionManager.IsBossBattle)
         {
             return;
         }
@@ -283,7 +292,7 @@ public class EnemySpawner : IUpdatable
         return aiType switch
         {
             AIType.StationaryTurret => EnemyAssets.WarShip,  // Solid, stationary look
-            AIType.VerticalPatrol => EnemyAssets.Shark,        // Mobile, threatening
+            AIType.VerticalPatrol => EnemyAssets.SharkWithLasers,        // Mobile, threatening
             AIType.AggressiveChaser => EnemyAssets.Basic,      // Fast, simple
             AIType.KamikazeCharger => EnemyAssets.Kamikaze,    // Explosive, dangerous
             _ => EnemyAssets.WarShip

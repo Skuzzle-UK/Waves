@@ -345,6 +345,9 @@ public class GameManager : IGameManager, IUpdatable
         IsBossBattle = true;
         _progressionManager.IsBossBattle = true;
 
+        // Make all enemies flee off-screen
+        _enemyAISystem.FleeAllEnemies();
+
         // Reset game speed to 1.0f (slows terrain/landmass back down)
         _progressionManager.CurrentSpeed = 1.0f;
 

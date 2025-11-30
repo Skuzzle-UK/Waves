@@ -194,9 +194,11 @@ public class EntityFactory : IEntityFactory
 
         // Register the projectile with all relevant systems
         _entityRegistry.RegisterEntity(projectile);
-        if (soundEffect != null)
+
+        // Play sound effect asynchronously (fire and forget)
+        if (soundEffect != null && _audioManager != null)
         {
-            _audioManager?.PlayOneShot(soundEffect);
+            _ = _audioManager.PlayOneShot(soundEffect);
         }
 
         return projectile;

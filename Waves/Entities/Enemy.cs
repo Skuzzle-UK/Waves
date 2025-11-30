@@ -106,6 +106,37 @@ public class Enemy : BaseEntity
     }
 
     /// <summary>
+    /// Updates the enemy state and checks for off-screen deactivation.
+    /// </summary>
+    public override void Update(float deltaTime)
+    {
+        // Update cooldown timer
+        UpdateShootCooldown(deltaTime);
+
+        // Call base update for movement
+        base.Update(deltaTime);
+
+        // Auto-deactivate if completely off-screen and not clamped to bounds
+        if (!ClampToBounds && IsActive)
+        {
+            float gameWidth = AppWrapper.GameAreaWidth;
+            float gameHeight = AppWrapper.GameAreaHeight - GameConstants.Display.GameGridHeightOffset;
+
+            // Check if enemy is completely off-screen (with margin for asset size)
+            float margin = Asset?.Width ?? 10f;
+            bool offScreenLeft = Position.X < -margin;
+            bool offScreenRight = Position.X > gameWidth + margin;
+            bool offScreenTop = Position.Y < -margin;
+            bool offScreenBottom = Position.Y > gameHeight + margin;
+
+            if (offScreenLeft || offScreenRight || offScreenTop || offScreenBottom)
+            {
+                IsActive = false;
+            }
+        }
+    }
+
+    /// <summary>
     /// Handles collision with other entities.
     /// Takes damage when hit by projectiles, instantly killed when touched by player.
     /// </summary>
