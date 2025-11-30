@@ -38,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
 
     // Speed progression settings
     private const float BaseTargetSpeed = 2.0f;
-    private const float RampDuration = 120f; // TODO: Adjust this back to something logical like 120f (2 minutes)
+    private const float RampDuration = 120f;
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
     private const float MaxLevelStartSpeed = 1.5f; // Cap until all bosses defeated once
