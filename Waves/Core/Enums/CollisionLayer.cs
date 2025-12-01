@@ -8,5 +8,6 @@ public enum CollisionLayer
     Enemy = 1 << 1,            // 2
     PlayerProjectile = 1 << 2, // 4
     EnemyProjectile = 1 << 3,  // 8
-    Obstacle = 1 << 4          // 16
+    Obstacle = 1 << 4,         // 16
+    Collectable = 1 << 5       // 32
 }

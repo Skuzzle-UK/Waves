@@ -21,12 +21,15 @@ public class Player : BaseEntity
     private Action<int>? _onTakeDamage;
     private float _invulnerabilityTimer = 0f;
     private float _landmassInvulnerabilityTimer = 0f;
+    private float _powerUpInvulnerabilityTimer = 0f; // 10-second invulnerability from power-up
     private float _flashTimer = 0f;
     private bool _showRedFlash = false;
+    private bool _showBlueFlash = false;
     private bool _skipDragNextFrame = false;
     private float _bounceSpeedTimer = 0f;
     private const float FlashInterval = 0.2f; // Flash every 0.2 seconds
     private const float BounceSpeedDuration = 0.2f; // Allow higher speed for 0.2 seconds after bounce
+    private const float PowerUpInvulnerabilityDuration = 10.0f; // 10 seconds of invulnerability
 
     public float Mass { get; set; }
     public float Drag { get; set; }
@@ -49,7 +52,7 @@ public class Player : BaseEntity
 
         // Set collision properties
         Layer = CollisionLayer.Player;
-        CollidesWith = CollisionLayer.Enemy | CollisionLayer.EnemyProjectile | CollisionLayer.Obstacle;
+        CollidesWith = CollisionLayer.Enemy | CollisionLayer.EnemyProjectile | CollisionLayer.Obstacle | CollisionLayer.Collectable;
     }
 
     /// <summary>
@@ -117,13 +120,29 @@ public class Player : BaseEntity
         {
             _landmassInvulnerabilityTimer -= deltaTime;
         }
+        if (_powerUpInvulnerabilityTimer > 0)
+        {
+            _powerUpInvulnerabilityTimer -= deltaTime;
+        }
         if (_bounceSpeedTimer > 0)
         {
             _bounceSpeedTimer -= deltaTime;
         }
 
-        // Handle flashing effect during invulnerability (if either timer active)
-        if (_invulnerabilityTimer > 0 || _landmassInvulnerabilityTimer > 0)
+        // Handle flashing effect during invulnerability
+        // Power-up invulnerability (blue flash) takes priority over damage invulnerability (red flash)
+        if (_powerUpInvulnerabilityTimer > 0)
+        {
+            _flashTimer += deltaTime;
+            if (_flashTimer >= FlashInterval)
+            {
+                _flashTimer = 0f;
+                _showBlueFlash = !_showBlueFlash;
+                // Flash between blue and default (null = reset to default color)
+                RenderColor = _showBlueFlash ? Spectre.Console.Color.Blue : null;
+            }
+        }
+        else if (_invulnerabilityTimer > 0 || _landmassInvulnerabilityTimer > 0)
         {
             _flashTimer += deltaTime;
             if (_flashTimer >= FlashInterval)
@@ -136,11 +155,12 @@ public class Player : BaseEntity
         }
         else
         {
-            // Both timers ended - reset to normal appearance (no color)
+            // All timers ended - reset to normal appearance (no color)
             if (RenderColor.HasValue)
             {
                 RenderColor = null;
                 _showRedFlash = false;
+                _showBlueFlash = false;
             }
         }
 
@@ -211,22 +231,44 @@ public class Player : BaseEntity
             return; // Early return - don't process as generic obstacle
         }
 
-        // Handle enemy projectile collisions (instant damage, no invulnerability)
-        if (other.Layer == CollisionLayer.EnemyProjectile && other is EnemyProjectile proj)
+        // Handle collectable pickups
+        if (other.Layer == CollisionLayer.Collectable && other is Collectable collectable)
         {
-            if (_audioManager is not null)
+            if (collectable.Type == CollectableType.HealthUp)
             {
-                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                ActivateHealthPickup();
             }
-            _onTakeDamage?.Invoke(proj.Damage);
-            _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
+            else if (collectable.Type == CollectableType.Invulnerability)
+            {
+                ActivateInvulnerabilityPickup();
+            }
+            return;
+        }
+
+        // Handle enemy projectile collisions (instant damage, no invulnerability)
+        // Skip damage if power-up invulnerability is active
+        if (other.Layer == CollisionLayer.EnemyProjectile)
+        {
+            if (_powerUpInvulnerabilityTimer <= 0)
+            {
+                if (_audioManager is not null)
+                {
+                    _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                }
+
+                // Get damage from EnemyProjectile or use default for boss projectiles
+                int damage = other is EnemyProjectile enemyProj ? enemyProj.Damage : 10;
+                _onTakeDamage?.Invoke(damage);
+                _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
+            }
             return;
         }
 
         // Handle enemy collisions (different handling for kamikaze vs normal)
+        // Skip damage if power-up invulnerability is active
         if (other.Layer == CollisionLayer.Enemy && other is Enemy enemy)
         {
-            if (_invulnerabilityTimer <= 0)
+            if (_invulnerabilityTimer <= 0 && _powerUpInvulnerabilityTimer <= 0)
             {
                 if (enemy.ApplyKnockback)
                 {
@@ -246,7 +288,8 @@ public class Player : BaseEntity
         }
 
         // Handle terrain obstacles (islands, boats) with invulnerability cooldown
-        if ((other.Layer & CollisionLayer.Obstacle) != 0 && _invulnerabilityTimer <= 0)
+        // Skip damage if power-up invulnerability is active
+        if ((other.Layer & CollisionLayer.Obstacle) != 0 && _invulnerabilityTimer <= 0 && _powerUpInvulnerabilityTimer <= 0)
         {
             _audioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
@@ -325,5 +368,35 @@ public class Player : BaseEntity
 
         // Allow higher speed temporarily to let knockback velocity through
         _bounceSpeedTimer = BounceSpeedDuration;
+    }
+
+    /// <summary>
+    /// Activates the health pickup, restoring 20 health up to MaxHealth.
+    /// </summary>
+    private void ActivateHealthPickup()
+    {
+        int healAmount = 20;
+        int newHealth = Math.Min(Health + healAmount, GameConstants.Player.MaxHealth);
+        int actualHealed = newHealth - Health;
+
+        if (actualHealed > 0)
+        {
+            Health = newHealth;
+            // Play positive sound effect
+            _audioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_002); // TODO: Add proper pickup sound
+        }
+    }
+
+    /// <summary>
+    /// Activates the invulnerability pickup, granting 10 seconds of invulnerability with blue flashing.
+    /// </summary>
+    private void ActivateInvulnerabilityPickup()
+    {
+        _powerUpInvulnerabilityTimer = PowerUpInvulnerabilityDuration;
+        _flashTimer = 0f;
+        _showBlueFlash = true;
+
+        // Play positive sound effect
+        _audioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_002); // TODO: Add proper pickup sound
     }
 }

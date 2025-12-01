@@ -1,4 +1,5 @@
 ﻿@using RazorConsole.Components
+@using System.Diagnostics
 @using Waves.Core.Enums
 
 <Panel Border="Spectre.Console.BoxBorder.Double" BorderColor="Spectre.Console.Color.DarkSeaGreen">
@@ -36,7 +37,8 @@ else
 {
     @foreach (string? line in lines)
     {
-        <Markup Content="@line" />
+        string displayLine = TrimLineToWidth(line, 116);
+        <Markup Content="@displayLine" />
     }
 }
 

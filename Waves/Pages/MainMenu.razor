@@ -21,14 +21,6 @@ else
                 <Padder Padding="@(new(0, 0, 0, 1))">
                     <Markup Content="Use tab to navigate menu" />
                 </Padder>
-                @*  TODO: This input is sadly very broken (Visually). *@
-                <TextInput
-                    Value=@_seedInput
-                    ValueChanged="OnSeedChanged"
-                    Placeholder="     Seed      "
-                    BackgroundColor="@Spectre.Console.Color.Grey15"
-                    FocusedColor="@Spectre.Console.Color.Blue"
-                />
                 <Panel>
                     <TextButton
                     Content="     Start     "

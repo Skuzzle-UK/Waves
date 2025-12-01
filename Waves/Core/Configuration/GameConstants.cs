@@ -79,12 +79,12 @@ public static class GameConstants
         /// <summary>
         /// Initial health value for the player.
         /// </summary>
-        public const int InitialHealth = 1000;
+        public const int InitialHealth = 150;
 
         /// <summary>
         /// Maximum health value for the player.
         /// </summary>
-        public const int MaxHealth = 100;
+        public const int MaxHealth = 150;
 
         /// <summary>
         /// Duration of invulnerability after taking damage in seconds.
@@ -367,12 +367,12 @@ public static class GameConstants
         /// <summary>
         /// Default speed for enemy projectiles.
         /// </summary>
-        public const float DefaultSpeed = 120f;
+        public const float DefaultSpeed = 1f;
 
         /// <summary>
         /// Fast speed for charged enemy projectiles.
         /// </summary>
-        public const float FastSpeed = 200f;
+        public const float FastSpeed = 2f;
 
         /// <summary>
         /// Maximum distance enemy projectiles can travel.
@@ -425,12 +425,12 @@ public static class GameConstants
         /// <summary>
         /// Fire interval for rapid fire pattern.
         /// </summary>
-        public const float RapidFireInterval = 0.8f;
+        public const float RapidFireInterval = 1f;
 
         /// <summary>
         /// Interval between shots in a burst.
         /// </summary>
-        public const float BurstFireInterval = 0.2f;
+        public const float BurstFireInterval = 0.5f;
 
         /// <summary>
         /// Number of shots in a burst.
@@ -440,7 +440,7 @@ public static class GameConstants
         /// <summary>
         /// Cooldown after a burst fire.
         /// </summary>
-        public const float BurstCooldown = 3.0f;
+        public const float BurstCooldown = 4.5f;
 
         /// <summary>
         /// Charge time for charged shot pattern.
@@ -472,12 +472,12 @@ public static class GameConstants
         /// <summary>
         /// Minimum spawn interval for enemies.
         /// </summary>
-        public const float MinSpawnInterval = 2.0f;
+        public const float MinSpawnInterval = 4.0f;
 
         /// <summary>
         /// Maximum spawn interval for enemies.
         /// </summary>
-        public const float MaxSpawnInterval = 6.0f;
+        public const float MaxSpawnInterval = 20.0f;
 
         /// <summary>
         /// Speed at which enemies flee when boss battle starts.
