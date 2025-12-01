@@ -153,47 +153,71 @@ public class AudioManager : IAudioManager, IHostedService
             }
         }
 
-        try
+        string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
+
+        // Try to get from cache first
+        if (!_soundCache.TryGetValue(resourceName, out CachedSound? cachedSound))
         {
-            string resourceName = $"Waves.{resourcePath.Replace('/', '.').Replace('\\', '.')}";
+            // If not cached, preload it now (fallback - shouldn't normally happen)
+            Debug.WriteLine($"Sound effect not in cache, loading on-demand: {resourceName}");
+            await PreloadSoundEffect(resourcePath);
 
-            // Try to get from cache first
-            if (!_soundCache.TryGetValue(resourceName, out CachedSound? cachedSound))
+            if (!_soundCache.TryGetValue(resourceName, out cachedSound))
             {
-                // If not cached, preload it now (fallback - shouldn't normally happen)
-                Debug.WriteLine($"Sound effect not in cache, loading on-demand: {resourceName}");
-                await PreloadSoundEffect(resourcePath);
-
-                if (!_soundCache.TryGetValue(resourceName, out cachedSound))
+                Debug.WriteLine($"Failed to load sound effect: {resourceName}");
+                if (acquired)
                 {
-                    throw new FileNotFoundException($"Failed to load sound effect: {resourceName}");
+                    _sfxSemaphore.Release();
                 }
+                return;
             }
+        }
 
-            // Play the cached audio from memory
-            using (MemoryStream memoryStream = new MemoryStream(cachedSound.AudioData))
-            using (WaveFileReader audioFile = new WaveFileReader(memoryStream))
-            using (WaveOutEvent outputDevice = new WaveOutEvent())
+        // Fire and forget - play the sound without blocking
+        _ = Task.Run(() =>
+        {
+            WaveOutEvent? outputDevice = null;
+            try
             {
+                // Create a memory stream from cached audio data
+                MemoryStream memoryStream = new MemoryStream(cachedSound.AudioData);
+                WaveFileReader audioFile = new WaveFileReader(memoryStream);
+
+                // Create output device and set up cleanup on completion
+                outputDevice = new WaveOutEvent();
+
+                // Set up automatic disposal when playback stops
+                outputDevice.PlaybackStopped += (sender, args) =>
+                {
+                    audioFile.Dispose();
+                    memoryStream.Dispose();
+                    outputDevice.Dispose();
+
+                    // Release semaphore slot
+                    if (acquired)
+                    {
+                        _sfxSemaphore.Release();
+                    }
+                };
+
                 outputDevice.Init(audioFile);
                 outputDevice.Volume = OneShotVolume;
                 outputDevice.Play();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error playing sound effect {resourceName}: {ex.Message}");
 
-                while (outputDevice.PlaybackState == PlaybackState.Playing)
+                // Clean up on error
+                outputDevice?.Dispose();
+
+                // Release semaphore on error
+                if (acquired)
                 {
-                    outputDevice.Volume = OneShotVolume;
-                    await Task.Delay(10);
+                    _sfxSemaphore.Release();
                 }
             }
-        }
-        finally
-        {
-            // Release the semaphore slot when the sound finishes (only if we acquired it)
-            if (acquired)
-            {
-                _sfxSemaphore.Release();
-            }
-        }
+        });
     }
 
     public void SetBackgroundTrack(string resourcePath)

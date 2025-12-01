@@ -95,6 +95,45 @@ public class EnemyAISystem : IUpdatable
     }
 
     /// <summary>
+    /// Makes all active enemies flee off-screen in random directions.
+    /// Called when a boss battle starts to clear the playing field.
+    /// </summary>
+    public void FleeAllEnemies()
+    {
+        // Cardinal directions for fleeing
+        Vector2[] fleeDirections = new[]
+        {
+            Vector2.Up,     // Flee upward
+            Vector2.Down,   // Flee downward
+            Vector2.Left,   // Flee leftward
+            Vector2.Right   // Flee rightward
+        };
+
+        // Make each enemy flee in a random direction
+        foreach (Enemy enemy in _enemies.ToList()) // ToList() prevents modification exception
+        {
+            if (!enemy.IsActive || enemy.IsDisposed)
+            {
+                continue;
+            }
+
+            // Pick random flee direction
+            Vector2 fleeDirection = fleeDirections[_random.Next(fleeDirections.Length)];
+
+            // Set flee velocity and speed
+            enemy.Velocity = fleeDirection.Normalized();
+            enemy.Speed = GameConstants.EnemyAI.FleeSpeed;
+
+            // Allow enemy to move off-screen
+            enemy.ClampToBounds = false;
+
+            // Disable AI behaviors during flee (prevents shooting/chasing)
+            enemy.AIBehavior = null;
+            enemy.ShootingPattern = null;
+        }
+    }
+
+    /// <summary>
     /// Updates all enemy AI behaviors, terrain avoidance, and shooting logic.
     /// </summary>
     public void Update()

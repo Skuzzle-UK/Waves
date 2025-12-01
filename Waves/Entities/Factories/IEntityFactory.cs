@@ -87,5 +87,5 @@ public interface IEntityFactory
     /// </summary>
     Boss6 CreateBoss6(Vector2 position, IAsset asset, int maxHealth = 500);
 
-    EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage);
+    EnemyProjectile CreateEnemyProjectile(Vector2 position, Vector2 direction, int damage, string? soundEffect);
 }

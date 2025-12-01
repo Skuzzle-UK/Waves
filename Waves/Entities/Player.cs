@@ -219,36 +219,28 @@ public class Player : BaseEntity
                 _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             }
             _onTakeDamage?.Invoke(proj.Damage);
+            _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
             return;
         }
 
-        // Handle enemy collisions (instant damage, no invulnerability)
-        if (other.Layer == CollisionLayer.Enemy)
+        // Handle enemy collisions (different handling for kamikaze vs normal)
+        if (other.Layer == CollisionLayer.Enemy && other is Enemy enemy)
         {
-            // Handle enemy/projectile collisions with invulnerability flash
-            if (_audioManager is not null)
-            {
-                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
-            }
-            _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage);
-        }
-        if ((other.Layer & (CollisionLayer.Enemy | CollisionLayer.EnemyProjectile)) != 0)
-        {
-            // Only take damage if not currently invulnerable
             if (_invulnerabilityTimer <= 0)
             {
-                if (_audioManager is not null)
+                if (enemy.ApplyKnockback)
                 {
-                    _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
+                    // Kamikaze enemies deal more damage and apply knockback
+                    _audioManager?.PlayOneShot(AudioResources.SoundEffects.EightBit.Explosion_001);
+                    _onTakeDamage?.Invoke(GameConstants.Player.KamikazeDamage);
+                    ApplyKamikazeKnockback(enemy.Position);
                 }
-                _onTakeDamage?.Invoke(10); // TODO: Make damage configurable per entity type
+                else
+                {
+                    // Normal enemies deal standard damage
+                    _onTakeDamage?.Invoke(GameConstants.Player.EnemyDamage);
+                }
                 _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
-
-                // Deactivate projectile if it hit us
-                if (other is Projectile projectile)
-                {
-                    projectile.IsActive = false;
-                }
             }
             return;
         }
@@ -256,10 +248,7 @@ public class Player : BaseEntity
         // Handle terrain obstacles (islands, boats) with invulnerability cooldown
         if ((other.Layer & CollisionLayer.Obstacle) != 0 && _invulnerabilityTimer <= 0)
         {
-            if (_audioManager is not null)
-            {
-                _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
-            }
+            _audioManager?.PlayOneShot(AudioResources.SoundEffects.Impact_003);
             _onTakeDamage?.Invoke(GameConstants.Player.TerrainDamage);
             _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
         }
@@ -300,6 +289,41 @@ public class Player : BaseEntity
         _skipDragNextFrame = true;
 
         // Allow higher speed temporarily to let bounce velocity through
+        _bounceSpeedTimer = BounceSpeedDuration;
+    }
+
+    /// <summary>
+    /// Applies knockback physics when hit by a kamikaze enemy.
+    /// Calculates knockback direction away from the enemy and applies amplified velocity.
+    /// </summary>
+    /// <param name="enemyPosition">The position of the kamikaze enemy</param>
+    private void ApplyKamikazeKnockback(Vector2 enemyPosition)
+    {
+        // Calculate direction away from enemy
+        Vector2 knockbackDirection = Position - enemyPosition;
+
+        // If positions are identical (rare edge case), use random direction
+        if (knockbackDirection.Length < 0.1f)
+        {
+            Random random = new Random();
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            knockbackDirection = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+        }
+        else
+        {
+            knockbackDirection = knockbackDirection.Normalized();
+        }
+
+        // Apply knockback velocity (scaled by multiplier)
+        Velocity = knockbackDirection * GameConstants.Player.KamikazeKnockbackMultiplier;
+
+        // Reset acceleration to prevent input from fighting the knockback
+        _acceleration = Vector2.Zero;
+
+        // Skip drag on next frame to preserve knockback velocity
+        _skipDragNextFrame = true;
+
+        // Allow higher speed temporarily to let knockback velocity through
         _bounceSpeedTimer = BounceSpeedDuration;
     }
 }

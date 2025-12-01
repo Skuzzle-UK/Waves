@@ -1,3 +1,4 @@
+using Waves.Assets.Audio;
 using Waves.Core.Configuration;
 using Waves.Core.Maths;
 using Waves.Entities;
@@ -24,7 +25,8 @@ public class RapidFirePattern : IShootingPattern
         factory.CreateEnemyProjectile(
             source.Position,
             targetDirection,
-            GameConstants.EnemyProjectile.DefaultDamage
+            GameConstants.EnemyProjectile.DefaultDamage,
+            AudioResources.SoundEffects.EightBit.Shoot_001
         );
     }
 }

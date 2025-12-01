@@ -18,5 +18,10 @@ public enum AIType
     /// <summary>
     /// Aggressive chaser that tracks the player's position.
     /// </summary>
-    AggressiveChaser
+    AggressiveChaser,
+
+    /// <summary>
+    /// Kamikaze charger that moves directly toward the player to collide with them.
+    /// </summary>
+    KamikazeCharger
 }

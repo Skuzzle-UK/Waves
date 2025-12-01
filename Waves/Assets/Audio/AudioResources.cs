@@ -115,5 +115,13 @@ public static class AudioResources
         /// Tiger sound
         /// </summary>
         public const string Tiger = "Assets/Audio/SFX/Tiger.wav";
+
+        public static class EightBit
+        {
+            public const string Explosion_001 = "Assets/Audio/SFX/Explosion_8Bit_001.wav";
+            public const string Shoot_001 = "Assets/Audio/SFX/Shoot_8Bit_001.wav";
+            public const string Shoot_002 = "Assets/Audio/SFX/Shoot_8Bit_002.wav";
+            public const string Shoot_003 = "Assets/Audio/SFX/Shoot_8Bit_003.wav";
+        }
     }
 }
