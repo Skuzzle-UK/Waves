@@ -39,6 +39,7 @@ internal class Program
                 // Register Enemy AI systems
                 services.AddSingleton<EnemyAISystem>();
                 services.AddSingleton<EnemySpawner>();
+                services.AddSingleton<CollectableSpawner>();
 
                 // Register EntityFactory for creating all game entities
                 services.AddSingleton<IEntityFactory, EntityFactory>();
@@ -60,6 +61,7 @@ internal class Program
                     sp.GetRequiredService<ScoreSystem>(),
                     sp.GetRequiredService<GameRenderService>(),
                     sp.GetRequiredService<EnemySpawner>(),
+                    sp.GetRequiredService<CollectableSpawner>(),
                     sp.GetRequiredService<EnemyAISystem>()));
 
                 services.AddHostedService<GameLoop>(sp => (GameLoop)sp.GetRequiredService<IGameLoop>());

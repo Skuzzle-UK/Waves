@@ -26,6 +26,7 @@ public class GameManager : IGameManager, IUpdatable
     private readonly LandmassSpawner _landmassSpawner;
     private readonly TerrainSpawner _terrainSpawner;
     private readonly EnemySpawner _enemySpawner;
+    private readonly CollectableSpawner _collectableSpawner;
     private readonly EnemyAISystem _enemyAISystem;
 
     // Store game area dimensions for calculating positions
@@ -37,7 +38,7 @@ public class GameManager : IGameManager, IUpdatable
     private Player? _currentPlayer;
 
     // Speed progression settings
-    private const float BaseTargetSpeed = 2.0f;
+    private const float BaseTargetSpeed = 1.8f;
     private const float RampDuration = 120f;
     private float _levelStartSpeed = 1.0f;
     private float _levelElapsedGameTime;
@@ -74,6 +75,7 @@ public class GameManager : IGameManager, IUpdatable
         LandmassSpawner landmassSpawner,
         TerrainSpawner terrainSpawner,
         EnemySpawner enemySpawner,
+        CollectableSpawner collectableSpawner,
         EnemyAISystem enemyAISystem)
     {
         _entityFactory = entityFactory;
@@ -84,6 +86,7 @@ public class GameManager : IGameManager, IUpdatable
         _landmassSpawner = landmassSpawner;
         _terrainSpawner = terrainSpawner;
         _enemySpawner = enemySpawner;
+        _collectableSpawner = collectableSpawner;
         _enemyAISystem = enemyAISystem;
 
         _gameWidth = AppWrapper.GameAreaWidth;
@@ -132,6 +135,7 @@ public class GameManager : IGameManager, IUpdatable
 
         // Reset spawner states (clears any internal tracking)
         _enemySpawner.Reset();
+        _collectableSpawner.Reset();
         _terrainSpawner.Reset();
 
         // Initialize terrain and landmass spawners with provided seed or default
@@ -142,6 +146,10 @@ public class GameManager : IGameManager, IUpdatable
         // Initialize enemy spawner with seed and scoring callback
         int enemySeed = seed ?? GameConstants.Terrain.DefaultSeed;
         _enemySpawner.Initialize(enemySeed, IncrementScore);
+
+        // Initialize collectable spawner with seed
+        int collectableSeed = seed ?? GameConstants.Terrain.DefaultSeed;
+        _collectableSpawner.Initialize(collectableSeed);
 
         // Create and register the wave background
         // Position at x=3.5 so the 7-char wide wave starts at x=0

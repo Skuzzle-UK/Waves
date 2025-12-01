@@ -27,6 +27,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     private readonly ScoreSystem _scoreSystem;
     private readonly GameRenderService _renderService;
     private readonly EnemySpawner _enemySpawner;
+    private readonly CollectableSpawner _collectableSpawner;
     private readonly EnemyAISystem _enemyAISystem;
 
     private bool _gameSystemsRegistered = false;
@@ -55,6 +56,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
     /// <param name="scoreSystem">The score system to register during gameplay.</param>
     /// <param name="renderService">The render service to register during gameplay.</param>
     /// <param name="enemySpawner">The enemy spawner to register during gameplay.</param>
+    /// <param name="collectableSpawner">The collectable spawner to register during gameplay.</param>
     /// <param name="enemyAISystem">The enemy AI system to register during gameplay.</param>
     public GameLoop(
         int tickRateMilliseconds,
@@ -68,6 +70,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         ScoreSystem scoreSystem,
         GameRenderService renderService,
         EnemySpawner enemySpawner,
+        CollectableSpawner collectableSpawner,
         EnemyAISystem enemyAISystem)
     {
         _tickRateMilliseconds = tickRateMilliseconds;
@@ -82,6 +85,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
         _scoreSystem = scoreSystem;
         _renderService = renderService;
         _enemySpawner = enemySpawner;
+        _collectableSpawner = collectableSpawner;
         _enemyAISystem = enemyAISystem;
 
         // Subscribe to game state changes for automatic pause/resume
@@ -239,6 +243,7 @@ public class GameLoop : IGameLoop, IHostedService, IDisposable
             RegisterUpdatable(_landmassSpawner);
             RegisterUpdatable(_terrainSpawner);
             RegisterUpdatable(_enemySpawner);
+            RegisterUpdatable(_collectableSpawner);
             RegisterUpdatable(_projectileSpawner);
             RegisterUpdatable(_enemyAISystem);
             RegisterUpdatable(_collisionSystem);
