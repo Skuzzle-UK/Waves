@@ -284,6 +284,7 @@ public class GameRenderService : IUpdatable
 
             for (int row = 0; row < _height; row++)
             {
+                StringBuilder lineContent = new StringBuilder(_width);
                 Spectre.Console.Color? currentColor = null;
                 bool needsReset = false;
 
@@ -292,33 +293,91 @@ public class GameRenderService : IUpdatable
                     Color? cellColor = _colorBuffer[col, row];
                     char cellChar = _buffer[col, row];
 
+                    // Replace null bytes with spaces - they cause rendering issues
+                    if (cellChar == '\0')
+                    {
+                        cellChar = ' ';
+                    }
+
                     // Check if we need to change color
                     if (cellColor != currentColor)
                     {
                         // Only add color codes if there's an actual color
                         if (cellColor.HasValue)
                         {
-                            content.Append(GetAnsiColorCode(cellColor.Value));
+                            lineContent.Append(GetAnsiColorCode(cellColor.Value));
                             needsReset = true;
                         }
                         else if (needsReset)
                         {
                             // Reset to default only if we previously set a color
-                            content.Append($"{(char)27}[0m");
+                            lineContent.Append($"{(char)27}[0m");
                             needsReset = false;
                         }
 
                         currentColor = cellColor;
                     }
 
-                    content.Append(cellChar);
+                    lineContent.Append(cellChar);
+                }
+
+                // Replace any trailing pipes or box-drawing characters (last 3 characters) with spaces
+                int checkRange = Math.Min(3, _width);
+                for (int i = 0; i < checkRange; i++)
+                {
+                    int bufferPos = _width - 1 - i;
+                    char bufferChar = _buffer[bufferPos, row];
+                    if (bufferChar == '|' || bufferChar == '│')
+                    {
+                        // Find and replace the pipe/box char in lineContent
+                        // Need to count back from end, skipping ANSI codes
+                        int linePos = lineContent.Length - 1 - i;
+                        if (linePos >= 0 && linePos < lineContent.Length)
+                        {
+                            char lineChar = lineContent[linePos];
+                            if (lineChar == '|' || lineChar == '│')
+                            {
+                                lineContent[linePos] = ' ';
+                            }
+                        }
+                    }
                 }
 
                 // Reset at end of line only if needed
                 if (needsReset)
                 {
-                    content.Append($"{(char)27}[0m");
+                    lineContent.Append($"{(char)27}[0m");
                 }
+
+                // Ensure line is exactly _width visible characters
+                // Count actual visible characters (not ANSI codes)
+                int visibleChars = 0;
+                bool inAnsiCode = false;
+                for (int j = 0; j < lineContent.Length; j++)
+                {
+                    if (lineContent[j] == (char)27) // Start of ANSI code
+                    {
+                        inAnsiCode = true;
+                    }
+                    else if (inAnsiCode && lineContent[j] == 'm') // End of ANSI code
+                    {
+                        inAnsiCode = false;
+                    }
+                    else if (!inAnsiCode)
+                    {
+                        visibleChars++;
+                    }
+                }
+
+                // Pad with spaces if needed to reach exactly _width visible characters
+                while (visibleChars < _width)
+                {
+                    lineContent.Append(' ');
+                    visibleChars++;
+                }
+
+                // Append this line to the main content
+                content.Append(lineContent);
 
                 // Add newline except for the last row
                 if (row < _height - 1)

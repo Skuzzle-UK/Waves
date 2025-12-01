@@ -59,8 +59,8 @@ public class EnemySpawner : IUpdatable
         // Configure spawn zone (right half of screen)
         _minSpawnX = _gameWidth * 0.5f;
         _maxSpawnX = _gameWidth - 10f;
-        _minSpawnY = 5f;
-        _maxSpawnY = _gameHeight - 5f;
+        _minSpawnY = 7f;
+        _maxSpawnY = _gameHeight - 7f;
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class EnemySpawner : IUpdatable
     }
 
     /// <summary>
-    /// Spawns a new enemy at a random position in the right half of the screen.
+    /// Spawns a new enemy off-screen to the right, with entrance animation to final position.
     /// </summary>
     private void SpawnEnemy()
     {
@@ -132,10 +132,14 @@ public class EnemySpawner : IUpdatable
             return;
         }
 
-        // Random position in right half of screen
-        float x = (float)(_random.NextDouble() * (_maxSpawnX - _minSpawnX) + _minSpawnX);
-        float y = (float)(_random.NextDouble() * (_maxSpawnY - _minSpawnY) + _minSpawnY);
-        Vector2 spawnPosition = new Vector2(x, y);
+        // Final position in right half of screen (where enemy will end up)
+        float finalX = (float)(_random.NextDouble() * (_maxSpawnX - _minSpawnX) + _minSpawnX);
+        float finalY = (float)(_random.NextDouble() * (_maxSpawnY - _minSpawnY) + _minSpawnY);
+        Vector2 finalPosition = new Vector2(finalX, finalY);
+
+        // Spawn position off-screen to the right
+        float spawnX = _gameWidth + 15f; // Off-screen right with margin
+        Vector2 spawnPosition = new Vector2(spawnX, finalY);
 
         // Select AI type based on difficulty scaling
         AIType aiType = SelectAIType();
@@ -143,8 +147,11 @@ public class EnemySpawner : IUpdatable
         // Select asset based on AI type (visual distinction)
         IAsset asset = SelectAssetForType(aiType);
 
-        // Create enemy via factory
-        Enemy enemy = CreateEnemyWithAI(spawnPosition, asset, aiType);
+        // Create enemy via factory (spawns at final position initially)
+        Enemy enemy = CreateEnemyWithAI(finalPosition, asset, aiType);
+
+        // Set up entrance animation to slide in from right
+        enemy.SetupEntranceAnimation(spawnPosition, finalPosition);
 
         // Subscribe to death event for scoring
         enemy.OnDeath += (sender, args) =>

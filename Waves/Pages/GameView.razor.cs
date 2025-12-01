@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Hosting;
 using Spectre.Console;
+using System.Text;
 using Waves.Assets.Audio;
 using Waves.Core.Enums;
 using Waves.Core.Interfaces;
@@ -156,6 +157,63 @@ public partial class GameView : ComponentBase, IDisposable
     private string GetRenderedContent()
     {
         return RenderService.GetRenderedContent();
+    }
+
+    private string TrimLineToWidth(string line, int targetWidth)
+    {
+        // Count ANSI code characters
+        int ansiCodeLength = 0;
+        bool inAnsiCode = false;
+        List<int> whitespacePositions = new List<int>();
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            if (line[i] == '\x1b') // Start of ANSI code
+            {
+                inAnsiCode = true;
+                ansiCodeLength++;
+            }
+            else if (inAnsiCode)
+            {
+                ansiCodeLength++;
+                if (line[i] == 'm') // End of ANSI code
+                {
+                    inAnsiCode = false;
+                }
+            }
+            else if (!inAnsiCode && char.IsWhiteSpace(line[i]))
+            {
+                whitespacePositions.Add(i);
+            }
+        }
+
+        // If no ANSI codes, return as-is
+        if (ansiCodeLength == 0)
+        {
+            return line;
+        }
+
+        // Remove exactly as many whitespace characters as ANSI codes add
+        // Start from the rightmost whitespace
+        whitespacePositions.Reverse();
+
+        StringBuilder result = new StringBuilder(line);
+        int removed = 0;
+        int removalOffset = 0;
+
+        foreach (int pos in whitespacePositions)
+        {
+            if (removed >= ansiCodeLength) break;
+
+            int adjustedPos = pos - removalOffset;
+            if (adjustedPos < 0 || adjustedPos >= result.Length) continue;
+
+            result.Remove(adjustedPos, 1);
+            removalOffset++;
+            removed++;
+        }
+
+        return result.ToString();
     }
 
     private string GetHealthBar()
