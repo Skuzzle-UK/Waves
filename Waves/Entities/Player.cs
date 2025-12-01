@@ -247,7 +247,7 @@ public class Player : BaseEntity
 
         // Handle enemy projectile collisions (instant damage, no invulnerability)
         // Skip damage if power-up invulnerability is active
-        if (other.Layer == CollisionLayer.EnemyProjectile && other is EnemyProjectile proj)
+        if (other.Layer == CollisionLayer.EnemyProjectile)
         {
             if (_powerUpInvulnerabilityTimer <= 0)
             {
@@ -255,7 +255,10 @@ public class Player : BaseEntity
                 {
                     _ = _audioManager.PlayOneShot(AudioResources.SoundEffects.Impact_003);
                 }
-                _onTakeDamage?.Invoke(proj.Damage);
+
+                // Get damage from EnemyProjectile or use default for boss projectiles
+                int damage = other is EnemyProjectile enemyProj ? enemyProj.Damage : 10;
+                _onTakeDamage?.Invoke(damage);
                 _invulnerabilityTimer = GameConstants.Player.InvulnerabilityDuration;
             }
             return;
